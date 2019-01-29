@@ -26,6 +26,6 @@ public class Uridium extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
-		// FOR LATER USE
+		// FOR LATER
 	}
 }
