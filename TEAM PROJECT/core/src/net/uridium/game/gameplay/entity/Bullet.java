@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.util.Colors;
-
+//Bullet
 public class Bullet {
     public static final float BULLET_WIDTH = 15;
     public static final float BULLET_HEIGHT = 15;
