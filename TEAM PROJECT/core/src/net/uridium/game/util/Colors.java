@@ -3,7 +3,7 @@ package net.uridium.game.util;
 import com.badlogic.gdx.graphics.Color;
 
 public class Colors {
-    public static final Color LEVEL_BG = new Color(149f/255f, 165f/255f, 1, 1);
+    public static final Color LEVEL_BG = new Color(219f/255f, 165f/255f, 1, 1);
 
     public static final Color BULLET_MAIN = new Color(135f/255f, 211f/255f, 124f/255f, 1);
     public static final Color BULLET_OUTLINE = new Color(4f/255f, 147f/255f, 114f/255f, 1);
