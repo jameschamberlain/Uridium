@@ -42,6 +42,8 @@ public class Level {
     Player player;
     Vector2 playerSpawn;
 
+    Texture enemyTexture;
+
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
     ArrayList<Rectangle> enemies;
@@ -67,6 +69,8 @@ public class Level {
     }
 
     public void init() {
+        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
+
         gridHeight = rows.size();
         gridWidth = rows.get(0).length();
 
@@ -222,10 +226,8 @@ public class Level {
         for(Bullet bullet : bullets)
             bullet.render(batch);
 
-        for (Rectangle enemy : enemies) {
-            shapeRenderer.setColor(Color.OLIVE);
-            shapeRenderer.rect(enemy.x, enemy.y, enemy.width, enemy.height);
-        }
+        for (Rectangle enemy : enemies)
+            batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
 
         player.render(batch);
     }
