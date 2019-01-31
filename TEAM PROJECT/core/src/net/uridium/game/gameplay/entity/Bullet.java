@@ -47,4 +47,5 @@ public class Bullet {
         shapeRenderer.setColor(Colors.BULLET_MAIN);
         shapeRenderer.rect(body.x + body.width / 4, body.y + body.height / 4, body.width / 2, body.height / 2);
     }
+
 }

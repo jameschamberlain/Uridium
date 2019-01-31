@@ -80,6 +80,7 @@ public class TempScreen extends UridiumScreen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         level.render(shapeRenderer);
+
         player.render(shapeRenderer);
 
         shapeRenderer.end();

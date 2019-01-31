@@ -1,13 +1,17 @@
 package net.uridium.game.gameplay;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
+import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.util.Colors;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+
 
 public class Level {
     Rectangle[] walls;
@@ -16,16 +20,21 @@ public class Level {
 
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
+    ArrayList<Rectangle> enemies;
+    ArrayList<Rectangle> enemiesToRemove;
 
     public Level() {
         bullets = new ArrayList<>();
         bulletsToRemove = new ArrayList<>();
+        enemies = new ArrayList<>();
+        enemiesToRemove = new ArrayList<>();
     }
 
     public void init() {
         initWalls();
         initDoors();
         initObstacles();
+        initEnemies();
     }
 
     public void initWalls() {
@@ -48,6 +57,11 @@ public class Level {
         obstacles = new Rectangle[2];
         obstacles[0] = new Rectangle(180, 110, 70, 70);
         obstacles[1] = new Rectangle(450, 400, 70, 70);
+    }
+
+    public void initEnemies() {
+        enemies.add(new Rectangle(180, 250, 40, 40));
+        enemies.add(new Rectangle(220, 330, 40, 40));
     }
 
     public boolean checkPlayerCollisions(Player player) {
@@ -114,6 +128,14 @@ public class Level {
             }
         }
 
+        for (Rectangle enemy : enemies){
+            if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
+                bulletsToRemove.add(bullet);
+                enemiesToRemove.add(enemy);
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -124,11 +146,17 @@ public class Level {
 
         checkBulletCollisions();
         purgeBullets();
+        purgeEnemies();
     }
 
     public void purgeBullets() {
         for(Bullet bullet : bulletsToRemove)
             bullets.remove(bullet);
+    }
+
+    public void purgeEnemies() {
+        for(Rectangle enemy : enemiesToRemove)
+            enemies.remove(enemy);
     }
 
     public void spawnBullet(Bullet bullet) {
@@ -160,7 +188,13 @@ public class Level {
             shapeRenderer.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         }
 
-        for(Bullet bullet : bullets)
+        for(Bullet bullet : bullets) {
             bullet.render(shapeRenderer);
+        }
+
+        for (Rectangle enemy : enemies) {
+            shapeRenderer.setColor(Color.OLIVE);
+            shapeRenderer.rect(enemy.x, enemy.y, enemy.width, enemy.height);
+        }
     }
 }
