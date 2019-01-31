@@ -81,6 +81,8 @@ public class Level {
         yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
         yOffset /= 2;
 
+        initEnemies();
+
         Texture tileTexture;
         String row;
         boolean isObstacle = false;
