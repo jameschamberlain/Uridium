@@ -76,7 +76,6 @@ public class Level {
         boolean isObstacle = false;
         for(int j = 0; j < gridHeight; j++) {
             row = rows.get(j);
-            System.out.println(row);
             for(int i = 0; i < gridWidth; i++) {
                 char c = row.charAt(i);
                 isObstacle = false;
