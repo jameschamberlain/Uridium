@@ -7,6 +7,7 @@ import net.uridium.game.screen.TempScreen;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
+
 public class Uridium extends ApplicationAdapter {
 	public static final int GAME_WIDTH = 1280;
 	public static final int GAME_HEIGHT = 720;
