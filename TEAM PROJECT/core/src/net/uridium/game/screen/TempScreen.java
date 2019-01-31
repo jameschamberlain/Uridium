@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
@@ -23,8 +25,9 @@ public class TempScreen extends UridiumScreen {
     SpriteBatch batch;
     ShapeRenderer shapeRenderer;
 
-    Player player;
     Level level;
+    Texture bgTexture;
+    TextureRegion bg;
 
     public TempScreen() {
         init();
@@ -38,50 +41,26 @@ public class TempScreen extends UridiumScreen {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        player = new Player(GAME_WIDTH / 2 - 27.5f, GAME_HEIGHT / 2 - 27.5f, 55, 55);
-        level = new Level();
+        level = new Level(Gdx.files.internal("level1.txt"));
         level.init();
+
+        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        bg = new TextureRegion(bgTexture);
+        bg.setRegion(0, 0, 640, 640);
     }
 
     @Override
     public void update(float delta) {
-        player.update(delta);
         level.update(delta);
-        level.checkPlayerCollisions(player);
-
-        Rectangle playerBody = player.getBody();
-
-        Vector2 bulletSpawn = new Vector2();
-        if(player.canShoot()) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                level.spawnBullet(new Bullet(playerBody.getCenter(bulletSpawn).add(0, playerBody.height / 2), 0));
-                player.shoot();
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                level.spawnBullet(new Bullet(playerBody.getCenter(bulletSpawn).sub(playerBody.width / 2, 0), 270));
-                player.shoot();
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                level.spawnBullet(new Bullet(playerBody.getCenter(bulletSpawn).sub(0, playerBody.height / 2), 180));
-                player.shoot();
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                level.spawnBullet(new Bullet(playerBody.getCenter(bulletSpawn).add(playerBody.width / 2, 0), 90));
-                player.shoot();
-            }
-        }
     }
 
     @Override
     public void render() {
-//        Matrix4 matrix = camera.combined.cpy();
-//        matrix.translate(100, 0, 0);
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        level.render(shapeRenderer);
-        player.render(shapeRenderer);
-
-        shapeRenderer.end();
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+        level.render(batch);
+        batch.end();
     }
 }

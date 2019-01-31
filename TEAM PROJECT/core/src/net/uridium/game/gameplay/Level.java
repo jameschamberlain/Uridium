@@ -1,92 +1,140 @@
 package net.uridium.game.gameplay;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.util.Colors;
 
+import javax.sound.sampled.Clip;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import static net.uridium.game.Uridium.GAME_HEIGHT;
+import static net.uridium.game.Uridium.GAME_WIDTH;
+
 public class Level {
-    Rectangle[] walls;
-    Rectangle[] obstacles;
-    Rectangle[] doors;
+    public int gridWidth;
+    public int gridHeight;
+
+    public static final float TILE_WIDTH = 64;
+    public static final float TILE_HEIGHT = 64;
+
+    ArrayList<String> rows;
+    public Tile[][] grid;
+
+    float xOffset;
+    float yOffset;
+
+    Player player;
+    Vector2 playerSpawn;
 
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
 
-    public Level() {
+    public Level(FileHandle fileHandle) {
         bullets = new ArrayList<>();
         bulletsToRemove = new ArrayList<>();
+
+        rows = new ArrayList<>();
+
+        try {
+            String line;
+            BufferedReader reader = fileHandle.reader(2048);
+            while((line = reader.readLine()) != null)
+                rows.add(line);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void init() {
-        initWalls();
-        initDoors();
-        initObstacles();
+        gridHeight = rows.size();
+        gridWidth = rows.get(0).length();
+
+        grid = new Tile[gridWidth][gridHeight];
+
+        xOffset = GAME_WIDTH - (gridWidth * TILE_WIDTH);
+        xOffset /= 2;
+        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
+        yOffset /= 2;
+
+        Texture tileTexture;
+        String row;
+        boolean isObstacle = false;
+        for(int j = 0; j < gridHeight; j++) {
+            row = rows.get(j);
+            System.out.println(row);
+            for(int i = 0; i < gridWidth; i++) {
+                char c = row.charAt(i);
+                isObstacle = false;
+
+                switch(c) {
+                    case 'W':
+                        tileTexture = new Texture(Gdx.files.internal("block_04.png"));
+                        isObstacle = true;
+                        break;
+                    case 'O':
+                        tileTexture = new Texture(Gdx.files.internal("crate_08.png"));
+                        isObstacle = true;
+                        break;
+                    case 'D':
+                        tileTexture = new Texture(Gdx.files.internal("ground_03.png"));
+                        break;
+                    case 'P':
+                        playerSpawn = new Vector2(xOffset + i * TILE_WIDTH, yOffset + j * TILE_HEIGHT);
+                    default:
+                        tileTexture = new Texture(Gdx.files.internal("ground_06.png"));
+                        break;
+                }
+
+                grid[i][gridHeight - 1 - j] = new Tile(i, gridHeight - 1 - j, tileTexture, xOffset, yOffset, isObstacle);
+            }
+        }
+
+        player = new Player(playerSpawn.x, playerSpawn.y, 55, 55, this);
+        Gdx.input.setInputProcessor(player);
     }
 
-    public void initWalls() {
-        walls = new Rectangle[6];
-        walls[0] = new Rectangle(40, 40, 60, 620);
-        walls[1] = new Rectangle(1180, 40, 60, 280);
-        walls[2] = new Rectangle(1180, 400, 60, 280);
-        walls[3] = new Rectangle(40, 40, 1200, 60);
-        walls[4] = new Rectangle(40, 620, 560, 60);
-        walls[5] = new Rectangle(680, 620, 560, 60);
-    }
-
-    public void initDoors() {
-        doors = new Rectangle[2];
-        doors[0] = new Rectangle(605, 640, 70, 70);
-        doors[1] = new Rectangle(1200, 325, 70, 70);
-    }
-
-    public void initObstacles() {
-        obstacles = new Rectangle[2];
-        obstacles[0] = new Rectangle(180, 110, 70, 70);
-        obstacles[1] = new Rectangle(450, 400, 70, 70);
-    }
-
-    public boolean checkPlayerCollisions(Player player) {
+    public boolean checkPlayerCollisions() {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
 
-        for(Rectangle door : doors) {
-            if (Intersector.intersectRectangles(playerBody, door, overlap)) {
+        Tile tile;
+        Rectangle obstacle;
+        for(int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                tile = grid[i][j];
 
+                if(tile.isObstacle) {
+                    obstacle = tile.getBody();
+
+                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                        Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
+                        if (!overlap.overlaps(playerBodyOldX))
+                            player.goToLastXPos();
+
+                        Rectangle playerBodyOldY = new Rectangle(playerBody.x, player.lastPos.y, playerBody.width, playerBody.height);
+                        if (!overlap.overlaps(playerBodyOldY))
+                            player.goToLastYPos();
+
+                        return true;
+                    }
+                }
             }
         }
-
-        for(Rectangle wall : walls) {
-            if(Intersector.intersectRectangles(playerBody, wall, overlap)) {
-                Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
-
-                if(!overlap.overlaps(playerBodyOldX))
-                    player.goToLastXPos();
-                else
-                    player.goToLastYPos();
-            }
-
-            continue;
-        }
-
-        for(Rectangle obstacle : obstacles) {
-            if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
-                Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
-
-                if(!overlap.overlaps(playerBodyOldX))
-                    player.goToLastXPos();
-                else
-                    player.goToLastYPos();
-            }
-
-            continue;
-        }
-
-
 
         return false;
     }
@@ -100,17 +148,20 @@ public class Level {
         Rectangle bulletBody = bullet.getBody();
         Rectangle overlap = new Rectangle();
 
-        for(Rectangle wall : walls) {
-            if (Intersector.intersectRectangles(bulletBody, wall, overlap)) {
-                bulletsToRemove.add(bullet);
-                return true;
-            }
-        }
+        Tile tile;
+        Rectangle obstacle;
+        for(int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                tile = grid[i][j];
 
-        for(Rectangle obstacle : obstacles) {
-            if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
-                bulletsToRemove.add(bullet);
-                return true;
+                if(tile.isObstacle) {
+                    obstacle = tile.getBody();
+
+                    if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
+                        bulletsToRemove.add(bullet);
+                        return true;
+                    }
+                }
             }
         }
 
@@ -118,6 +169,9 @@ public class Level {
     }
 
     public void update(float delta) {
+        player.update(delta);
+        checkPlayerCollisions();
+
         for(Bullet b : bullets) {
             b.update(delta);
         }
@@ -135,32 +189,15 @@ public class Level {
         bullets.add(bullet);
     }
 
-    public void render(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(Colors.LEVEL_BG);
-        shapeRenderer.rect(40, 40, 1200, 640);
-
-        for(Rectangle wall : walls) {
-            shapeRenderer.setColor(Colors.WALL_OUTLINE);
-            shapeRenderer.rect(wall.x, wall.y, wall.width, wall.height);
-            shapeRenderer.setColor(Colors.WALL_MAIN);
-            shapeRenderer.rect(wall.x + 5, wall.y + 5, wall.width - 10, wall.height - 10);
-        }
-
-        for(Rectangle door : doors) {
-            shapeRenderer.setColor(Colors.DOOR_OUTLINE);
-            shapeRenderer.rect(door.x, door.y, door.width, door.height);
-            shapeRenderer.setColor(Colors.DOOR_MAIN);
-            shapeRenderer.rect(door.x + 4, door.y + 4, door.width - 8, door.height - 8);
-        }
-
-        for(Rectangle obstacle : obstacles) {
-            shapeRenderer.setColor(Colors.OBST_OUTLINE);
-            shapeRenderer.rect(obstacle.x - 4, obstacle.y - 4, obstacle.width + 8, obstacle.height + 8);
-            shapeRenderer.setColor(Colors.OBST_MAIN);
-            shapeRenderer.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    public void render(SpriteBatch batch) {for(int i = 0; i < gridWidth; i++) {
+            for(int j = 0; j < gridHeight; j++) {
+                grid[i][j].render(batch);
+            }
         }
 
         for(Bullet bullet : bullets)
-            bullet.render(shapeRenderer);
+            bullet.render(batch);
+
+        player.render(batch);
     }
 }
