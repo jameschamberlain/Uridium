@@ -2,6 +2,7 @@ package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
+import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.util.Colors;
 
 import javax.sound.sampled.Clip;
@@ -40,12 +42,18 @@ public class Level {
     Player player;
     Vector2 playerSpawn;
 
+    Texture enemyTexture;
+
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
+    ArrayList<Rectangle> enemies;
+    ArrayList<Rectangle> enemiesToRemove;
 
     public Level(FileHandle fileHandle) {
         bullets = new ArrayList<>();
         bulletsToRemove = new ArrayList<>();
+        enemies = new ArrayList<>();
+        enemiesToRemove = new ArrayList<>();
 
         rows = new ArrayList<>();
 
@@ -61,6 +69,8 @@ public class Level {
     }
 
     public void init() {
+        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
+
         gridHeight = rows.size();
         gridWidth = rows.get(0).length();
 
@@ -105,6 +115,11 @@ public class Level {
 
         player = new Player(playerSpawn.x, playerSpawn.y, 55, 55, this);
         Gdx.input.setInputProcessor(player);
+    }
+
+    public void initEnemies() {
+        enemies.add(new Rectangle(180, 250, 40, 40));
+        enemies.add(new Rectangle(220, 330, 40, 40));
     }
 
     public boolean checkPlayerCollisions() {
@@ -164,6 +179,14 @@ public class Level {
             }
         }
 
+        for (Rectangle enemy : enemies){
+            if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
+                bulletsToRemove.add(bullet);
+                enemiesToRemove.add(enemy);
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -177,11 +200,17 @@ public class Level {
 
         checkBulletCollisions();
         purgeBullets();
+        purgeEnemies();
     }
 
     public void purgeBullets() {
         for(Bullet bullet : bulletsToRemove)
             bullets.remove(bullet);
+    }
+
+    public void purgeEnemies() {
+        for(Rectangle enemy : enemiesToRemove)
+            enemies.remove(enemy);
     }
 
     public void spawnBullet(Bullet bullet) {
@@ -196,6 +225,9 @@ public class Level {
 
         for(Bullet bullet : bullets)
             bullet.render(batch);
+
+        for (Rectangle enemy : enemies)
+            batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
 
         player.render(batch);
     }
