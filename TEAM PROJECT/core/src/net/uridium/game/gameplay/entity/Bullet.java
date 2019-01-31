@@ -54,4 +54,5 @@ public class Bullet {
 //        batch.draw(texture, body.x, body.y ,body.width, body.height);
         batch.draw(texture, body.x, body.y, body.width / 2, body.height / 2, body.width, body.height, 1, 1, rot);
     }
+
 }
