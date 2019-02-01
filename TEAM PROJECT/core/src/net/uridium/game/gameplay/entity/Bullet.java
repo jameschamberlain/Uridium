@@ -22,7 +22,7 @@ public class Bullet {
 
     float shootAngle;
     double velocity = 450;
-    double xVel;//asdasdasdqe
+    double xVel;
     double yVel;
 
     float rot;

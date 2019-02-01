@@ -11,21 +11,42 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.util.UridiumInputProcessor;
 
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+
 public class Player extends UridiumInputProcessor {
+    //这里是身体的矩形
     final Rectangle body;
     Color c = new Color(10673872);
     Color c2 = new Color();
-
+    //移动速度
     float moveSpeed = 300;
+    //当前关卡
     Level level;
 
     public Vector2 lastPos;
     public long lastShot = 0;
     private long reloadTime = 350;
 
+    public Socket s;
+    // 这两个是用来读Object的
+    public ObjectInputStream oi;
+    public PrintStream ps;
+    // 存储信息的HashMap
+    public HashMap<Integer, Player> planes;
+
+    public int up = Input.Keys.W;
+    public int down = Input.Keys.S;
+    public int left = Input.Keys.A;
+    public int right = Input.Keys.D;
+
     Texture texture;
 
     public Player(float x, float y, float width, float height, Level level) {
+
+
         lastPos = new Vector2(x, y);
         body = new Rectangle(x, y, width, height);
 
@@ -57,18 +78,18 @@ public class Player extends UridiumInputProcessor {
     public void update(float delta) {
         body.getPosition(lastPos);
 
-        boolean moved = false;
-        if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D))
-            moved = true;
-
         if(Gdx.input.isKeyPressed(Input.Keys.W))
-            body.y += moveSpeed * delta;
+           ps.println(up);
+            //body.y += moveSpeed * delta;
         if(Gdx.input.isKeyPressed(Input.Keys.A))
-            body.x -= moveSpeed * delta;
+            ps.println(left);
+            //body.x -= moveSpeed * delta;
         if(Gdx.input.isKeyPressed(Input.Keys.S))
-            body.y -= moveSpeed * delta;
+            ps.println(down);
+            //body.y -= moveSpeed * delta;
         if(Gdx.input.isKeyPressed(Input.Keys.D))
-            body.x += moveSpeed * delta;
+            ps.println(right);
+            //body.x += moveSpeed * delta;
 
     }
 
@@ -78,12 +99,15 @@ public class Player extends UridiumInputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        //创建了一个(0,0)的Vector
         Vector2 bulletSpawn = new Vector2();
 
         if(canShoot()) {
             switch(keycode) {
                 case Input.Keys.UP:
+                    //获得企鹅当前位置的中心点然后加上一半身体的高度，就是企鹅rec的正上方，下面的同理
                     bulletSpawn = body.getCenter(bulletSpawn).add(0, body.height / 2);
+                    //有了起始角度和起始坐标就可以发射了
                     shoot(bulletSpawn, 0);
                     return true;
                 case Input.Keys.LEFT:
