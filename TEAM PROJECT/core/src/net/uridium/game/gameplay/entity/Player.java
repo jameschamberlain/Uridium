@@ -16,6 +16,8 @@ public class Player extends UridiumInputProcessor {
     Color c = new Color(10673872);
     Color c2 = new Color();
 
+    int score = 0;
+
     float moveSpeed = 300;
     Level level;
 
@@ -70,6 +72,18 @@ public class Player extends UridiumInputProcessor {
         if(Gdx.input.isKeyPressed(Input.Keys.D))
             body.x += moveSpeed * delta;
 
+    }
+
+    public void killedEnemy(){
+        score += 100;
+    }
+
+    public int getScore(){
+        return score;
+    }
+
+    public void setScore(int s){
+        score = s;
     }
 
     public void render(SpriteBatch batch) {
