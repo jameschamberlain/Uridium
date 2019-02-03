@@ -4,16 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.util.Colors;
+
 
 import javax.sound.sampled.Clip;
 import java.io.BufferedReader;
@@ -27,6 +30,8 @@ import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
 public class Level {
+
+
     public int gridWidth;
     public int gridHeight;
 
@@ -48,6 +53,14 @@ public class Level {
     ArrayList<Bullet> bulletsToRemove;
     ArrayList<Rectangle> enemies;
     ArrayList<Rectangle> enemiesToRemove;
+
+    String outputScore;
+
+    BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
+
+
+
+
 
     public Level(FileHandle fileHandle) {
         bullets = new ArrayList<>();
@@ -80,6 +93,8 @@ public class Level {
         xOffset /= 2;
         yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
         yOffset /= 2;
+
+
 
         initEnemies();
 
@@ -120,8 +135,8 @@ public class Level {
     }
 
     public void initEnemies() {
-        enemies.add(new Rectangle(180, 250, 40, 40));
-        enemies.add(new Rectangle(220, 330, 40, 40));
+        enemies.add(new Rectangle(600, 250, 40, 40));
+        enemies.add(new Rectangle(300, 330, 40, 40));
     }
 
     public boolean checkPlayerCollisions() {
@@ -185,6 +200,7 @@ public class Level {
             if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
                 bulletsToRemove.add(bullet);
                 enemiesToRemove.add(enemy);
+                player.setScore(player.getScore() + 100);
                 return true;
             }
         }
@@ -203,6 +219,8 @@ public class Level {
         checkBulletCollisions();
         purgeBullets();
         purgeEnemies();
+        outputScore = String.valueOf(player.getScore());
+
     }
 
     public void purgeBullets() {
@@ -215,6 +233,7 @@ public class Level {
             enemies.remove(enemy);
     }
 
+
     public void spawnBullet(Bullet bullet) {
         bullets.add(bullet);
     }
@@ -225,6 +244,8 @@ public class Level {
             }
         }
 
+
+
         for(Bullet bullet : bullets)
             bullet.render(batch);
 
@@ -232,5 +253,9 @@ public class Level {
             batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
 
         player.render(batch);
+
+        myFont.draw(batch, "Score \n  " + outputScore,1130,670);
+
+
     }
 }
