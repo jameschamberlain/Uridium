@@ -16,12 +16,12 @@ import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.util.Colors;
 
 import javax.sound.sampled.Clip;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
@@ -44,12 +44,26 @@ public class Level {
 
     Texture enemyTexture;
 
+    Socket s;
+    PrintStream ps;
+    ObjectInputStream oi;
+
+    HashMap<Integer,Vector2> players;
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
     ArrayList<Rectangle> enemies;
     ArrayList<Rectangle> enemiesToRemove;
 
     public Level(FileHandle fileHandle) {
+        //Client Service starts
+        try {
+            s = new Socket("127.0.0.1",9988);
+            ps = new PrintStream(s.getOutputStream());
+            oi = new ObjectInputStream(s.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         bullets = new ArrayList<>();
         bulletsToRemove = new ArrayList<>();
         enemies = new ArrayList<>();
@@ -66,9 +80,12 @@ public class Level {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        players = new HashMap<Integer, Vector2>();
     }
 
     public void init() {
+
         enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
 
         gridHeight = rows.size();
@@ -106,6 +123,10 @@ public class Level {
                         break;
                     case 'P':
                         playerSpawn = new Vector2(xOffset + i * TILE_WIDTH, yOffset + j * TILE_HEIGHT);
+                        System.out.println("Before Send");
+                        System.out.println(playerSpawn.x+" "+playerSpawn.y);
+                        ps.println(playerSpawn.x+" "+playerSpawn.y);
+                        System.out.println("After Send");
                     default:
                         tileTexture = new Texture(Gdx.files.internal("ground_06.png"));
                         break;
@@ -115,8 +136,19 @@ public class Level {
             }
         }
 
-        player = new Player(playerSpawn.x, playerSpawn.y, 55, 55, this);
-        Gdx.input.setInputProcessor(player);
+        try {
+            players = (HashMap<Integer, Vector2>) oi.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println(players.size());
+        for(Vector2 p : players.values()){
+            player = new Player(p.x, p.y, 55, 55, this);
+            Gdx.input.setInputProcessor(player);
+        }
+
     }
 
     public void initEnemies() {
@@ -193,7 +225,10 @@ public class Level {
     }
 
     public void update(float delta) {
+        System.out.println("Updated");
+        //Instead of doing change here, Sending the location to Server
         player.update(delta);
+
         checkPlayerCollisions();
 
         for(Bullet b : bullets) {
@@ -219,7 +254,9 @@ public class Level {
         bullets.add(bullet);
     }
 
-    public void render(SpriteBatch batch) {for(int i = 0; i < gridWidth; i++) {
+    public void render(SpriteBatch batch) {
+
+        for(int i = 0; i < gridWidth; i++) {
             for(int j = 0; j < gridHeight; j++) {
                 grid[i][j].render(batch);
             }
