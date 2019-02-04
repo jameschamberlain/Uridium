@@ -233,4 +233,36 @@ public class Level {
 
         player.render(batch);
     }
+
+    //Takes the player's x and y location and evaluates if it is close enough for enemy to shoot
+    public void enemyShootPlayer(){
+        float pos1X;
+        float pos1Y;
+        float pos2X;
+        float pos2Y;
+
+        pos1X = player.getBody().x;
+        pos1Y = player.getBody().y;
+        pos2X = e;
+        pos2Y = e;
+
+        float x;
+        float y;
+        if (pos2X > pos1X){
+            x = pos2X - pos1X;
+        }else{
+            x = pos1X - pos2X;
+        }
+
+        if (pos2Y > pos1Y){
+            y = pos2Y - pos1Y;
+        }else{
+            y = pos1Y - pos2Y;
+        }
+
+        
+
+    }
+
+
 }
