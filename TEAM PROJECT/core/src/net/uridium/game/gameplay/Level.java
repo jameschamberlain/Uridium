@@ -137,6 +137,7 @@ public class Level {
         }
 
         try {
+            //Get Init data
             players = (HashMap<Integer, Vector2>) oi.readObject();
         } catch (IOException e) {
             e.printStackTrace();
