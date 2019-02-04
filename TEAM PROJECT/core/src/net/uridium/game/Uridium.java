@@ -3,6 +3,7 @@ package net.uridium.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import net.uridium.game.gameplay.LevelFactory;
 import net.uridium.game.screen.TempScreen;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
@@ -14,6 +15,8 @@ public class Uridium extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+//		LevelFactory.buildLevel(Gdx.files.internal("level1.json").readString());
+
 		getUSMInstance().push(new TempScreen());
 	}
 

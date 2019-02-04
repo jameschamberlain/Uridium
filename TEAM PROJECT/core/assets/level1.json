@@ -1,0 +1,30 @@
+{
+  "grid": {
+    "width": 15,
+    "height": 10,
+    "rows": [
+      "WWWWWWWDWWWWWWW",
+      "W             W",
+      "W   OOO       W",
+      "W   OOO   OO  W",
+      "W         O   W",
+      "W             W",
+      "W        OO   D",
+      "W         O   W",
+      "W         O   W",
+      "WWWWWWWWWWWWWWW"
+    ]
+  },
+  "playerSpawn": {
+    "x": 2,
+    "y": 4
+  },
+  "enemies": [
+    {
+      "type": "chicken",
+      "x": 12,
+      "y": 12
+    }
+  ],
+  "name": "The Start"
+}

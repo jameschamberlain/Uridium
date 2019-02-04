@@ -13,8 +13,10 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
+import net.uridium.game.gameplay.LevelFactory;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
+import net.uridium.game.ui.HealthBar;
 import net.uridium.game.util.Colors;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
@@ -29,6 +31,8 @@ public class TempScreen extends UridiumScreen {
     Texture bgTexture;
     TextureRegion bg;
 
+    HealthBar healthBar;
+
     public TempScreen() {
         init();
     }
@@ -41,8 +45,12 @@ public class TempScreen extends UridiumScreen {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        level = new Level(Gdx.files.internal("level1.txt"));
-        level.init();
+//        level = new Level(Gdx.files.internal("level1.txt"));
+//        level.init();
+
+        level = LevelFactory.buildLevelFromFileHandle(Gdx.files.internal("level1.json"));
+
+        healthBar = new HealthBar(3, 5);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -61,6 +69,9 @@ public class TempScreen extends UridiumScreen {
         batch.begin();
         batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
         level.render(batch);
+
+        batch.setProjectionMatrix(camera.combined);
+        healthBar.render(batch);
         batch.end();
     }
 }
