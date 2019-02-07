@@ -188,4 +188,12 @@ public class Object {
     public void setF(float f) {
         this.f = f;
     }
+
+    @Override
+    public String toString() {
+        int x = position.x;
+        int y = position.y;
+        String s = "(" + x + ", " + y + ")";
+        return s;
+    }
 }

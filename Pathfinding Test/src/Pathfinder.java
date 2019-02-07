@@ -1,20 +1,40 @@
 import java.awt.*;
 import java.util.*;
 
-public class Pathfinder {
+class Pathfinder {
 
 
     /**
-     * Base grid
+     * Base grid.
      */
     private Grid grid;
+    /**
+     * The 2D array of which acts as the coordinate
+     * system for the world.
+     */
     private Object[][] map;
+    /**
+     * The maximum x value in the grid.
+     */
     private int maxX;
+    /**
+     * The maximum y value in the grid.
+     */
     private int maxY;
+    /**
+     * Stores the nodes above, below, to the left
+     * and to the right of the current node.
+     */
     private HashMap<String, Point> surroundingNodes = new HashMap<>();
 
 
-    public Pathfinder(Grid grid) {
+    /**
+     *
+     * Constructor for a new pathfinding object.
+     *
+     * @param grid The grid for the world.
+     */
+    Pathfinder(Grid grid) {
         this.grid = grid;
         this.map = grid.getGrid();
         maxX = grid.getX() - 1;
@@ -23,18 +43,32 @@ public class Pathfinder {
     }
 
 
+    /**
+     *
+     * Uses the A* search algorithm to find a path
+     * through the world from a start node to an
+     * end node.
+     *
+     * @return An arraylist of coordinates for the route.
+     */
     ArrayList<Object> findPath() {
-        //TreeMap<Point, Object> sortedPaths = new TreeMap<Point, Object>(customComparator);
-        //TreeMap<Float, Object> sortedPaths = new TreeMap<>(floatComparator);
+        // Setup a list of visible paths.
         ArrayList<Object> paths = new ArrayList<>();
-        ArrayList<Object> route = new ArrayList<>();
         Object currentNode = getStartNode();
+        // Calculate the heuristic for every node in the world.
         calculateHeuristic();
         boolean hasReachedGoal = false;
+        /*
+         While the goal has not been reached continue to travel
+         through the world.
+          */
         while (!hasReachedGoal) {
             currentNode.setType(ObjectType.VISITED_PATH);
-            System.out.println(currentNode.getPosition());
-            grid.printGrid();
+            /*
+            Use a control flow to check the surrounding nodes for available paths
+            while also making sure that the algorithm doesn't attempt to process a node
+            that would be outside the grid.
+             */
             if (currentNode.getPosition().x == 0) {
                 if (currentNode.getPosition().y == 0) {
                     surroundingNodes.replace("up", new Point(0, 1));
@@ -95,34 +129,34 @@ public class Pathfinder {
                     surroundingNodes.replace("right", new Point(currentNode.getPosition().x + 1, currentNode.getPosition().y));
                 }
             }
+            // For each surrounding valid node add it the list of paths.
             for (String node : surroundingNodes.keySet()) {
                 int xVal = surroundingNodes.get(node).x;
                 int yVal = surroundingNodes.get(node).y;
                 if (!(xVal == -1) && !(yVal == -1)) {
                     float newG = currentNode.getG() + 1;
                     Object object = map[yVal][xVal];
-                    System.out.print(node + ": ");
-                    System.out.print(surroundingNodes.get(node));
-                    System.out.print(" or ");
-                    System.out.println(object.getPosition());
                     if (!(object.getType() == ObjectType.VISITED_PATH) && !(object.getType() == ObjectType.OBSTACLE)) {
                         if (object.getG() > newG) {
                             object.setG(newG);
-                            System.out.println("G: " + object.getG() + ", H: " + object.getH());
                             object.setF(object.getG() + object.getH());
                             object.setPrecedPoint(currentNode);
-                            //sortedPaths.put(object.getPosition(), object);
-                            //sortedPaths.put(object.getF(), object);
                             paths.add(object);
                         }
                     }
                 }
             }
-            //currentNode = sortedPaths.pollLastEntry().getValue();
+            /*
+             Sort the list of paths so the first node is that
+             which has the lowest  f when computing g + h.
+              */
             Collections.sort(paths, new sortByF());
-            for (Object object : paths) {
-                System.out.print(object.getF() + ", ");
-            }
+            /*
+            Get the first node from the list and set it as
+            the current node. Then check if it is the end
+            goal node. If it is then end the while loop.
+            Otherwise go back through the loop.
+             */
             currentNode = paths.get(0);
             paths.remove(0);
             currentNode.setSymbol('Z');
@@ -130,12 +164,24 @@ public class Pathfinder {
                 hasReachedGoal = true;
             }
         }
-
-        System.out.println("We did it!");
+        // Setup and populate a list of the route found.
+        ArrayList<Object> route = new ArrayList<>();
+        route.add(currentNode);
+        while (currentNode.getPrecedPoint() != null) {
+            currentNode = currentNode.getPrecedPoint();
+            route.add(currentNode);
+        }
+        Collections.reverse(route);
         return route;
     }
 
 
+    /**
+     *
+     * Get the start node form the grid.
+     *
+     * @return The start node.
+     */
     private Object getStartNode() {
         for (int i = grid.getY() - 1; i >= 0; i--) {
             for (int j = 0; j < grid.getX(); j++) {
@@ -148,6 +194,10 @@ public class Pathfinder {
     }
 
 
+    /**
+     * Calculate the heuristic value for each
+     * node in the grid.
+     */
     private void calculateHeuristic() {
         Object endNode = null;
         for (int i = grid.getY() - 1; i >= 0; i--) {
@@ -157,7 +207,6 @@ public class Pathfinder {
                 }
             }
         }
-
         for (int i = grid.getY() - 1; i >= 0; i--) {
             for (int j = 0; j < grid.getX(); j++) {
                 if (map[i][j].getType() == ObjectType.START || map[i][j].getType() == ObjectType.PATH) {
@@ -169,6 +218,16 @@ public class Pathfinder {
     }
 
 
+    /**
+     *
+     * Helper for calculating the heuristic.
+     * Calculates pythagoras for two grid points.
+     *
+     * @param point1 A node from the grid.
+     * @param point2 A node from the grid.
+     *
+     * @return The result of the pythagoras calculation.
+     */
     private float calcPythag(Point point1, Point point2) {
         float xSquare = (point2.x - point1.x) * (point2.x - point1.x);
         float ySquare = (point2.y - point1.y) * (point2.y - point1.y);
@@ -177,6 +236,11 @@ public class Pathfinder {
     }
 
 
+    /**
+     * Sets up the hash map with placeholders for
+     * the nodes above, below, to the left, and to
+     * the right of the current node.
+     */
     private void setupSurroundingNodes() {
         surroundingNodes.put("up", new Point(-1, -1));
         surroundingNodes.put("down", new Point(-1, -1));
@@ -184,24 +248,13 @@ public class Pathfinder {
         surroundingNodes.put("right", new Point(-1, -1));
     }
 
-
-    Comparator<Map.Entry<Point, Object>> customComparator = new Comparator<Map.Entry<Point, Object>>() {
-        @Override
-        public int compare(Map.Entry<Point, Object> o1, Map.Entry<Point, Object> o2) {
-            return Float.compare(o1.getValue().getF(), o2.getValue().getF());
-        }
-    };
-
-    Comparator<Float> floatComparator = new Comparator<Float>() {
-        @Override
-        public int compare(Float o1, Float o2) {
-            return Float.compare(o1, o2);
-        }
-    };
-
 }
 
 
+/**
+ * A custom comparator to oder objects based on the f value.
+ * f = g + h.
+ */
 class sortByF implements Comparator<Object> {
     @Override
     public int compare(Object o1, Object o2) {

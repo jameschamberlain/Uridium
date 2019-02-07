@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -15,7 +16,8 @@ public class Main {
         scan.close();
         grid.printGrid();
         Pathfinder pathfinder = new Pathfinder(grid);
-        pathfinder.findPath();
+        ArrayList<Object> route = pathfinder.findPath();
+        System.out.println(route);
     }
 
 
