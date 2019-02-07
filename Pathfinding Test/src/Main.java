@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Scanner;
 
 public class Main {
@@ -13,6 +14,8 @@ public class Main {
         placeObjects(scan);
         scan.close();
         grid.printGrid();
+        Pathfinder pathfinder = new Pathfinder(grid);
+        pathfinder.findPath();
     }
 
 
@@ -48,13 +51,15 @@ public class Main {
         System.out.println("Enter start position:");
         int x = grid.getValidX(scan);
         int y = grid.getValidY(scan);
-        grid.addObject(ObjectType.START, x, y);
+        Object startNode = new Object(ObjectType.START, new Point(x, y));
+        grid.addObject(startNode);
 
         // Add the end position to the grid
         System.out.println("Enter end position:");
         x = grid.getValidX(scan);
         y = grid.getValidY(scan);
-        grid.addObject(ObjectType.END, x, y);
+        Object endNode = new Object(ObjectType.END, new Point(x, y));
+        grid.addObject(endNode);
 
         // Add any obstacles to the grid
         System.out.println("How many obstacles?");
@@ -63,7 +68,8 @@ public class Main {
             System.out.println("Position of obstacle " + i + ":");
             x = grid.getValidX(scan);
             y = grid.getValidY(scan);
-            grid.addObject(ObjectType.OBSTACLE, x, y);
+            Object obstacle = new Object(ObjectType.OBSTACLE, new Point(x, y));
+            grid.addObject(obstacle);
         }
     }
 

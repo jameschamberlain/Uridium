@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Scanner;
 
 public class Grid {
@@ -13,7 +14,7 @@ public class Grid {
     /**
      * Base grid
      */
-    private ObjectType[][] grid;
+    private Object[][] grid;
 
     /**
      *
@@ -25,7 +26,7 @@ public class Grid {
     Grid(int x, int y) {
         this.x = x;
         this.y = y;
-        this.grid = new ObjectType[y][x];
+        this.grid = new Object[y][x];
         resetGrid();
     }
 
@@ -52,24 +53,12 @@ public class Grid {
      * the start position, end position, and
      * any obstacles
      *
-     * @param type The type of object to be placed
-     * @param x The x-coordinate of the object
-     * @param y The y-coordinate of the object
+     * @param object The object to be placed
      */
-    void addObject(ObjectType type, int x, int y) {
-        switch (type) {
-            case START:
-                grid[y][x] = ObjectType.START;
-                break;
-            case END:
-                grid[y][x] = ObjectType.END;
-                break;
-            case OBSTACLE:
-                grid[y][x] = ObjectType.OBSTACLE;
-                break;
-            default:
-                break;
-        }
+    void addObject(Object object) {
+        int xCoord = (int) object.getPosition().getX();
+        int yCoord = (int) object.getPosition().getY();
+        grid[yCoord][xCoord] = object;
     }
 
 
@@ -80,7 +69,7 @@ public class Grid {
     private void resetGrid() {
         for (int i = 0; i < y; i++) {
             for (int j = 0; j < x; j++) {
-                grid[i][j] = ObjectType.PATH;
+                grid[i][j] = new Object(ObjectType.PATH, new Point(j, i));
             }
         }
     }
@@ -95,31 +84,9 @@ public class Grid {
         for (int i = y-1; i >= 0; i--) {
             prefix = "";
             for (int j = 0; j < x; j++) {
-                ObjectType type = grid[i][j];
-                switch (type) {
-                    case PATH:
-                        stringBuilder.append(prefix);
-                        prefix = " ";
-                        stringBuilder.append("-");
-                        break;
-                    case START:
-                        stringBuilder.append(prefix);
-                        prefix = " ";
-                        stringBuilder.append("S");
-                        break;
-                    case END:
-                        stringBuilder.append(prefix);
-                        prefix = " ";
-                        stringBuilder.append("E");
-                        break;
-                    case OBSTACLE:
-                        stringBuilder.append(prefix);
-                        prefix = " ";
-                        stringBuilder.append("O");
-                        break;
-                    default:
-                        break;
-                }
+                stringBuilder.append(prefix);
+                prefix = " ";
+                stringBuilder.append(grid[i][j].getSymbol());
             }
             stringBuilder.append("\n");
         }
@@ -180,4 +147,14 @@ public class Grid {
         return y;
     }
 
+
+    /**
+     *
+     * Get the grid
+     *
+     * @return The grid
+     */
+    public Object[][] getGrid() {
+        return grid;
+    }
 }
