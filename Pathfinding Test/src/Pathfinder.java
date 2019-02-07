@@ -25,7 +25,8 @@ public class Pathfinder {
 
     ArrayList<Object> findPath() {
         //TreeMap<Point, Object> sortedPaths = new TreeMap<Point, Object>(customComparator);
-        TreeMap<Float, Object> sortedPaths = new TreeMap<>(floatComparator);
+        //TreeMap<Float, Object> sortedPaths = new TreeMap<>(floatComparator);
+        ArrayList<Object> paths = new ArrayList<>();
         ArrayList<Object> route = new ArrayList<>();
         Object currentNode = getStartNode();
         calculateHeuristic();
@@ -100,18 +101,30 @@ public class Pathfinder {
                 if (!(xVal == -1) && !(yVal == -1)) {
                     float newG = currentNode.getG() + 1;
                     Object object = map[yVal][xVal];
+                    System.out.print(node + ": ");
+                    System.out.print(surroundingNodes.get(node));
+                    System.out.print(" or ");
+                    System.out.println(object.getPosition());
                     if (!(object.getType() == ObjectType.VISITED_PATH) && !(object.getType() == ObjectType.OBSTACLE)) {
                         if (object.getG() > newG) {
                             object.setG(newG);
+                            System.out.println("G: " + object.getG() + ", H: " + object.getH());
                             object.setF(object.getG() + object.getH());
                             object.setPrecedPoint(currentNode);
                             //sortedPaths.put(object.getPosition(), object);
-                            sortedPaths.put(object.getF(), object);
+                            //sortedPaths.put(object.getF(), object);
+                            paths.add(object);
                         }
                     }
                 }
             }
-            currentNode = sortedPaths.pollLastEntry().getValue();
+            //currentNode = sortedPaths.pollLastEntry().getValue();
+            Collections.sort(paths, new sortByF());
+            for (Object object : paths) {
+                System.out.print(object.getF() + ", ");
+            }
+            currentNode = paths.get(0);
+            paths.remove(0);
             currentNode.setSymbol('Z');
             if (currentNode.getType() == ObjectType.END) {
                 hasReachedGoal = true;
@@ -186,4 +199,12 @@ public class Pathfinder {
         }
     };
 
+}
+
+
+class sortByF implements Comparator<Object> {
+    @Override
+    public int compare(Object o1, Object o2) {
+        return Float.compare(o1.getF(), o2.getF());
+    }
 }
