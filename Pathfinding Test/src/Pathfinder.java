@@ -42,7 +42,7 @@ class Pathfinder {
         this.map = grid.getGrid();
         maxX = grid.getX() - 1;
         maxY = grid.getY() - 1;
-        setupSurroundingNodes();
+        //setupSurroundingNodes();
     }
 
 
@@ -60,6 +60,12 @@ class Pathfinder {
         Object currentNode = getStartNode();
         // Calculate the heuristic for every node in the world.
         calculateHeuristic();
+
+        Point up = new Point(-1, -1);
+        Point down = new Point(-1, -1);
+        Point left = new Point(-1, -1);
+        Point right = new Point(-1, -1);
+
         boolean hasReachedGoal = false;
         /*
          While the goal has not been reached continue to travel
@@ -74,81 +80,70 @@ class Pathfinder {
              */
             if (currentNode.getPosition().x == 0) {
                 if (currentNode.getPosition().y == 0) {
-                    surroundingNodes.replace("up", new Point(0, 1));
-                    surroundingNodes.replace("down", new Point(-1, -1));
-                    surroundingNodes.replace("left", new Point(-1, -1));
-                    surroundingNodes.replace("right", new Point(1, 0));
+                    up = new Point(0, 1);
+                    down = new Point(-1, -1);
+                    left = new Point(-1, -1);
+                    right = new Point(1, 0);
                 }
                 else if (currentNode.getPosition().y == maxY) {
-                    surroundingNodes.replace("up", new Point(-1, -1));
-                    surroundingNodes.replace("down", new Point(0, maxY - 1));
-                    surroundingNodes.replace("left", new Point(-1, -1));
-                    surroundingNodes.replace("right", new Point(1, maxY));
+                    up = new Point(-1, -1);
+                    down = new Point(0, maxY - 1);
+                    left = new Point(-1, -1);
+                    right = new Point(1, maxY);
                 }
                 else {
-                    surroundingNodes.replace("up", new Point(0, currentNode.getPosition().y + 1));
-                    surroundingNodes.replace("down", new Point(0, currentNode.getPosition().y - 1));
-                    surroundingNodes.replace("left", new Point(-1, -1));
-                    surroundingNodes.replace("right", new Point(1, currentNode.getPosition().y));
+                    up = new Point(0, currentNode.getPosition().y + 1);
+                    down = new Point(0, currentNode.getPosition().y - 1);
+                    left = new Point(-1, -1);
+                    right = new Point(1, currentNode.getPosition().y);
                 }
             }
             else if (currentNode.getPosition().x == maxX) {
                 if (currentNode.getPosition().y == 0) {
-                    surroundingNodes.replace("up", new Point(maxX, 1));
-                    surroundingNodes.replace("down", new Point(-1, -1));
-                    surroundingNodes.replace("left", new Point(maxX - 1, 0));
-                    surroundingNodes.replace("right", new Point(-1, -1));
+                    up = new Point(maxX, 1);
+                    down = new Point(-1, -1);
+                    left = new Point(maxX - 1, 0);
+                    right = new Point(-1, -1);
                 }
                 else if (currentNode.getPosition().y == maxY) {
-                    surroundingNodes.replace("up", new Point(-1, -1));
-                    surroundingNodes.replace("down", new Point(maxX, maxY - 1));
-                    surroundingNodes.replace("left", new Point(maxX - 1, maxY));
-                    surroundingNodes.replace("right", new Point(-1, -1));
+                    up = new Point(-1, -1);
+                    down = new Point(maxX, maxY - 1);
+                    left = new Point(maxX - 1, maxY);
+                    right = new Point(-1, -1);
                 }
                 else {
-                    surroundingNodes.replace("up", new Point(maxX, currentNode.getPosition().y + 1));
-                    surroundingNodes.replace("down", new Point(maxX, currentNode.getPosition().y - 1));
-                    surroundingNodes.replace("left", new Point(maxX - 1, currentNode.getPosition().y));
-                    surroundingNodes.replace("right", new Point(-1, -1));
+                    up = new Point(maxX, currentNode.getPosition().y + 1);
+                    down = new Point(maxX, currentNode.getPosition().y - 1);
+                    left = new Point(maxX - 1, currentNode.getPosition().y);
+                    right = new Point(-1, -1);
                 }
             }
             else {
                 if (currentNode.getPosition().y == 0) {
-                    surroundingNodes.replace("up", new Point(currentNode.getPosition().x, 1));
-                    surroundingNodes.replace("down", new Point(-1, -1));
-                    surroundingNodes.replace("left", new Point(currentNode.getPosition().x - 1, 0));
-                    surroundingNodes.replace("right", new Point(currentNode.getPosition().x + 1, 0));
+                    up = new Point(currentNode.getPosition().x, 1);
+                    down = new Point(-1, -1);
+                    left = new Point(currentNode.getPosition().x - 1, 0);
+                    right = new Point(currentNode.getPosition().x + 1, 0);
                 }
                 else if (currentNode.getPosition().y == maxY) {
-                    surroundingNodes.replace("up", new Point(-1, -1));
-                    surroundingNodes.replace("down", new Point(currentNode.getPosition().x, maxY - 1));
-                    surroundingNodes.replace("left", new Point(currentNode.getPosition().x - 1, maxY));
-                    surroundingNodes.replace("right", new Point(currentNode.getPosition().x + 1, maxY));
+                    up = new Point(-1, -1);
+                    down = new Point(currentNode.getPosition().x, maxY - 1);
+                    left = new Point(currentNode.getPosition().x - 1, maxY);
+                    right = new Point(currentNode.getPosition().x + 1, maxY);
                 }
                 else {
-                    surroundingNodes.replace("up", new Point(currentNode.getPosition().x, currentNode.getPosition().y + 1));
-                    surroundingNodes.replace("down", new Point(currentNode.getPosition().x, currentNode.getPosition().y - 1));
-                    surroundingNodes.replace("left", new Point(currentNode.getPosition().x - 1, currentNode.getPosition().y));
-                    surroundingNodes.replace("right", new Point(currentNode.getPosition().x + 1, currentNode.getPosition().y));
+                    up = new Point(currentNode.getPosition().x, currentNode.getPosition().y + 1);
+                    down = new Point(currentNode.getPosition().x, currentNode.getPosition().y - 1);
+                    left = new Point(currentNode.getPosition().x - 1, currentNode.getPosition().y);
+                    right = new Point(currentNode.getPosition().x + 1, currentNode.getPosition().y);
                 }
             }
             // For each surrounding valid node add it the list of paths.
-            for (String node : surroundingNodes.keySet()) {
-                int xVal = surroundingNodes.get(node).x;
-                int yVal = surroundingNodes.get(node).y;
-                if (!(xVal == -1) && !(yVal == -1)) {
-                    float newG = currentNode.getG() + 1;
-                    Object object = map[yVal][xVal];
-                    if (!(object.getType() == ObjectType.VISITED_PATH) && !(object.getType() == ObjectType.OBSTACLE)) {
-                        if (object.getG() > newG) {
-                            object.setG(newG);
-                            object.setF(object.getG() + object.getH());
-                            object.setPrecedPoint(currentNode);
-                            paths.add(object);
-                        }
-                    }
-                }
-            }
+            addNodeToPath(up, currentNode, paths);
+            addNodeToPath(down, currentNode, paths);
+            addNodeToPath(left, currentNode, paths);
+            addNodeToPath(right, currentNode, paths);
+
             /*
              Sort the list of paths so the first node is that
              which has the lowest  f when computing g + h.
@@ -248,6 +243,24 @@ class Pathfinder {
         surroundingNodes.put("down", new Point(-1, -1));
         surroundingNodes.put("left", new Point(-1, -1));
         surroundingNodes.put("right", new Point(-1, -1));
+    }
+
+
+    private void addNodeToPath(Point point, Object currentNode, ArrayList<Object> paths) {
+        int xVal = point.x;
+        int yVal = point.y;
+        if (!(xVal == -1) && !(yVal == -1)) {
+            float newG = currentNode.getG() + 1;
+            Object object = map[yVal][xVal];
+            if (!(object.getType() == ObjectType.VISITED_PATH) && !(object.getType() == ObjectType.OBSTACLE)) {
+                if (object.getG() > newG) {
+                    object.setG(newG);
+                    object.setF(object.getG() + object.getH());
+                    object.setPrecedPoint(currentNode);
+                    paths.add(object);
+                }
+            }
+        }
     }
 
 }
