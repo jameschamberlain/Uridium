@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.math.*;
+import java.lang.Number.*;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
@@ -196,6 +197,7 @@ public class Level {
     public void update(float delta) {
         player.update(delta);
         checkPlayerCollisions();
+        calculateAngleToPlayer();
 
         for(Bullet b : bullets) {
             b.update(delta);
@@ -237,26 +239,26 @@ public class Level {
 
     //Calculates the angle to the player is from the enemy
     public void calculateAngleToPlayer(){
-        float playerX = player.getBody().x;
-        float enemyX =  enemies.get(0).x;
+        float playerX = player.lastPos.x;
+        float enemyX =  enemies.get(1).getX();
         float xDifference = playerX - enemyX;
 
-        float playerY = player.getBody().y;
-        float enemyY = enemies.get(0).x;
+        float playerY = player.lastPos.y;
+        float enemyY = enemies.get(1).getY();
         float yDifference = playerY - enemyY;
 
-        float modifier;
-        if (xDifference>0 && yDifference>0){
-            modifier = 0;
-        }else if (xDifference>0 && yDifference<0){
-            modifier = 90;
-        }else if (xDifference<0 && yDifference>0){
-            modifier = 270;
-        }else if (xDifference<0 && yDifference<0){
-            modifier = 180;
+        double x = xDifference;
+        double y = yDifference;
+
+        float distanceToPlayer = ((float)x * (float)x) + ((float)y*(float)y);
+
+        double a = Math.atan2(x,y);
+        float angle = (float)Math.toDegrees(a);
+
+        if (angle <= 0){
+            angle= angle + 360;
         }
-
-
+        System.out.println(angle);
     }
 
 
