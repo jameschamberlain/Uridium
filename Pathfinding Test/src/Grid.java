@@ -30,7 +30,7 @@ public class Grid {
         resetGrid();
     }
 
-    public int getX() {
+    int getX() {
         return x;
     }
 
@@ -38,7 +38,7 @@ public class Grid {
         this.x = x;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
@@ -154,7 +154,7 @@ public class Grid {
      *
      * @return The grid
      */
-    public Object[][] getGrid() {
+    Object[][] getGrid() {
         return grid;
     }
 }

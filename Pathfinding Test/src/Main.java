@@ -9,70 +9,58 @@ public class Main {
      */
     private static Grid grid;
 
+    private static final long MEGABYTE = 1024L * 1024L;
+
+    static long bytesToMegabytes(long bytes) {
+        return bytes / MEGABYTE;
+    }
+
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        grid = getGrid(scan);
-        placeObjects(scan);
-        scan.close();
+
+        long startTime = System.currentTimeMillis();
+
+        grid = new Grid(5, 5);
+        placeObjects();
         grid.printGrid();
         Pathfinder pathfinder = new Pathfinder(grid);
         ArrayList<Object> route = pathfinder.findPath();
         System.out.println(route);
+
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc();
+        long memory = runtime.totalMemory() - runtime.freeMemory();
+        System.out.println("Used memory in bytes: " + memory);
+        System.out.println("Used memory in megabytes: " + bytesToMegabytes(memory));
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("Elapsed time: " + elapsedTime);
+
     }
 
 
     /**
-     *
-     * Creates a grid with the specification laid
-     * out by the user
-     *
-     * @param scan The console input object
-     * @return The grid
-     */
-    private static Grid getGrid(Scanner scan) {
-        System.out.println("Enter a Grid size:");
-        System.out.print("X: ");
-        int x = scan.nextInt();
-        System.out.print("Y: ");
-        int y = scan.nextInt();
-        return new Grid(x, y);
-    }
-
-
-    /**
-     *
      * Places objects onto the grid,
      * including the start & end
      * positions as well as any obstacles
      * there may be
-     *
-     * @param scan The console input object
      */
-    private static void placeObjects(Scanner scan) {
+    private static void placeObjects() {
         // Add the start position to the grid
-        System.out.println("Enter start position:");
-        int x = grid.getValidX(scan);
-        int y = grid.getValidY(scan);
-        Object startNode = new Object(ObjectType.START, new Point(x, y));
+        Object startNode = new Object(ObjectType.START, new Point(1, 1));
         grid.addObject(startNode);
 
         // Add the end position to the grid
-        System.out.println("Enter end position:");
-        x = grid.getValidX(scan);
-        y = grid.getValidY(scan);
-        Object endNode = new Object(ObjectType.END, new Point(x, y));
+        Object endNode = new Object(ObjectType.END, new Point(4, 4));
         grid.addObject(endNode);
 
         // Add any obstacles to the grid
-        System.out.println("How many obstacles?");
-        int numOfObstacles = scan.nextInt();
-        for (int i = 1; i <= numOfObstacles; i++) {
-            System.out.println("Position of obstacle " + i + ":");
-            x = grid.getValidX(scan);
-            y = grid.getValidY(scan);
-            Object obstacle = new Object(ObjectType.OBSTACLE, new Point(x, y));
-            grid.addObject(obstacle);
-        }
+        Object obstacle = new Object(ObjectType.OBSTACLE, new Point(2, 2));
+        grid.addObject(obstacle);
+        obstacle = new Object(ObjectType.OBSTACLE, new Point(3, 3));
+        grid.addObject(obstacle);
+        obstacle = new Object(ObjectType.OBSTACLE, new Point(4, 3));
+        grid.addObject(obstacle);
     }
 
 }

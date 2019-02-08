@@ -73,7 +73,7 @@ public class Object {
      *
      * @return The position of the object
      */
-    public Point getPosition() {
+    Point getPosition() {
         return position;
     }
 
@@ -93,7 +93,7 @@ public class Object {
      *
      * @return The type of the object
      */
-    public ObjectType getType() {
+    ObjectType getType() {
         return type;
     }
 
@@ -103,7 +103,7 @@ public class Object {
      *
      * @param type The new type of the object
      */
-    public void setType(ObjectType type) {
+    void setType(ObjectType type) {
         this.type = type;
     }
 
@@ -113,7 +113,7 @@ public class Object {
      *
      * @return The preceding point
      */
-    public Object getPrecedPoint() {
+    Object getPrecedPoint() {
         return precedPoint;
     }
 
@@ -123,7 +123,7 @@ public class Object {
      *
      * @param precedPoint The new preceding point of the object
      */
-    public void setPrecedPoint(Object precedPoint) {
+    void setPrecedPoint(Object precedPoint) {
         this.precedPoint = precedPoint;
     }
 
@@ -133,7 +133,7 @@ public class Object {
      *
      * @return The cost of movement
      */
-    public float getG() {
+    float getG() {
         return g;
     }
 
@@ -143,7 +143,7 @@ public class Object {
      *
      * @param g The new cost of movement
      */
-    public void setG(float g) {
+    void setG(float g) {
         this.g = g;
     }
 
@@ -153,7 +153,7 @@ public class Object {
      *
      * @return The cost of movement
      */
-    public float getH() {
+    float getH() {
         return h;
     }
 
@@ -163,7 +163,7 @@ public class Object {
      *
      * @param h The new cost of movement
      */
-    public void setH(float h) {
+    void setH(float h) {
         this.h = h;
     }
 
@@ -173,19 +173,19 @@ public class Object {
      *
      * @return The symbol
      */
-    public char getSymbol() {
+    char getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(char symbol) {
+    void setSymbol(char symbol) {
         this.symbol = symbol;
     }
 
-    public float getF() {
+    float getF() {
         return f;
     }
 
-    public void setF(float f) {
+    void setF(float f) {
         this.f = f;
     }
 
@@ -193,7 +193,6 @@ public class Object {
     public String toString() {
         int x = position.x;
         int y = position.y;
-        String s = "(" + x + ", " + y + ")";
-        return s;
+        return "(" + x + ", " + y + ")";
     }
 }

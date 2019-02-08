@@ -1,5 +1,8 @@
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 class Pathfinder {
 
@@ -166,10 +169,9 @@ class Pathfinder {
         }
         // Setup and populate a list of the route found.
         ArrayList<Object> route = new ArrayList<>();
-        route.add(currentNode);
         while (currentNode.getPrecedPoint() != null) {
-            currentNode = currentNode.getPrecedPoint();
             route.add(currentNode);
+            currentNode = currentNode.getPrecedPoint();
         }
         Collections.reverse(route);
         return route;
