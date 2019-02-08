@@ -24,11 +24,6 @@ class Pathfinder {
      * The maximum y value in the grid.
      */
     private int maxY;
-    /**
-     * Stores the nodes above, below, to the left
-     * and to the right of the current node.
-     */
-    private HashMap<String, Point> surroundingNodes = new HashMap<>();
 
 
     /**
@@ -42,7 +37,6 @@ class Pathfinder {
         this.map = grid.getGrid();
         maxX = grid.getX() - 1;
         maxY = grid.getY() - 1;
-        //setupSurroundingNodes();
     }
 
 
@@ -80,62 +74,62 @@ class Pathfinder {
              */
             if (currentNode.getPosition().x == 0) {
                 if (currentNode.getPosition().y == 0) {
-                    up = new Point(0, 1);
-                    down = new Point(-1, -1);
-                    left = new Point(-1, -1);
-                    right = new Point(1, 0);
+                    up.setLocation(0, 1);
+                    down.setLocation(-1, -1);
+                    left.setLocation(-1, -1);
+                    right.setLocation(1, 0);
                 }
                 else if (currentNode.getPosition().y == maxY) {
-                    up = new Point(-1, -1);
-                    down = new Point(0, maxY - 1);
-                    left = new Point(-1, -1);
-                    right = new Point(1, maxY);
+                    up.setLocation(-1, -1);
+                    down.setLocation(0, maxY - 1);
+                    left.setLocation(-1, -1);
+                    right.setLocation(1, maxY);
                 }
                 else {
-                    up = new Point(0, currentNode.getPosition().y + 1);
-                    down = new Point(0, currentNode.getPosition().y - 1);
-                    left = new Point(-1, -1);
-                    right = new Point(1, currentNode.getPosition().y);
+                    up.setLocation(0, currentNode.getPosition().y + 1);
+                    down.setLocation(0, currentNode.getPosition().y - 1);
+                    left.setLocation(-1, -1);
+                    right.setLocation(1, currentNode.getPosition().y);
                 }
             }
             else if (currentNode.getPosition().x == maxX) {
                 if (currentNode.getPosition().y == 0) {
-                    up = new Point(maxX, 1);
-                    down = new Point(-1, -1);
-                    left = new Point(maxX - 1, 0);
-                    right = new Point(-1, -1);
+                    up.setLocation(maxX, 1);
+                    down.setLocation(-1, -1);
+                    left.setLocation(maxX - 1, 0);
+                    right.setLocation(-1, -1);
                 }
                 else if (currentNode.getPosition().y == maxY) {
-                    up = new Point(-1, -1);
-                    down = new Point(maxX, maxY - 1);
-                    left = new Point(maxX - 1, maxY);
-                    right = new Point(-1, -1);
+                    up.setLocation(-1, -1);
+                    down.setLocation(maxX, maxY - 1);
+                    left.setLocation(maxX - 1, maxY);
+                    right.setLocation(-1, -1);
                 }
                 else {
-                    up = new Point(maxX, currentNode.getPosition().y + 1);
-                    down = new Point(maxX, currentNode.getPosition().y - 1);
-                    left = new Point(maxX - 1, currentNode.getPosition().y);
-                    right = new Point(-1, -1);
+                    up.setLocation(maxX, currentNode.getPosition().y + 1);
+                    down.setLocation(maxX, currentNode.getPosition().y - 1);
+                    left.setLocation(maxX - 1, currentNode.getPosition().y);
+                    right.setLocation(-1, -1);
                 }
             }
             else {
                 if (currentNode.getPosition().y == 0) {
-                    up = new Point(currentNode.getPosition().x, 1);
-                    down = new Point(-1, -1);
-                    left = new Point(currentNode.getPosition().x - 1, 0);
-                    right = new Point(currentNode.getPosition().x + 1, 0);
+                    up.setLocation(currentNode.getPosition().x, 1);
+                    down.setLocation(-1, -1);
+                    left.setLocation(currentNode.getPosition().x - 1, 0);
+                    right.setLocation(currentNode.getPosition().x + 1, 0);
                 }
                 else if (currentNode.getPosition().y == maxY) {
-                    up = new Point(-1, -1);
-                    down = new Point(currentNode.getPosition().x, maxY - 1);
-                    left = new Point(currentNode.getPosition().x - 1, maxY);
-                    right = new Point(currentNode.getPosition().x + 1, maxY);
+                    up.setLocation(-1, -1);
+                    down.setLocation(currentNode.getPosition().x, maxY - 1);
+                    left.setLocation(currentNode.getPosition().x - 1, maxY);
+                    right.setLocation(currentNode.getPosition().x + 1, maxY);
                 }
                 else {
-                    up = new Point(currentNode.getPosition().x, currentNode.getPosition().y + 1);
-                    down = new Point(currentNode.getPosition().x, currentNode.getPosition().y - 1);
-                    left = new Point(currentNode.getPosition().x - 1, currentNode.getPosition().y);
-                    right = new Point(currentNode.getPosition().x + 1, currentNode.getPosition().y);
+                    up.setLocation(currentNode.getPosition().x, currentNode.getPosition().y + 1);
+                    down.setLocation(currentNode.getPosition().x, currentNode.getPosition().y - 1);
+                    left.setLocation(currentNode.getPosition().x - 1, currentNode.getPosition().y);
+                    right.setLocation(currentNode.getPosition().x + 1, currentNode.getPosition().y);
                 }
             }
             // For each surrounding valid node add it the list of paths.
@@ -230,19 +224,6 @@ class Pathfinder {
         float ySquare = (point2.y - point1.y) * (point2.y - point1.y);
         float addition = xSquare + ySquare;
         return (float) Math.sqrt(addition);
-    }
-
-
-    /**
-     * Sets up the hash map with placeholders for
-     * the nodes above, below, to the left, and to
-     * the right of the current node.
-     */
-    private void setupSurroundingNodes() {
-        surroundingNodes.put("up", new Point(-1, -1));
-        surroundingNodes.put("down", new Point(-1, -1));
-        surroundingNodes.put("left", new Point(-1, -1));
-        surroundingNodes.put("right", new Point(-1, -1));
     }
 
 
