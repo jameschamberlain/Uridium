@@ -1,8 +1,5 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 class Pathfinder {
 
@@ -50,11 +47,12 @@ class Pathfinder {
      */
     ArrayList<Object> findPath() {
         // Setup a list of visible paths.
-        ArrayList<Object> paths = new ArrayList<>();
+        PriorityQueue<Object> paths = new PriorityQueue<Object>(10, new sortByF());
         Object currentNode = getStartNode();
         // Calculate the heuristic for every node in the world.
         calculateHeuristic();
 
+        // Setup points surrounding the current node
         Point up = new Point(-1, -1);
         Point down = new Point(-1, -1);
         Point left = new Point(-1, -1);
@@ -139,17 +137,12 @@ class Pathfinder {
             addNodeToPath(right, currentNode, paths);
 
             /*
-             Sort the list of paths so the first node is that
-             which has the lowest  f when computing g + h.
-              */
-            Collections.sort(paths, new sortByF());
-            /*
             Get the first node from the list and set it as
             the current node. Then check if it is the end
             goal node. If it is then end the while loop.
             Otherwise go back through the loop.
              */
-            currentNode = paths.get(0);
+            currentNode = paths.poll();
             paths.remove(0);
             currentNode.setSymbol('Z');
             if (currentNode.getType() == ObjectType.END) {
@@ -227,7 +220,7 @@ class Pathfinder {
     }
 
 
-    private void addNodeToPath(Point point, Object currentNode, ArrayList<Object> paths) {
+    private void addNodeToPath(Point point, Object currentNode, PriorityQueue<Object> paths) {
         int xVal = point.x;
         int yVal = point.y;
         if (!(xVal == -1) && !(yVal == -1)) {
