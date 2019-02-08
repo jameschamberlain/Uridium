@@ -37,6 +37,19 @@ class Pathfinder {
     }
 
 
+    Pathfinder(Tuple gridSize, Point start, Point end, ArrayList<Point> obstacles) {
+        this.grid = new Grid(gridSize.getX(), gridSize.getY());
+        grid.addObject(new Object(ObjectType.START, start));
+        grid.addObject(new Object(ObjectType.END, end));
+        for(Point obstacle : obstacles) {
+            grid.addObject(new Object(ObjectType.OBSTACLE, obstacle));
+        }
+        this.map = grid.getGrid();
+        maxX = grid.getX() - 1;
+        maxY = grid.getY() - 1;
+    }
+
+
     /**
      *
      * Uses the A* search algorithm to find a path
@@ -46,6 +59,7 @@ class Pathfinder {
      * @return An arraylist of coordinates for the route.
      */
     ArrayList<Object> findPath() {
+        System.out.println(grid.toString());
         // Setup a list of visible paths.
         PriorityQueue<Object> paths = new PriorityQueue<Object>(10, new sortByF());
         Object currentNode = getStartNode();
@@ -220,6 +234,14 @@ class Pathfinder {
     }
 
 
+    /**
+     *
+     * Adds nodes the the path priority queue.
+     *
+     * @param point The location of the point to be added.
+     * @param currentNode The current node.
+     * @param paths The paths priority queue
+     */
     private void addNodeToPath(Point point, Object currentNode, PriorityQueue<Object> paths) {
         int xVal = point.x;
         int yVal = point.y;

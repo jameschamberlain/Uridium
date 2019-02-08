@@ -75,10 +75,8 @@ public class Grid {
     }
 
 
-    /**
-     * Prints the grid
-     */
-    void printGrid() {
+    @Override
+    public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         String prefix;
         for (int i = y-1; i >= 0; i--) {
@@ -90,9 +88,8 @@ public class Grid {
             }
             stringBuilder.append("\n");
         }
-        System.out.println(stringBuilder);
+        return stringBuilder.toString();
     }
-
 
     /**
      *
