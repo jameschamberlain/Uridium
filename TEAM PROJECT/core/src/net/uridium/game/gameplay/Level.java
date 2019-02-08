@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.math.*;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
@@ -234,33 +235,27 @@ public class Level {
         player.render(batch);
     }
 
-    //Takes the player's x and y location and evaluates if it is close enough for enemy to shoot
-    public void enemyShootPlayer(){
-        float pos1X;
-        float pos1Y;
-        float pos2X;
-        float pos2Y;
+    //Calculates the angle to the player is from the enemy
+    public void calculateAngleToPlayer(){
+        float playerX = player.getBody().x;
+        float enemyX =  enemies.get(0).x;
+        float xDifference = playerX - enemyX;
 
-        pos1X = player.getBody().x;
-        pos1Y = player.getBody().y;
-        pos2X = e;
-        pos2Y = e;
+        float playerY = player.getBody().y;
+        float enemyY = enemies.get(0).x;
+        float yDifference = playerY - enemyY;
 
-        float x;
-        float y;
-        if (pos2X > pos1X){
-            x = pos2X - pos1X;
-        }else{
-            x = pos1X - pos2X;
+        float modifier;
+        if (xDifference>0 && yDifference>0){
+            modifier = 0;
+        }else if (xDifference>0 && yDifference<0){
+            modifier = 90;
+        }else if (xDifference<0 && yDifference>0){
+            modifier = 270;
+        }else if (xDifference<0 && yDifference<0){
+            modifier = 180;
         }
 
-        if (pos2Y > pos1Y){
-            y = pos2Y - pos1Y;
-        }else{
-            y = pos1Y - pos2Y;
-        }
-
-        
 
     }
 
