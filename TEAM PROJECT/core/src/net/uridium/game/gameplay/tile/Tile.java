@@ -16,8 +16,8 @@ public abstract class Tile {
     private int gridY;
 
     private boolean isObstacle;
-    private boolean isDamageable;
-    protected int health;
+    public boolean isDamageable;
+    public int health;
 
     private Texture texture;
 

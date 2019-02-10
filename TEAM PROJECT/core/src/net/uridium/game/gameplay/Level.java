@@ -3,15 +3,21 @@ package net.uridium.game.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
+import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
 
+
+import javax.sound.sampled.Clip;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +26,8 @@ import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
 public class Level {
+
+
     public int gridWidth;
     public int gridHeight;
 
@@ -37,8 +45,11 @@ public class Level {
 
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
-    ArrayList<Rectangle> enemies;
-    ArrayList<Rectangle> enemiesToRemove;
+    ArrayList<Enemy> enemies;
+    ArrayList<Enemy> enemiesToRemove;
+
+    String outputScore;
+    BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
 
     public Level(Tile[][] grid, int gridWidth, int gridHeight, Vector2 playerSpawnCenter) {
         bullets = new ArrayList<>();
@@ -60,74 +71,11 @@ public class Level {
 
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
         Gdx.input.setInputProcessor(player);
-
-//        rows = new ArrayList<>();
-//
-//        try {
-//            String line;
-//            BufferedReader reader = fileHandle.reader(2048);
-//            while((line = reader.readLine()) != null)
-//                rows.add(line);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    public void init() {
-//        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
-
-//        gridHeight = rows.size();
-//        gridWidth = rows.get(0).length();
-
-//        grid = new Tile[gridWidth][gridHeight];
-
-//        xOffset = GAME_WIDTH - (gridWidth * TILE_WIDTH);
-//        xOffset /= 2;
-//        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
-//        yOffset /= 2;
-
-//        initEnemies();
-
-//        Texture tileTexture;
-//        String row;
-//        boolean isObstacle;
-//        for(int j = 0; j < gridHeight; j++) {
-//            row = rows.get(j);
-//            for(int i = 0; i < gridWidth; i++) {
-//                char c = row.charAt(i);
-//                isObstacle = false;
-//
-//                switch(c) {
-//                    case 'W':
-//                        tileTexture = new Texture(Gdx.files.internal("block_04.png"));
-//                        isObstacle = true;
-//                        break;
-//                    case 'O':
-//                        tileTexture = new Texture(Gdx.files.internal("crate_08.png"));
-//                        isObstacle = true;
-//                        break;
-//                    case 'D':
-//                        tileTexture = new Texture(Gdx.files.internal("ground_03.png"));
-//                        break;
-//                    case 'P':
-//                        playerSpawn = new Vector2(i * TILE_WIDTH, j * TILE_HEIGHT);
-//                    default:
-//                        tileTexture = new Texture(Gdx.files.internal("ground_06.png"));
-//                        break;
-//                }
-//
-//                grid[i][gridHeight - 1 - j] = new Tile(i, gridHeight - 1 - j, tileTexture, isObstacle, false, -1);
-//            }
-//        }
-
-//        player = new Player(playerSpawn.x, playerSpawn.y, 55, 55, this);
-//        Gdx.input.setInputProcessor(player);
     }
 
     public void initEnemies() {
-        enemies.add(new Rectangle(240, 250, 40, 40));
-        enemies.add(new Rectangle(235, 360, 40, 40));
+        enemies.add(new Enemy(240, 250, 40, 40));
+        enemies.add(new Enemy(600, 500, 40, 40));
     }
 
     public boolean checkPlayerCollisions() {
@@ -158,6 +106,22 @@ public class Level {
             }
         }
 
+        for (Enemy enemy : enemies) {
+            if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
+                Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldX))
+                    player.goToLastXPos();
+
+                Rectangle playerBodyOldY = new Rectangle(playerBody.x, player.lastPos.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldY))
+                    player.goToLastYPos();
+
+                return true;
+            }
+        }
+
+
+
         return false;
     }
 
@@ -181,16 +145,27 @@ public class Level {
 
                     if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
                         bulletsToRemove.add(bullet);
+
+                        if(tile instanceof BreakableTile) {
+                            BreakableTile bt = (BreakableTile) tile;
+                            bt.health--;
+
+                            if(bt.health == 0) {
+                                grid[i][j] = bt.getReplacementTile();
+                            }
+                        }
+
                         return true;
                     }
                 }
             }
         }
 
-        for (Rectangle enemy : enemies){
-            if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
+        for (Enemy enemy : enemies){
+            if(Intersector.intersectRectangles(bulletBody, enemy.getBody(), overlap)) {
                 bulletsToRemove.add(bullet);
                 enemiesToRemove.add(enemy);
+                player.setScore(player.getScore() + 100);
                 return true;
             }
         }
@@ -209,6 +184,7 @@ public class Level {
         checkBulletCollisions();
         purgeBullets();
         purgeEnemies();
+        outputScore = String.valueOf(player.getScore());
     }
 
     private void purgeBullets() {
@@ -239,9 +215,14 @@ public class Level {
         for(Bullet bullet : bullets)
             bullet.render(batch);
 
-        for (Rectangle enemy : enemies)
-            batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
+        for (Enemy enemy : enemies)
+            batch.draw(enemyTexture, enemy.getBody().getX(), enemy.getBody().getY(), enemy.getBody().getWidth(), enemy.getBody().getHeight());
 
         player.render(batch);
+
+        matrix4 = batch.getProjectionMatrix();
+        matrix4.translate(-xOffset, -yOffset, 0);
+        batch.setProjectionMatrix(matrix4);
+        myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
 }

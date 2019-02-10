@@ -32,7 +32,7 @@ public class Player extends UridiumInputProcessor {
         body = new Rectangle(x, y, width, height);
 
         this.level = level;
-        texture = new Texture(Gdx.files.internal("rahul.png"));
+        texture = new Texture(Gdx.files.internal("penguin.png"));
     }
 
     public Rectangle getBody() {
