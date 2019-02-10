@@ -12,6 +12,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
+import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
 
 
@@ -43,8 +45,8 @@ public class Level {
 
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
-    ArrayList<Rectangle> enemies;
-    ArrayList<Rectangle> enemiesToRemove;
+    ArrayList<Enemy> enemies;
+    ArrayList<Enemy> enemiesToRemove;
 
     String outputScore;
     BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
@@ -72,8 +74,8 @@ public class Level {
     }
 
     public void initEnemies() {
-        enemies.add(new Rectangle(240, 250, 40, 40));
-        enemies.add(new Rectangle(235, 360, 40, 40));
+        enemies.add(new Enemy(240, 250, 40, 40));
+        enemies.add(new Enemy(600, 500, 40, 40));
     }
 
     public boolean checkPlayerCollisions() {
@@ -104,6 +106,22 @@ public class Level {
             }
         }
 
+        for (Enemy enemy : enemies) {
+            if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
+                Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldX))
+                    player.goToLastXPos();
+
+                Rectangle playerBodyOldY = new Rectangle(playerBody.x, player.lastPos.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldY))
+                    player.goToLastYPos();
+
+                return true;
+            }
+        }
+
+
+
         return false;
     }
 
@@ -127,14 +145,24 @@ public class Level {
 
                     if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
                         bulletsToRemove.add(bullet);
+
+                        if(tile instanceof BreakableTile) {
+                            BreakableTile bt = (BreakableTile) tile;
+                            bt.health--;
+
+                            if(bt.health == 0) {
+                                grid[i][j] = bt.getReplacementTile();
+                            }
+                        }
+
                         return true;
                     }
                 }
             }
         }
 
-        for (Rectangle enemy : enemies){
-            if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
+        for (Enemy enemy : enemies){
+            if(Intersector.intersectRectangles(bulletBody, enemy.getBody(), overlap)) {
                 bulletsToRemove.add(bullet);
                 enemiesToRemove.add(enemy);
                 player.setScore(player.getScore() + 100);
@@ -187,11 +215,14 @@ public class Level {
         for(Bullet bullet : bullets)
             bullet.render(batch);
 
-        for (Rectangle enemy : enemies)
-            batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
+        for (Enemy enemy : enemies)
+            batch.draw(enemyTexture, enemy.getBody().getX(), enemy.getBody().getY(), enemy.getBody().getWidth(), enemy.getBody().getHeight());
 
         player.render(batch);
 
+        matrix4 = batch.getProjectionMatrix();
+        matrix4.translate(-xOffset, -yOffset, 0);
+        batch.setProjectionMatrix(matrix4);
         myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
 }
