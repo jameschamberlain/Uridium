@@ -15,6 +15,7 @@ import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
+import java.util.concurrent.TimeUnit;
 
 
 import javax.sound.sampled.Clip;
@@ -78,6 +79,12 @@ public class Level {
         enemies.add(new Enemy(600, 500, 40, 40));
     }
 
+    public int updateHealthBar(){
+        int health = player.getHealth();
+        return health;
+    }
+
+
     public boolean checkPlayerCollisions() {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
@@ -108,6 +115,7 @@ public class Level {
 
         for (Enemy enemy : enemies) {
             if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
+                System.out.println(player.getHealth());
                 Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
                 if (!overlap.overlaps(playerBodyOldX))
                     player.goToLastXPos();

@@ -17,6 +17,7 @@ public class Player extends UridiumInputProcessor {
     Color c2 = new Color();
 
     int score = 0;
+    int health = 5;
 
     float moveSpeed = 300;
     Level level;
@@ -32,7 +33,7 @@ public class Player extends UridiumInputProcessor {
         body = new Rectangle(x, y, width, height);
 
         this.level = level;
-        texture = new Texture(Gdx.files.internal("penguin.png"));
+        texture = new Texture(Gdx.files.internal("penguin_square.png"));
     }
 
     public Rectangle getBody() {
@@ -84,6 +85,14 @@ public class Player extends UridiumInputProcessor {
 
     public void setScore(int s){
         score = s;
+    }
+
+    public int getHealth(){
+        return health;
+    }
+
+    public void setHealth(int health){
+        this.health = health;
     }
 
     public void render(SpriteBatch batch) {
