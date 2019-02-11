@@ -57,72 +57,9 @@ public class Level {
         yOffset /= 2;
 
         initEnemies();
-//HIYA
+
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
         Gdx.input.setInputProcessor(player);
-
-//        rows = new ArrayList<>();
-//
-//        try {
-//            String line;
-//            BufferedReader reader = fileHandle.reader(2048);
-//            while((line = reader.readLine()) != null)
-//                rows.add(line);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    public void init() {
-//        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
-
-//        gridHeight = rows.size();
-//        gridWidth = rows.get(0).length();
-
-//        grid = new Tile[gridWidth][gridHeight];
-
-//        xOffset = GAME_WIDTH - (gridWidth * TILE_WIDTH);
-//        xOffset /= 2;
-//        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
-//        yOffset /= 2;
-
-//        initEnemies();
-
-//        Texture tileTexture;
-//        String row;
-//        boolean isObstacle;
-//        for(int j = 0; j < gridHeight; j++) {
-//            row = rows.get(j);
-//            for(int i = 0; i < gridWidth; i++) {
-//                char c = row.charAt(i);
-//                isObstacle = false;
-//
-//                switch(c) {
-//                    case 'W':
-//                        tileTexture = new Texture(Gdx.files.internal("block_04.png"));
-//                        isObstacle = true;
-//                        break;
-//                    case 'O':
-//                        tileTexture = new Texture(Gdx.files.internal("crate_08.png"));
-//                        isObstacle = true;
-//                        break;
-//                    case 'D':
-//                        tileTexture = new Texture(Gdx.files.internal("ground_03.png"));
-//                        break;
-//                    case 'P':
-//                        playerSpawn = new Vector2(i * TILE_WIDTH, j * TILE_HEIGHT);
-//                    default:
-//                        tileTexture = new Texture(Gdx.files.internal("ground_06.png"));
-//                        break;
-//                }
-//
-//                grid[i][gridHeight - 1 - j] = new Tile(i, gridHeight - 1 - j, tileTexture, isObstacle, false, -1);
-//            }
-//        }
-
-//        player = new Player(playerSpawn.x, playerSpawn.y, 55, 55, this);
-//        Gdx.input.setInputProcessor(player);
     }
 
     public void initEnemies() {
