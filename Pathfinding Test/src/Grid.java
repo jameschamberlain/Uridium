@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.Scanner;
 
 public class Grid {
 
@@ -89,59 +88,6 @@ public class Grid {
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
-    }
-
-    /**
-     *
-     * Checks that the x-coordinate entered
-     * by the user is valid
-     *
-     * @param scan The console input object
-     * @return The x-coordinate
-     */
-    int getValidX(Scanner scan) {
-        boolean isValidX = false;
-        // Dummy value
-        int x = -1;
-        while (!isValidX) {
-            System.out.print("X: ");
-            x = scan.nextInt();
-            if (x >= this.x || x < 0) {
-                System.out.println("Out of range");
-            }
-            else {
-                isValidX = true;
-            }
-
-        }
-        return x;
-    }
-
-
-    /**
-     *
-     * Checks that the y-coordinate entered
-     * by the user is valid
-     *
-     * @param scan The console input object
-     * @return The y-coordinate
-     */
-    int getValidY(Scanner scan) {
-        boolean isValidY = false;
-        // Dummy value
-        int y = -1;
-        while (!isValidY) {
-            System.out.print("Y: ");
-            y = scan.nextInt();
-            if (y >= this.y || y < 0) {
-                System.out.println("Out of range");
-            }
-            else {
-                isValidY = true;
-            }
-
-        }
-        return y;
     }
 
 
