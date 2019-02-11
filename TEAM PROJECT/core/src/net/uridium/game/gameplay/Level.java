@@ -9,26 +9,23 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
-import java.util.concurrent.TimeUnit;
 
-
-import javax.sound.sampled.Clip;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.math.*;
+import java.lang.Number.*;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
 public class Level {
-
-
     public int gridWidth;
     public int gridHeight;
 
@@ -41,8 +38,6 @@ public class Level {
     float yOffset;
 
     private Player player;
-
-    Texture enemyTexture;
 
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
@@ -67,23 +62,17 @@ public class Level {
         yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
         yOffset /= 2;
 
-        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
         initEnemies();
 
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
         Gdx.input.setInputProcessor(player);
+
     }
 
     public void initEnemies() {
-        enemies.add(new Enemy(240, 250, 40, 40));
-        enemies.add(new Enemy(600, 500, 40, 40));
+        enemies.add(new Enemy(280, 450, 40, 40, this));
+        enemies.add(new Enemy(220, 330, 40, 40, this));
     }
-
-    public int updateHealthBar(){
-        int health = player.getHealth();
-        return health;
-    }
-
 
     public boolean checkPlayerCollisions() {
         Rectangle playerBody = player.getBody();
@@ -128,8 +117,6 @@ public class Level {
             }
         }
 
-
-
         return false;
     }
 
@@ -169,14 +156,15 @@ public class Level {
             }
         }
 
-        for (Enemy enemy : enemies){
-            if(Intersector.intersectRectangles(bulletBody, enemy.getBody(), overlap)) {
-                bulletsToRemove.add(bullet);
-                enemiesToRemove.add(enemy);
-                player.setScore(player.getScore() + 100);
-                return true;
-            }
-        }
+//        for (Enemy enemy : enemies){
+//            Rectangle enemyBody = enemy.getBody();
+//            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
+//                bulletsToRemove.add(bullet);
+//                enemiesToRemove.add(enemy);
+//                player.setScore(player.getScore() + 100);
+//                return true;
+//            }
+//        }
 
         return false;
     }
@@ -184,6 +172,13 @@ public class Level {
     public void update(float delta) {
         player.update(delta);
         checkPlayerCollisions();
+
+        float shootAngle;
+        for(Enemy enemy : enemies) {
+            shootAngle = calculateAngleToPlayer(enemy);
+            if(enemy.canShoot())
+                enemy.shoot(shootAngle);
+        }
 
         for(Bullet b : bullets) {
             b.update(delta);
@@ -224,7 +219,7 @@ public class Level {
             bullet.render(batch);
 
         for (Enemy enemy : enemies)
-            batch.draw(enemyTexture, enemy.getBody().getX(), enemy.getBody().getY(), enemy.getBody().getWidth(), enemy.getBody().getHeight());
+            enemy.render(batch);
 
         player.render(batch);
 
@@ -233,4 +228,32 @@ public class Level {
         batch.setProjectionMatrix(matrix4);
         myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
+
+    //Calculates the angle to the player is from the enemy
+    public float calculateAngleToPlayer(Enemy enemy){
+        float playerX = player.lastPos.x;
+        float enemyX =  enemy.getBody().getX();
+        float xDifference = playerX - enemyX;
+
+        float playerY = player.lastPos.y;
+        float enemyY = enemy.getBody().getY();
+        float yDifference = playerY - enemyY;
+
+        double x = xDifference;
+        double y = yDifference;
+
+        float distanceToPlayer = ((float)x * (float)x) + ((float)y*(float)y);
+
+        double a = Math.atan2(x,y);
+        float angle = (float)Math.toDegrees(a);
+
+        if (angle <= 0){
+            angle= angle + 360;
+        }
+        System.out.println(angle);
+
+        return angle;
+    }
+
+
 }
