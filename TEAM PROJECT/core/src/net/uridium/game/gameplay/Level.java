@@ -84,7 +84,6 @@ public class Level {
         return health;
     }
 
-
     public boolean checkPlayerCollisions() {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
