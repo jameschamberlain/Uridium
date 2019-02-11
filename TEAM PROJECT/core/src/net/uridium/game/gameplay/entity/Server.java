@@ -20,59 +20,60 @@ public class Server {
     private Socket s;
     private BufferedReader bfr;
     private ObjectOutputStream oos;
+    private myPackage aPackage;
     private HashMap<Integer, Vector2> players;
 
 
     public Server() throws IOException {
+        ss = new ServerSocket(9988);
+        System.out.println("Server Starts");
+        while(true){
+            try {
+                s=ss.accept();
+                aPackage = new myPackage();
+                System.out.println("Connecnted");
+                oos = new ObjectOutputStream(s.getOutputStream());
+                bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                String str = bfr.readLine();
+                String xy[] = str.split(" ");
 
-        try {
-            ss = new ServerSocket(9988);
-            System.out.println("Server Starts");
-            s=ss.accept();
-            System.out.println("Connecnted");
-            oos = new ObjectOutputStream(s.getOutputStream());
-            bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            String str = bfr.readLine();
-            String xy[] = str.split(" ");
+                Float x = Float.parseFloat(xy[0]);
+                Float y = Float.parseFloat(xy[1]);
+                Vector2 player = new Vector2(x,y);
 
-            Float x = Float.parseFloat(xy[0]);
-            Float y = Float.parseFloat(xy[1]);
-            Vector2 player = new Vector2(x,y);
-            players = new HashMap<Integer, Vector2>();
-            players.put(s.getPort(),player);
-            System.out.println(players.get(s.getPort()).x+"......."+players.get(s.getPort()).y);
+                aPackage.setPlayers(s.getPort(),player);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new Thread(new Sender(oos)).start();
+            new Thread(new Receiver(bfr,s)).start();
         }
-        new Thread(new Sender(oos)).start();
-        new Thread(new Receiver(bfr)).start();
-
-
 
     }
 
     public class Receiver implements Runnable{
         private BufferedReader bfr;
+        Socket s;
 
-        public Receiver(BufferedReader bfr){
+        public Receiver(BufferedReader bfr,Socket s){
             this.bfr = bfr;
+            this.s = s;
         }
         @Override
         public void run() {
             while (true){
                 try {
                     String str =  bfr.readLine();
-                    if(str.equals("up")){
-                        players.get(0).x+=10;
-                    }
-                    else if(str.equals("down")){
-                        players.get(0).x-=10;
-                    }
-                    Thread.sleep(10);
+                    String xy[] = str.split(" ");
+
+                    Float x = Float.parseFloat(xy[0]);
+                    Float y = Float.parseFloat(xy[1]);
+                    Vector2 player = new Vector2(x,y);
+                    System.out.println("Server Receive:"+xy[0]+"------"+xy[1]);
+                    aPackage.setPlayers(s.getPort(),player);
+
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -89,12 +90,11 @@ public class Server {
         public void run() {
             while(true){
                 try {
-                    oos.writeObject(players);
+                    oos.writeObject(aPackage);
+                    System.out.println("A package sent");
                     oos.reset();
-                    Thread.sleep(10);
+
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }

@@ -1,6 +1,8 @@
 package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.entity.myPackage;
 import net.uridium.game.util.Colors;
 
 import javax.sound.sampled.Clip;
@@ -27,6 +30,8 @@ import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
 public class Level {
+    private myPackage aPackage;
+
     public int gridWidth;
     public int gridHeight;
 
@@ -60,6 +65,7 @@ public class Level {
             s = new Socket("127.0.0.1",9988);
             ps = new PrintStream(s.getOutputStream());
             oi = new ObjectInputStream(s.getInputStream());
+            aPackage = null;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,18 +142,29 @@ public class Level {
             }
         }
 
+        //Get Init data
+        new Thread(()-> {
+            while(true){
+                try {
+                    aPackage = (myPackage) oi.readObject();
+                    players = aPackage.getPlayers();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         try {
-            //Get Init data
-            players = (HashMap<Integer, Vector2>) oi.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(players.size());
+        System.out.println("The size is "+players.size());
+        players = aPackage.getPlayers();
         for(Vector2 p : players.values()){
             player = new Player(p.x, p.y, 55, 55, this);
-            Gdx.input.setInputProcessor(player);
+            //Gdx.input.setInputProcessor(player);
         }
 
     }
@@ -164,8 +181,8 @@ public class Level {
         Tile tile;
         Rectangle obstacle;
         for(int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                tile = grid[i][j];
+                    for (int j = 0; j < gridHeight; j++) {
+                        tile = grid[i][j];
 
                 if(tile.isObstacle) {
                     obstacle = tile.getBody();
@@ -226,11 +243,30 @@ public class Level {
     }
 
     public void update(float delta) {
-        System.out.println("Updated");
+        //player.getBody().getPosition(player.getLastPos());
+        Vector2 body = player.getLastPos();
+        //Rectangle body = player.getBody();
+        float moveSpeed = player.getMoveSpeed();
+        if(Gdx.input.isKeyPressed(Input.Keys.W))
+            body.y += moveSpeed * delta;
+        if(Gdx.input.isKeyPressed(Input.Keys.A))
+            body.x -= moveSpeed * delta;
+        if(Gdx.input.isKeyPressed(Input.Keys.S))
+            body.y -= moveSpeed * delta;
+        if(Gdx.input.isKeyPressed(Input.Keys.D))
+            body.x += moveSpeed * delta;
+
+        ps.println(body.x+" "+body.y);
+        System.out.println("InputProcessor sent "+body.x+"-----"+body.y);
         //Instead of doing change here, Sending the location to Server
-        player.update(delta);
+        //Ensuer Collosion happenes, do not go to first Position.
 
         checkPlayerCollisions();
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            System.out.println(e);
+        }
 
         for(Bullet b : bullets) {
             b.update(delta);
@@ -269,6 +305,11 @@ public class Level {
         for (Rectangle enemy : enemies)
             batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
 
-        player.render(batch);
+
+        for(Vector2 p:players.values()){
+            player.setBody(p);
+            System.out.println("The body has been set to "+p.x+"---"+p.y);
+            player.render(batch);
+        }
     }
 }

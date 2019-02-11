@@ -30,17 +30,6 @@ public class Player extends UridiumInputProcessor {
     public long lastShot = 0;
     private long reloadTime = 350;
 
-    public Socket s;
-    // 这两个是用来读Object的
-    public ObjectInputStream oi;
-    public PrintStream ps;
-    // 存储信息的HashMap
-    public HashMap<Integer, Player> planes;
-
-    public int up = Input.Keys.W;
-    public int down = Input.Keys.S;
-    public int left = Input.Keys.A;
-    public int right = Input.Keys.D;
 
     Texture texture;
 
@@ -54,8 +43,30 @@ public class Player extends UridiumInputProcessor {
         texture = new Texture(Gdx.files.internal("penguin_square.png"));
     }
 
+    public void update(float delta) {
+        body.getPosition(lastPos);
+
+        boolean moved = false;
+        if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D))
+            moved = true;
+    }
+
+
     public Rectangle getBody() {
         return body;
+    }
+
+    public float getMoveSpeed(){
+        return moveSpeed;
+    }
+
+    public Vector2 getLastPos(){
+        return  lastPos;
+    }
+
+    public void setBody(Vector2 v2){
+        body.x = v2.x;
+        body.y = v2.y;
     }
 
     private void shoot(Vector2 bulletSpawn, float shootAngle) {
@@ -75,23 +86,6 @@ public class Player extends UridiumInputProcessor {
         body.y = lastPos.y;
     }
 
-    public void update(float delta) {
-        body.getPosition(lastPos);
-
-        if(Gdx.input.isKeyPressed(Input.Keys.W))
-           ps.println(up);
-            //body.y += moveSpeed * delta;
-        if(Gdx.input.isKeyPressed(Input.Keys.A))
-            ps.println(left);
-            //body.x -= moveSpeed * delta;
-        if(Gdx.input.isKeyPressed(Input.Keys.S))
-            ps.println(down);
-            //body.y -= moveSpeed * delta;
-        if(Gdx.input.isKeyPressed(Input.Keys.D))
-            ps.println(right);
-            //body.x += moveSpeed * delta;
-
-    }
 
     public void render(SpriteBatch batch) {
         batch.draw(texture, body.x, body.y, body.width, body.height);
