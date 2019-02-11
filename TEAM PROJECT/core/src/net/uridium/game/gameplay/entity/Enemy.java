@@ -15,7 +15,7 @@ public class Enemy {
 
     public Vector2 lastPos;
     public long lastShot = 0;
-    private long reloadTime = 450;
+    private long reloadTime = 1000;
     private Level level;
     private Texture texture = new Texture(Gdx.files.internal("chicken.png"));
 
