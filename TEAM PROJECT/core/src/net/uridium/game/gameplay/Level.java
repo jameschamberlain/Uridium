@@ -28,6 +28,7 @@ import java.lang.Number.*;
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
+
 public class Level {
     public int gridWidth;
     public int gridHeight;
