@@ -60,7 +60,6 @@ public class Player extends UridiumInputProcessor {
         boolean moved = false;
         if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D))
             moved = true;
-
         if(Gdx.input.isKeyPressed(Input.Keys.W))
             body.y += moveSpeed * delta;
         if(Gdx.input.isKeyPressed(Input.Keys.A))
@@ -69,7 +68,6 @@ public class Player extends UridiumInputProcessor {
             body.y -= moveSpeed * delta;
         if(Gdx.input.isKeyPressed(Input.Keys.D))
             body.x += moveSpeed * delta;
-
     }
 
     public void render(SpriteBatch batch) {

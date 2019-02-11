@@ -44,12 +44,10 @@ public class Level {
     Player player;
     Vector2 playerSpawn;
 
-    Texture enemyTexture;
-
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
-    ArrayList<Rectangle> enemies;
-    ArrayList<Rectangle> enemiesToRemove;
+    ArrayList<Enemy> enemies;
+    ArrayList<Enemy> enemiesToRemove;
 
     public Level(FileHandle fileHandle) {
         bullets = new ArrayList<>();
@@ -71,8 +69,6 @@ public class Level {
     }
 
     public void init() {
-        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
-
         gridHeight = rows.size();
         gridWidth = rows.get(0).length();
 
@@ -122,8 +118,8 @@ public class Level {
     }
 
     public void initEnemies() {
-        enemies.add(new Rectangle(180, 250, 40, 40));
-        enemies.add(new Rectangle(220, 330, 40, 40));
+        enemies.add(new Enemy(280, 450, 40, 40, this));
+        enemies.add(new Enemy(220, 330, 40, 40, this));
     }
 
     public boolean checkPlayerCollisions() {
@@ -183,13 +179,14 @@ public class Level {
             }
         }
 
-        for (Rectangle enemy : enemies){
-            if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
-                bulletsToRemove.add(bullet);
-                enemiesToRemove.add(enemy);
-                return true;
-            }
-        }
+//        for (Enemy enemy : enemies){
+//            Rectangle enemyBody = enemy.getBody();
+//            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
+//                bulletsToRemove.add(bullet);
+//                enemiesToRemove.add(enemy);
+//                return true;
+//            }
+//        }
 
         return false;
     }
@@ -197,7 +194,13 @@ public class Level {
     public void update(float delta) {
         player.update(delta);
         checkPlayerCollisions();
-        calculateAngleToPlayer();
+
+        float shootAngle;
+        for(Enemy enemy : enemies) {
+            shootAngle = calculateAngleToPlayer(enemy);
+            if(enemy.canShoot())
+                enemy.shoot(shootAngle);
+        }
 
         for(Bullet b : bullets) {
             b.update(delta);
@@ -214,7 +217,7 @@ public class Level {
     }
 
     public void purgeEnemies() {
-        for(Rectangle enemy : enemiesToRemove)
+        for(Enemy enemy : enemiesToRemove)
             enemies.remove(enemy);
     }
 
@@ -231,20 +234,20 @@ public class Level {
         for(Bullet bullet : bullets)
             bullet.render(batch);
 
-        for (Rectangle enemy : enemies)
-            batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
+        for (Enemy enemy : enemies)
+            enemy.render(batch);
 
         player.render(batch);
     }
 
     //Calculates the angle to the player is from the enemy
-    public void calculateAngleToPlayer(){
+    public float calculateAngleToPlayer(Enemy enemy){
         float playerX = player.lastPos.x;
-        float enemyX =  enemies.get(1).getX();
+        float enemyX =  enemy.getBody().getX();
         float xDifference = playerX - enemyX;
 
         float playerY = player.lastPos.y;
-        float enemyY = enemies.get(1).getY();
+        float enemyY = enemy.getBody().getY();
         float yDifference = playerY - enemyY;
 
         double x = xDifference;
@@ -259,6 +262,8 @@ public class Level {
             angle= angle + 360;
         }
         System.out.println(angle);
+
+        return angle;
     }
 
 
