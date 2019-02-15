@@ -9,9 +9,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import net.uridium.game.gameplay.entity.Bullet;
-import net.uridium.game.gameplay.entity.Player;
-import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.entity.*;
 import net.uridium.game.gameplay.entity.Enemy;
 import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
@@ -36,6 +34,10 @@ public class Level {
 
     float xOffset;
     float yOffset;
+
+    public Player getPlayer() {
+        return player;
+    }
 
     private Player player;
 
@@ -70,7 +72,7 @@ public class Level {
     }
 
     public void initEnemies() {
-        enemies.add(new Enemy(280, 450, 40, 40, this));
+        enemies.add(new Enemy(700, 450, 40, 40, this));
         enemies.add(new Enemy(220, 330, 40, 40, this));
     }
 
@@ -156,15 +158,30 @@ public class Level {
             }
         }
 
-//        for (Enemy enemy : enemies){
-//            Rectangle enemyBody = enemy.getBody();
-//            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
-//                bulletsToRemove.add(bullet);
-//                enemiesToRemove.add(enemy);
-//                player.setScore(player.getScore() + 100);
-//                return true;
-//            }
-//        }
+        for (Enemy enemy : enemies){
+            Rectangle enemyBody = enemy.getBody();
+            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
+                if (bullet.getEnemyBullet() == false){
+                    bulletsToRemove.add(bullet);
+                    enemiesToRemove.add(enemy);
+                    player.setScore(player.getScore() + 100);
+                }
+                return true;
+            }
+        }
+
+        Rectangle playerBody = player.getBody();
+        if(Intersector.intersectRectangles(bulletBody, playerBody, overlap)) {
+            if (bullet.getEnemyBullet() == true){
+                bulletsToRemove.add(bullet);
+                player.setHealth(player.getHealth() - 1);
+                if (player.getHealth() <= 0){
+                    player.setIsDead(true);
+                }
+
+            }
+            return true;
+        }
 
         return false;
     }
@@ -200,7 +217,8 @@ public class Level {
         enemiesToRemove.clear();
     }
 
-    public void spawnBullet(Bullet bullet) {
+    public void spawnBullet(Bullet bullet, Boolean enemyBullet) {
+        bullet.setEnemyBullet(enemyBullet);
         bullets.add(bullet);
     }
 
@@ -226,6 +244,10 @@ public class Level {
         matrix4 = batch.getProjectionMatrix();
         matrix4.translate(-xOffset, -yOffset, 0);
         batch.setProjectionMatrix(matrix4);
+        if (player.getIsDead()){
+            myFont.draw(batch, "YOU'RE DEAD BITCH",500,500);
+
+        }
         myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
 
@@ -250,7 +272,7 @@ public class Level {
         if (angle <= 0){
             angle= angle + 360;
         }
-        System.out.println(angle);
+        //System.out.println(angle);
 
         return angle;
     }

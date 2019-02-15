@@ -29,4 +29,9 @@ public class HealthBar {
             else batch.draw(emptyHeart, 20, GAME_HEIGHT - ((20 + 24 * 4/3) * (i+1)), 28 * 4/3, 24 * 4/3);
         }
     }
+
+    public void update(int health){
+        this.health = health;
+    }
+
 }
