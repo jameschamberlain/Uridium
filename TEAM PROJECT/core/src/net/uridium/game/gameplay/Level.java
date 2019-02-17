@@ -106,7 +106,6 @@ public class Level {
 
         for (Enemy enemy : enemies) {
             if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
-                System.out.println(player.getHealth());
                 Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
                 if (!overlap.overlaps(playerBodyOldX))
                     player.goToLastXPos();
