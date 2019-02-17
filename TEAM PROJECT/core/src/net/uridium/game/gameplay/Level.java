@@ -57,9 +57,9 @@ public class Level {
         yOffset /= 2;
 
         initEnemies();
-
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
         Gdx.input.setInputProcessor(player);
+
     }
 
     public void initEnemies() {
