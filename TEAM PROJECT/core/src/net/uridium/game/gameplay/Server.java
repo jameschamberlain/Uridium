@@ -66,10 +66,11 @@ public class Server{
         new Thread(new accepter(ss)).start();
 
         new Thread(()->{
+            //Update package here
             while(true){
                 System.out.println("I am running");
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
