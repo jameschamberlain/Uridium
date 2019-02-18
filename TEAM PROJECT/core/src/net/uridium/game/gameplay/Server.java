@@ -62,7 +62,21 @@ public class Server{
         //Texture texture = new Texture(Gdx.files.internal("penguin_square.png"));
         System.out.println("get the photo");
         initLevel();
+
         new Thread(new accepter(ss)).start();
+
+        new Thread(()->{
+            while(true){
+                System.out.println("I am running");
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
+
 
     }
 

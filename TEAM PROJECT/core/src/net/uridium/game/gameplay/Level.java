@@ -265,11 +265,7 @@ public class Level {
 
         checkPlayerCollisions();
         ps.println(player.getLastPos().x+" "+player.getLastPos().y);
-        try {
-            Thread.sleep(2);
-        } catch (InterruptedException e) {
-            System.out.println(e);
-        }
+
 
         for(Bullet b : bullets) {
             b.update(delta);
