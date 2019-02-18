@@ -41,6 +41,8 @@ public class Level {
 
     private Player player;
 
+    float enemyMoveSpeed = 30;
+
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
     ArrayList<Enemy> enemies;
@@ -188,11 +190,17 @@ public class Level {
         player.update(delta);
         checkPlayerCollisions();
 
+        //bottom two values are temporary
+        float newX = 200;
+        float newY = 300;
         float shootAngle;
         for(Enemy enemy : enemies) {
             shootAngle = calculateAngleToPlayer(enemy);
-            if(enemy.canShoot())
+            if(enemy.canShoot()){
                 enemy.shoot(shootAngle);
+            }
+            //call to james' function to provide update to newx and newy
+            moveEnemy(enemy, newX, newY, delta);
         }
 
         for(Bullet b : bullets) {
@@ -275,5 +283,22 @@ public class Level {
         return angle;
     }
 
+    //Moves the enemy to a new X and Y coordinates
+    public void moveEnemy(Enemy enemy, float newX, float newY, float delta){
+        if (enemy.getBody().x != newX || enemy.getBody().y != newY){
+            if (enemy.getBody().x < newX){
+                enemy.getBody().x += enemyMoveSpeed * delta;
+            }
+            if (enemy.getBody().x > newX){
+                enemy.getBody().x -= enemyMoveSpeed * delta;
+            }
+            if (enemy.getBody().y < newY){
+                enemy.getBody().y += enemyMoveSpeed * delta;
+            }
+            if (enemy.getBody().y > newY){
+                enemy.getBody().y -= enemyMoveSpeed * delta;
+            }
+        }
+    }
 
 }
