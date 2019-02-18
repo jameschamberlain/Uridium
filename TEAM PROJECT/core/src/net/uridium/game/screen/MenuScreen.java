@@ -2,38 +2,30 @@ package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.LevelFactory;
-import net.uridium.game.gameplay.entity.Bullet;
-import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.ui.HealthBar;
-import net.uridium.game.util.Colors;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
-public class TempScreen extends UridiumScreen {
+public class MenuScreen extends UridiumScreen {
     OrthographicCamera camera;
     SpriteBatch batch;
-    ShapeRenderer shapeRenderer;
 
-    Level level;
     Texture bgTexture;
     TextureRegion bg;
 
-    HealthBar healthBar;
+    TextureRegion title;
 
-    public TempScreen() {
+
+    public MenuScreen() {
         init();
     }
 
@@ -43,24 +35,20 @@ public class TempScreen extends UridiumScreen {
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 
         batch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
-
-//        level = new Level(Gdx.files.internal("level1.txt"));
-//        level.init();
-
-        level = LevelFactory.buildLevelFromFileHandle(Gdx.files.internal("level1.json"));
-
-        healthBar = new HealthBar(3, 5);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
+
+        title = new TextureRegion(new Texture(Gdx.files.internal("temptitle.png")));
     }
 
     @Override
     public void update(float delta) {
-        level.update(delta);
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            getUSMInstance().push(new TempScreen());
+        }
     }
 
     @Override
@@ -68,10 +56,7 @@ public class TempScreen extends UridiumScreen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
-        level.render(batch);
-
-        batch.setProjectionMatrix(camera.combined);
-        healthBar.render(batch);
+        batch.draw(title, 0, 0, 1280, 720);
         batch.end();
     }
 }

@@ -2,8 +2,10 @@ package net.uridium.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.uridium.game.gameplay.LevelFactory;
+import net.uridium.game.screen.MenuScreen;
 import net.uridium.game.screen.TempScreen;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
@@ -17,7 +19,18 @@ public class Uridium extends ApplicationAdapter {
 	public void create () {
 //		LevelFactory.buildLevel(Gdx.files.internal("level1.json").readString());
 
-		getUSMInstance().push(new TempScreen());
+		TextureRegion cursorImage = new TextureRegion(new Texture(Gdx.files.internal("cursor.png")));
+		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		if (!cursorImage.getTexture().getTextureData().isPrepared()) {
+			cursorImage.getTexture().getTextureData().prepare();
+		}
+		Pixmap pixmap = cursorImage.getTexture().getTextureData().consumePixmap();
+
+		Cursor c = Gdx.graphics.newCursor(pixmap, 0, 0);
+		Gdx.graphics.setCursor(c);
+		pixmap.dispose();
+
+		getUSMInstance().push(new MenuScreen());
 	}
 
 	@Override
