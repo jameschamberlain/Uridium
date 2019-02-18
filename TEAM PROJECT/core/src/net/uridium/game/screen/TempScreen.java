@@ -42,6 +42,7 @@ public class TempScreen extends UridiumScreen {
         shapeRenderer = new ShapeRenderer();
 
         level = new Level(Gdx.files.internal("level1.txt"));
+        System.out.println(Gdx.files.internal("level1.txt").toString());
         level.init();
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));

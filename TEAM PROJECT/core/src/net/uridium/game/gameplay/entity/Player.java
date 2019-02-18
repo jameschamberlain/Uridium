@@ -35,7 +35,6 @@ public class Player extends UridiumInputProcessor {
 
     public Player(float x, float y, float width, float height, Level level) {
 
-
         lastPos = new Vector2(x, y);
         body = new Rectangle(x, y, width, height);
 
@@ -63,6 +62,10 @@ public class Player extends UridiumInputProcessor {
     public Vector2 getLastPos(){
         return  lastPos;
     }
+
+    public void setLastPosX(float x){lastPos.x=x;}
+
+    public void setLastPosY(float y){lastPos.y=y;}
 
     public void setBody(Vector2 v2){
         body.x = v2.x;

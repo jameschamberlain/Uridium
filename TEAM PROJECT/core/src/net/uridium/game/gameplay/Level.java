@@ -80,8 +80,10 @@ public class Level {
         try {
             String line;
             BufferedReader reader = fileHandle.reader(2048);
-            while((line = reader.readLine()) != null)
+            while((line = reader.readLine()) != null){
                 rows.add(line);
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -244,24 +246,25 @@ public class Level {
 
     public void update(float delta) {
         //player.getBody().getPosition(player.getLastPos());
-        Vector2 body = player.getLastPos();
+
         //Rectangle body = player.getBody();
         float moveSpeed = player.getMoveSpeed();
         if(Gdx.input.isKeyPressed(Input.Keys.W))
-            body.y += moveSpeed * delta;
+            player.setLastPosY(player.getLastPos().y += moveSpeed * delta);
         if(Gdx.input.isKeyPressed(Input.Keys.A))
-            body.x -= moveSpeed * delta;
+            player.setLastPosX(player.getLastPos().x -= moveSpeed * delta);
         if(Gdx.input.isKeyPressed(Input.Keys.S))
-            body.y -= moveSpeed * delta;
+            player.setLastPosY(player.getLastPos().y -= moveSpeed * delta);
         if(Gdx.input.isKeyPressed(Input.Keys.D))
-            body.x += moveSpeed * delta;
+            player.setLastPosX(player.getLastPos().x += moveSpeed * delta);
 
-        ps.println(body.x+" "+body.y);
-        System.out.println("InputProcessor sent "+body.x+"-----"+body.y);
+
+        System.out.println("InputProcessor sent "+player.getLastPos().x+"-----"+player.getLastPos().y);
         //Instead of doing change here, Sending the location to Server
         //Ensuer Collosion happenes, do not go to first Position.
 
         checkPlayerCollisions();
+        ps.println(player.getLastPos().x+" "+player.getLastPos().y);
         try {
             Thread.sleep(2);
         } catch (InterruptedException e) {

@@ -22,6 +22,10 @@ public class Tile {
         this(x, y, texture, xOffset, yOffset, false);
     }
 
+    public Tile(int x, int y, float xOffset, float yOffset, boolean isObstacle) {
+        this(x, y, null, xOffset, yOffset, isObstacle);
+    }
+
     public Tile(int x, int y, Texture texture, float xOffset, float yOffset, boolean isObstacle) {
         this.x = x;
         this.y = y;

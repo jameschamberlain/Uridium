@@ -3,7 +3,10 @@ package net.uridium.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import net.uridium.game.gameplay.Server;
 import net.uridium.game.screen.TempScreen;
+
+import java.io.IOException;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
@@ -15,6 +18,7 @@ public class Uridium extends ApplicationAdapter {
 	@Override
 	public void create () {
 		getUSMInstance().push(new TempScreen());
+
 	}
 
 	@Override
