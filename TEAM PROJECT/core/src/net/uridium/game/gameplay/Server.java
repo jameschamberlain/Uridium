@@ -66,7 +66,7 @@ public class Server{
         new Thread(new accepter(ss)).start();
 
         new Thread(()->{
-            //Update package here
+            //Update package here.
             while(true){
                 System.out.println("I am running");
                 try {
