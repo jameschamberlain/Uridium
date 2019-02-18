@@ -35,7 +35,7 @@ public class Enemy {
 
     //stolen from player for now, will update in future
     public void shoot(float shootAngle) {
-        level.spawnBullet(new Bullet(getCenter(), shootAngle));
+        level.spawnBullet(new Bullet(getCenter(), shootAngle), true);
         lastShot = System.currentTimeMillis();
     }
 

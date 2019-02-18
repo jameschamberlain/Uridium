@@ -78,6 +78,8 @@ public class LevelFactory {
                 return new CrateTile(x, y);
             case 'D':
                 return new DoorTile(x, y);
+            case 'E':
+                return new enemySpawnTile(x, y);
             default:
                 return new GroundTile(x, y);
         }

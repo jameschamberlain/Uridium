@@ -50,7 +50,7 @@ public class TempScreen extends UridiumScreen {
 
         level = LevelFactory.buildLevelFromFileHandle(Gdx.files.internal("level1.json"));
 
-        healthBar = new HealthBar(3, 5);
+        healthBar = new HealthBar(5, 5);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -61,6 +61,7 @@ public class TempScreen extends UridiumScreen {
     @Override
     public void update(float delta) {
         level.update(delta);
+        healthBar.update(level.getPlayer().getHealth());
     }
 
     @Override
