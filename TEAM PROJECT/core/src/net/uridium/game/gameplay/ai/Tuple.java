@@ -1,3 +1,5 @@
+package net.uridium.game.gameplay.ai;
+
 public class Tuple {
 
     /**

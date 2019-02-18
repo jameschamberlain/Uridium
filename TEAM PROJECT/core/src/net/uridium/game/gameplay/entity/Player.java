@@ -17,7 +17,7 @@ public class Player extends UridiumInputProcessor {
     Color c2 = new Color();
 
     int score = 0;
-    int health = 5;
+    int health = 6;
 
     float moveSpeed = 300;
     Level level;
@@ -25,6 +25,8 @@ public class Player extends UridiumInputProcessor {
     public Vector2 lastPos;
     public long lastShot = 0;
     private long reloadTime = 350;
+
+    boolean isDead = false;
 
     Texture texture;
 
@@ -41,7 +43,7 @@ public class Player extends UridiumInputProcessor {
     }
 
     private void shoot(Vector2 bulletSpawn, float shootAngle) {
-        level.spawnBullet(new Bullet(bulletSpawn, shootAngle));
+        level.spawnBullet(new Bullet(bulletSpawn, shootAngle), false);
         lastShot = System.currentTimeMillis();
     }
 
@@ -95,6 +97,14 @@ public class Player extends UridiumInputProcessor {
 
     public void render(SpriteBatch batch) {
         batch.draw(texture, body.x, body.y, body.width, body.height);
+    }
+
+    public boolean getIsDead(){
+        return isDead;
+    }
+
+    public void setIsDead(boolean isDead){
+        this.isDead = isDead;
     }
 
     @Override

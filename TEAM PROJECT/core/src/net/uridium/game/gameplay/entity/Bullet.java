@@ -19,6 +19,7 @@ public class Bullet {
 
     Rectangle body;
     TextureRegion texture;
+    Boolean enemyBullet = false;
 
     float shootAngle;
     double velocity = 450;
@@ -41,6 +42,14 @@ public class Bullet {
 
     public Rectangle getBody() {
         return body;
+    }
+
+    public Boolean getEnemyBullet(){
+        return enemyBullet;
+    }
+
+    public void setEnemyBullet(Boolean enemyBullet){
+        this.enemyBullet = enemyBullet;
     }
 
     public void update(float delta) {
