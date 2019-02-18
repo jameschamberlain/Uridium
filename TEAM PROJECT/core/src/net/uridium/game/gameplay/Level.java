@@ -3,6 +3,7 @@ package net.uridium.game.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
@@ -11,6 +12,8 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.entity.Bullet;
 import net.uridium.game.gameplay.entity.Player;
 import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
 
 import java.io.BufferedReader;
@@ -40,6 +43,9 @@ public class Level {
     ArrayList<Bullet> bulletsToRemove;
     ArrayList<Enemy> enemies;
     ArrayList<Enemy> enemiesToRemove;
+
+    String outputScore;
+    BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
 
     public Level(Tile[][] grid, int gridWidth, int gridHeight, Vector2 playerSpawnCenter) {
         bullets = new ArrayList<>();
@@ -96,6 +102,21 @@ public class Level {
             }
         }
 
+        for (Enemy enemy : enemies) {
+            if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
+                System.out.println(player.getHealth());
+                Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldX))
+                    player.goToLastXPos();
+
+                Rectangle playerBodyOldY = new Rectangle(playerBody.x, player.lastPos.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldY))
+                    player.goToLastYPos();
+
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -119,6 +140,16 @@ public class Level {
 
                     if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
                         bulletsToRemove.add(bullet);
+
+                        if(tile instanceof BreakableTile) {
+                            BreakableTile bt = (BreakableTile) tile;
+                            bt.health--;
+
+                            if(bt.health == 0) {
+                                grid[i][j] = bt.getReplacementTile();
+                            }
+                        }
+
                         return true;
                     }
                 }
@@ -130,6 +161,7 @@ public class Level {
 //            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
 //                bulletsToRemove.add(bullet);
 //                enemiesToRemove.add(enemy);
+//                player.setScore(player.getScore() + 100);
 //                return true;
 //            }
 //        }
@@ -155,6 +187,7 @@ public class Level {
         checkBulletCollisions();
         purgeBullets();
         purgeEnemies();
+        outputScore = String.valueOf(player.getScore());
     }
 
     private void purgeBullets() {
@@ -162,9 +195,9 @@ public class Level {
         bulletsToRemove.clear();
     }
 
-    public void purgeEnemies() {
-        for(Enemy enemy : enemiesToRemove)
-            enemies.remove(enemy);
+    private void purgeEnemies() {
+        enemies.removeAll(enemiesToRemove);
+        enemiesToRemove.clear();
     }
 
     public void spawnBullet(Bullet bullet) {
@@ -189,6 +222,11 @@ public class Level {
             enemy.render(batch);
 
         player.render(batch);
+
+        matrix4 = batch.getProjectionMatrix();
+        matrix4.translate(-xOffset, -yOffset, 0);
+        batch.setProjectionMatrix(matrix4);
+        myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
 
     //Calculates the angle to the player is from the enemy

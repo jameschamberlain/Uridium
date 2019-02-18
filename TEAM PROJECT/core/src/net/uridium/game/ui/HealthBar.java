@@ -1,17 +1,19 @@
 package net.uridium.game.ui;
 
+import net.uridium.game.gameplay.entity.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 
+
 public class HealthBar {
 
     Texture heart;
     Texture emptyHeart;
     int health;
-    int maxHealth;
+    int maxHealth = 5;
 
     public HealthBar(int health, int maxHealth) {
         heart = new Texture(Gdx.files.internal("heart.png"));
