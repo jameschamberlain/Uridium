@@ -29,13 +29,14 @@ public class Bullet {
     float rot;
 
     public Bullet(Vector2 spawnPos, float shootAngle) {
+        //就是发射子弹的位置（比如按上就是头顶的位置）- 子弹的一半高度 = 中心点位置 我怀疑他X写错了
         body = new Rectangle(spawnPos.x - BULLET_WIDTH / 2, spawnPos.y - BULLET_HEIGHT / 2, BULLET_WIDTH, BULLET_HEIGHT);
 
         this.shootAngle = shootAngle;
-
+        //这是给鼠标用的
         xVel = velocity * Math.sin(Math.toRadians(shootAngle));
         yVel = velocity * Math.cos(Math.toRadians(shootAngle));
-
+        //给子弹做渲染的
         texture = new TextureRegion(new Texture(Gdx.files.internal("penguin.png")));
         rot = 0;
     }

@@ -1,6 +1,8 @@
 package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -11,19 +13,28 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.entity.*;
 import net.uridium.game.gameplay.entity.Enemy;
+import net.uridium.game.gameplay.entity.myPackage;
 import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.Tile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import javax.sound.sampled.Clip;
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.math.*;
 import java.lang.Number.*;
+import java.util.HashMap;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
 public class Level {
+    private myPackage aPackage;
+
     public int gridWidth;
     public int gridHeight;
 
@@ -43,6 +54,11 @@ public class Level {
 
     float enemyMoveSpeed = 30;
 
+    Socket s;
+    PrintStream ps;
+    ObjectInputStream oi;
+
+    HashMap<Integer,Vector2> players;
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
     ArrayList<Enemy> enemies;
@@ -52,6 +68,15 @@ public class Level {
     BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
 
     public Level(Tile[][] grid, int gridWidth, int gridHeight, Vector2 playerSpawnCenter) {
+        //Client Service starts
+        try {
+            s = new Socket("127.0.0.1",9988);
+            ps = new PrintStream(s.getOutputStream());
+            oi = new ObjectInputStream(s.getInputStream());
+            aPackage = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         bullets = new ArrayList<>();
         bulletsToRemove = new ArrayList<>();
         enemies = new ArrayList<>();
@@ -70,6 +95,31 @@ public class Level {
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
         Gdx.input.setInputProcessor(player);
 
+        //Get Init data
+        new Thread(()-> {
+            while(true){
+                try {
+                    aPackage = (myPackage) oi.readObject();
+                    players = aPackage.getPlayers();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("The size is "+players.size());
+        players = aPackage.getPlayers();
+        for(Vector2 p : players.values()){
+            player = new Player(p.x, p.y, 55, 55, this);
+            //Gdx.input.setInputProcessor(player);
+        }
+
     }
 
     public void initEnemies() {
@@ -84,8 +134,8 @@ public class Level {
         Tile tile;
         Rectangle obstacle;
         for(int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                tile = grid[i][j];
+                    for (int j = 0; j < gridHeight; j++) {
+                        tile = grid[i][j];
 
                 if(tile.isObstacle()) {
                     obstacle = tile.getBody();
@@ -187,8 +237,27 @@ public class Level {
     }
 
     public void update(float delta) {
-        player.update(delta);
+        //player.getBody().getPosition(player.getLastPos());
+
+        //Rectangle body = player.getBody();
+        float moveSpeed = player.getMoveSpeed();
+        if(Gdx.input.isKeyPressed(Input.Keys.W))
+            player.setLastPosY(player.getLastPos().y += moveSpeed * delta);
+        if(Gdx.input.isKeyPressed(Input.Keys.A))
+            player.setLastPosX(player.getLastPos().x -= moveSpeed * delta);
+        if(Gdx.input.isKeyPressed(Input.Keys.S))
+            player.setLastPosY(player.getLastPos().y -= moveSpeed * delta);
+        if(Gdx.input.isKeyPressed(Input.Keys.D))
+            player.setLastPosX(player.getLastPos().x += moveSpeed * delta);
+
+
+        System.out.println("InputProcessor sent "+player.getLastPos().x+"-----"+player.getLastPos().y);
+        //Instead of doing change here, Sending the location to Server
+        //Ensuer Collosion happenes, do not go to first Position.
+
         checkPlayerCollisions();
+        ps.println(player.getLastPos().x+" "+player.getLastPos().y);
+
 
         //bottom two values are temporary
         float newX = 200;
@@ -228,12 +297,9 @@ public class Level {
         bullets.add(bullet);
     }
 
-    public void render(SpriteBatch batch) {
-        Matrix4 matrix4 = batch.getProjectionMatrix();
+    public void render(SpriteBatch batch) {Matrix4 matrix4 = batch.getProjectionMatrix();
         matrix4.translate(xOffset, yOffset, 0);
-        batch.setProjectionMatrix(matrix4);
-
-        for(int i = 0; i < gridWidth; i++) {
+        batch.setProjectionMatrix(matrix4);for(int i = 0; i < gridWidth; i++) {
             for(int j = 0; j < gridHeight; j++) {
                 grid[i][j].render(batch);
             }
@@ -245,7 +311,12 @@ public class Level {
         for (Enemy enemy : enemies)
             enemy.render(batch);
 
-        player.render(batch);
+
+        for(Vector2 p:players.values()){
+            player.setBody(p);
+            System.out.println("The body has been set to "+p.x+"---"+p.y);
+            player.render(batch);
+        }
 
         matrix4 = batch.getProjectionMatrix();
         matrix4.translate(-xOffset, -yOffset, 0);

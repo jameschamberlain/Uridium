@@ -11,6 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.util.UridiumInputProcessor;
 
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+
 public class Player extends UridiumInputProcessor {
     final Rectangle body;
     Color c = new Color(10673872);
@@ -40,6 +45,23 @@ public class Player extends UridiumInputProcessor {
 
     public Rectangle getBody() {
         return body;
+    }
+
+    public float getMoveSpeed(){
+        return moveSpeed;
+    }
+
+    public Vector2 getLastPos(){
+        return  lastPos;
+    }
+
+    public void setLastPosX(float x){lastPos.x=x;}
+
+    public void setLastPosY(float y){lastPos.y=y;}
+
+    public void setBody(Vector2 v2){
+        body.x = v2.x;
+        body.y = v2.y;
     }
 
     private void shoot(Vector2 bulletSpawn, float shootAngle) {

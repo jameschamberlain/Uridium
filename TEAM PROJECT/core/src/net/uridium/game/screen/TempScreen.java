@@ -45,9 +45,6 @@ public class TempScreen extends UridiumScreen {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-//        level = new Level(Gdx.files.internal("level1.txt"));
-//        level.init();
-
         level = LevelFactory.buildLevelFromFileHandle(Gdx.files.internal("level1.json"));
 
         healthBar = new HealthBar(5, 5);
