@@ -1,6 +1,6 @@
 package net.uridium.game.gameplay.ai;
 
-import java.awt.*;
+import com.badlogic.gdx.math.Vector2;
 
 public class Object {
 
@@ -12,7 +12,7 @@ public class Object {
     /**
      * Position of the object in the world
      */
-    private Point position;
+    private Vector2 position;
     /**
      * The preceding object in the route
      */
@@ -34,13 +34,12 @@ public class Object {
     private char symbol;
 
     /**
-     *
      * Constructor for a new object
      *
-     * @param type The type of the object
+     * @param type     The type of the object
      * @param position The position of the object
      */
-    Object(ObjectType type, Point position) {
+    Object(ObjectType type, Vector2 position) {
         this.type = type;
         this.position = position;
         this.precedPoint = null;
@@ -70,27 +69,24 @@ public class Object {
     }
 
     /**
-     *
      * Gets the position of the object
      *
      * @return The position of the object
      */
-    Point getPosition() {
+    Vector2 getPosition() {
         return position;
     }
 
     /**
-     *
      * Sets the position of the object
      *
      * @param position The new position of the object
      */
-    public void setPosition(Point position) {
+    public void setPosition(Vector2 position) {
         this.position = position;
     }
 
     /**
-     *
      * Gets the type of the object
      *
      * @return The type of the object
@@ -100,7 +96,6 @@ public class Object {
     }
 
     /**
-     *
      * Sets the type of the object
      *
      * @param type The new type of the object
@@ -110,7 +105,6 @@ public class Object {
     }
 
     /**
-     *
      * Gets the preceding point of the route
      *
      * @return The preceding point
@@ -120,7 +114,6 @@ public class Object {
     }
 
     /**
-     *
      * Sets the preceding point of the object
      *
      * @param precedPoint The new preceding point of the object
@@ -130,7 +123,6 @@ public class Object {
     }
 
     /**
-     *
      * Gets the cost of movement from the start node
      *
      * @return The cost of movement
@@ -140,7 +132,6 @@ public class Object {
     }
 
     /**
-     *
      * Sets the cost of movement from the start node
      *
      * @param g The new cost of movement
@@ -150,7 +141,6 @@ public class Object {
     }
 
     /**
-     *
      * Gets the cost of movement to the end node
      *
      * @return The cost of movement
@@ -160,7 +150,6 @@ public class Object {
     }
 
     /**
-     *
      * Sets the cost of movement to the end node
      *
      * @param h The new cost of movement
@@ -170,7 +159,6 @@ public class Object {
     }
 
     /**
-     *
      * Gets the symbol to represent the object
      *
      * @return The symbol
@@ -193,8 +181,8 @@ public class Object {
 
     @Override
     public String toString() {
-        int x = position.x;
-        int y = position.y;
+        float x = position.x;
+        float y = position.y;
         return "(" + x + ", " + y + ")";
     }
 }
