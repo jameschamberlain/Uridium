@@ -32,8 +32,7 @@ public class Level {
     public static final float TILE_WIDTH = 64;
     public static final float TILE_HEIGHT = 64;
 
-    private int count = 0;
-    private int n = 1;
+    private Vector2 currentPlayerPos;
 
     public Tile[][] grid;
 
@@ -198,33 +197,25 @@ public class Level {
     }
 
     public void update(float delta) {
-        count++;
         player.update(delta);
         checkPlayerCollisions();
-        int i = 0;
+        Vector2 newPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
         float shootAngle;
         for(Enemy enemy : enemies) {
-            i++;
             shootAngle = calculateAngleToPlayer(enemy);
             if(enemy.canShoot()){
 //                enemy.shoot(shootAngle);
             }
-            if (enemy.getRouteToPlayer().isEmpty()) {
-                System.out.println(i);
+            if (enemy.getRouteToPlayer().isEmpty() || Math.abs(newPlayerPos.x-currentPlayerPos.x) > 200 || Math.abs(newPlayerPos.y-currentPlayerPos.y) > 200) {
+                currentPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
                 enemy.getPathfinder().resetPaths();
                 enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
                 enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
-                System.out.println("s: " + enemy.getPathfindingStart() + " - e: " + enemy.getPathfindingEnd());
                 enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
-                System.out.println(enemy.getRouteToPlayer().size());
-                for (int j = 0; j < 10; j++) {
-                    System.out.print(enemy.getRouteToPlayer().get(j) + ", ");
-                }
             }
             Vector2 nextPoint;
             if (!(enemy.getRouteToPlayer().isEmpty())) {
                 nextPoint = enemy.getRouteToPlayer().get(0);
-                System.out.println(i + ": " + nextPoint);
                 moveEnemy(enemy, nextPoint.x, nextPoint.y, delta);
                 enemy.getRouteToPlayer().remove(0);
             }
