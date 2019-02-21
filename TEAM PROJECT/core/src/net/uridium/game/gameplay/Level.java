@@ -207,13 +207,13 @@ public class Level {
             i++;
             shootAngle = calculateAngleToPlayer(enemy);
             if(enemy.canShoot()){
-                enemy.shoot(shootAngle);
+//                enemy.shoot(shootAngle);
             }
             if (enemy.getRouteToPlayer().isEmpty()) {
                 System.out.println(i);
                 enemy.getPathfinder().resetPaths();
-                enemy.setPathfindingStart(new Vector2(enemy.lastPos.x, enemy.lastPos.y));
-                enemy.setPathfindingEnd(new Vector2(getPlayer().lastPos.x, getPlayer().lastPos.y));
+                enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
+                enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
                 System.out.println("s: " + enemy.getPathfindingStart() + " - e: " + enemy.getPathfindingEnd());
                 enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
                 System.out.println(enemy.getRouteToPlayer().size());
@@ -224,14 +224,9 @@ public class Level {
             Vector2 nextPoint;
             if (!(enemy.getRouteToPlayer().isEmpty())) {
                 nextPoint = enemy.getRouteToPlayer().get(0);
+                System.out.println(i + ": " + nextPoint);
                 moveEnemy(enemy, nextPoint.x, nextPoint.y, delta);
-            }
-            if (count > (n)) {
                 enemy.getRouteToPlayer().remove(0);
-                if (!(enemy.getRouteToPlayer().isEmpty())) {
-                    nextPoint = enemy.getRouteToPlayer().get(0);
-                }
-                n++;
             }
 
         }
@@ -319,22 +314,17 @@ public class Level {
     //Moves the enemy to a new X and Y coordinates
     public void moveEnemy(Enemy enemy, float newX, float newY, float delta){
         if (enemy.getBody().x != newX || enemy.getBody().y != newY){
-            System.out.println(enemy.getCenter());
             if (enemy.getBody().x < newX){
                 enemy.getBody().x += enemyMoveSpeed * delta;
-                System.out.println(1);
             }
             if (enemy.getBody().x > newX){
                 enemy.getBody().x -= enemyMoveSpeed * delta;
-                System.out.println(2);
             }
             if (enemy.getBody().y < newY){
                 enemy.getBody().y += enemyMoveSpeed * delta;
-                System.out.println(3);
             }
             if (enemy.getBody().y > newY){
                 enemy.getBody().y -= enemyMoveSpeed * delta;
-                System.out.println(4);
             }
         }
     }
