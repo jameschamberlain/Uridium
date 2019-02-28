@@ -4,9 +4,9 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import net.uridium.game.gameplay.LevelFactory;
+import net.uridium.game.screen.GameScreen;
 import net.uridium.game.screen.MenuScreen;
-import net.uridium.game.screen.TempScreen;
+import net.uridium.game.screen.TestMenuScreen;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
@@ -30,7 +30,7 @@ public class Uridium extends ApplicationAdapter {
 		Gdx.graphics.setCursor(c);
 		pixmap.dispose();
 
-		getUSMInstance().push(new MenuScreen());
+		getUSMInstance().push(new GameScreen());
 	}
 
 	@Override

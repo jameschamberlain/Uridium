@@ -6,6 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 public class DoorTile extends Tile {
 
     public DoorTile(int gridX, int gridY) {
-        super(gridX, gridY, new Texture(Gdx.files.internal("ground_03.png")), false);
+        super(gridX, gridY, "ground_03.png", false);
     }
 }
