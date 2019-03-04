@@ -45,7 +45,7 @@ public class Level {
 
     private Player player;
 
-    float enemyMoveSpeed = 30;
+    float enemyMoveSpeed = 50;
 
     ArrayList<Bullet> bullets;
     ArrayList<Bullet> bulletsToRemove;
@@ -71,19 +71,27 @@ public class Level {
         yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
         yOffset /= 2;
 
-        initEnemies();
+
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
+        initEnemies();
         Gdx.input.setInputProcessor(player);
 
     }
 
     public void initEnemies() {
-        enemies.add(new Enemy(700, 450, 40, 40, this));
-        enemies.add(new Enemy(220, 330, 40, 40, this));
+        enemies.add(new Enemy(652, 460, 40, 40, this));
+        enemies.add(new Enemy(204, 332, 40, 40, this));
         for (Enemy enemy : enemies) {
             // Setup the pathfinder for the enemies to use.
             ArrayList<Vector2> obstacles = new ArrayList<>();
             enemy.setPathfinder(new Pathfinder(obstacles));
+
+            enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
+            System.out.println("Start pos: " + (76 + (enemy.getPathfindingStart().x-1) * 64) + ", " + (76 + (enemy.getPathfindingStart().y-1) * 64));
+            enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
+            enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
+            enemy.setNextPoint(enemy.gridToPixel(enemy.getPathfindingStart()));
+            System.out.println(enemy.getRouteToPlayer());
         }
     }
 
@@ -93,14 +101,14 @@ public class Level {
 
         Tile tile;
         Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 tile = grid[i][j];
 
-                if(tile.isObstacle()) {
+                if (tile.isObstacle()) {
                     obstacle = tile.getBody();
 
-                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
                         Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
                         if (!overlap.overlaps(playerBodyOldX))
                             player.goToLastXPos();
@@ -133,7 +141,7 @@ public class Level {
     }
 
     public void checkBulletCollisions() {
-        for(Bullet bullet : bullets)
+        for (Bullet bullet : bullets)
             checkBullet(bullet);
     }
 
@@ -143,21 +151,21 @@ public class Level {
 
         Tile tile;
         Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 tile = grid[i][j];
 
-                if(tile.isObstacle()) {
+                if (tile.isObstacle()) {
                     obstacle = tile.getBody();
 
-                    if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
+                    if (Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
                         bulletsToRemove.add(bullet);
 
-                        if(tile instanceof BreakableTile) {
+                        if (tile instanceof BreakableTile) {
                             BreakableTile bt = (BreakableTile) tile;
                             bt.health--;
 
-                            if(bt.health == 0) {
+                            if (bt.health == 0) {
                                 grid[i][j] = bt.getReplacementTile();
                             }
                         }
@@ -168,10 +176,10 @@ public class Level {
             }
         }
 
-        for (Enemy enemy : enemies){
+        for (Enemy enemy : enemies) {
             Rectangle enemyBody = enemy.getBody();
-            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
-                if (bullet.getEnemyBullet() == false){
+            if (Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
+                if (bullet.getEnemyBullet() == false) {
                     bulletsToRemove.add(bullet);
                     enemiesToRemove.add(enemy);
                     player.setScore(player.getScore() + 100);
@@ -181,11 +189,11 @@ public class Level {
         }
 
         Rectangle playerBody = player.getBody();
-        if(Intersector.intersectRectangles(bulletBody, playerBody, overlap)) {
-            if (bullet.getEnemyBullet() == true){
+        if (Intersector.intersectRectangles(bulletBody, playerBody, overlap)) {
+            if (bullet.getEnemyBullet() == true) {
                 bulletsToRemove.add(bullet);
                 player.setHealth(player.getHealth() - 1);
-                if (player.getHealth() <= 0){
+                if (player.getHealth() <= 0) {
                     player.setIsDead(true);
                 }
 
@@ -201,28 +209,43 @@ public class Level {
         checkPlayerCollisions();
         Vector2 newPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
         float shootAngle;
-        for(Enemy enemy : enemies) {
+        for (Enemy enemy : enemies) {
             shootAngle = calculateAngleToPlayer(enemy);
-            if(enemy.canShoot()){
-//                enemy.shoot(shootAngle);
+            if (enemy.canShoot()) {
+                //enemy.shoot(shootAngle);
             }
-            if (enemy.getRouteToPlayer().isEmpty() || Math.abs(newPlayerPos.x-currentPlayerPos.x) > 200 || Math.abs(newPlayerPos.y-currentPlayerPos.y) > 200) {
-                currentPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
+            //if (((int) enemy.getBody().x != (int) player.getBody().x) && ((int) enemy.getBody().y != (int) player.getBody().y)) {
+                //if (enemy.getRouteToPlayer().isEmpty()
+                 //       || Math.abs(newPlayerPos.x - currentPlayerPos.x) > 100
+                   //     || Math.abs(newPlayerPos.y - currentPlayerPos.y) > 100) {
+//                    currentPlayerPos.x = player.getBody().x;
+  //          currentPlayerPos.y = player.getBody().y;
+            if (enemy.getRouteToPlayer().isEmpty()) {
                 enemy.getPathfinder().resetPaths();
                 enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
                 enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
-                enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
+                if ((enemy.getPathfindingStart().equals(enemy.getPathfindingEnd()))) {
+                    enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
+                    System.out.println(enemy.getRouteToPlayer());
+                }
             }
-            Vector2 nextPoint;
-            if (!(enemy.getRouteToPlayer().isEmpty())) {
-                nextPoint = enemy.getRouteToPlayer().get(0);
-                moveEnemy(enemy, nextPoint.x, nextPoint.y, delta);
-                enemy.getRouteToPlayer().remove(0);
+                //}
+            //}
+            System.out.println("Body pos: " + enemy.getBody().x + ", " + enemy.getBody().y);
+            System.out.println("Next pos: " + enemy.getNextPoint().x + ", " + enemy.getNextPoint().y);
+            if ((enemy.getBody().x == enemy.getNextPoint().x) && (enemy.getBody().y == enemy.getNextPoint().y)) {
+                if (!(enemy.getRouteToPlayer().isEmpty())) {
+                    System.out.println("Current pos: " + enemy.getBody());
+                    enemy.setNextPoint(enemy.getRouteToPlayer().get(0));
+                    System.out.println("Next pos: " + enemy.getNextPoint());
+                    moveEnemy(enemy, enemy.getNextPoint().x, enemy.getNextPoint().y, delta);
+                    enemy.getRouteToPlayer().remove(0);
+                }
             }
 
         }
 
-        for(Bullet b : bullets) {
+        for (Bullet b : bullets) {
             b.update(delta);
         }
 
@@ -252,13 +275,13 @@ public class Level {
         matrix4.translate(xOffset, yOffset, 0);
         batch.setProjectionMatrix(matrix4);
 
-        for(int i = 0; i < gridWidth; i++) {
-            for(int j = 0; j < gridHeight; j++) {
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
                 grid[i][j].render(batch);
             }
         }
 
-        for(Bullet bullet : bullets)
+        for (Bullet bullet : bullets)
             bullet.render(batch);
 
         for (Enemy enemy : enemies)
@@ -269,17 +292,17 @@ public class Level {
         matrix4 = batch.getProjectionMatrix();
         matrix4.translate(-xOffset, -yOffset, 0);
         batch.setProjectionMatrix(matrix4);
-        if (player.getIsDead()){
-            myFont.draw(batch, "YOU'RE DEAD BITCH",500,500);
+        if (player.getIsDead()) {
+            myFont.draw(batch, "YOU'RE DEAD BITCH", 500, 500);
 
         }
-        myFont.draw(batch, "Score \n  " + outputScore,1130,670);
+        myFont.draw(batch, "Score \n  " + outputScore, 1130, 670);
     }
 
     //Calculates the angle to the player is from the enemy
-    public float calculateAngleToPlayer(Enemy enemy){
+    public float calculateAngleToPlayer(Enemy enemy) {
         float playerX = player.lastPos.x;
-        float enemyX =  enemy.getBody().getX();
+        float enemyX = enemy.getBody().getX();
         float xDifference = playerX - enemyX;
 
         float playerY = player.lastPos.y;
@@ -289,13 +312,13 @@ public class Level {
         double x = xDifference;
         double y = yDifference;
 
-        float distanceToPlayer = ((float)x * (float)x) + ((float)y*(float)y);
+        float distanceToPlayer = ((float) x * (float) x) + ((float) y * (float) y);
 
-        double a = Math.atan2(x,y);
-        float angle = (float)Math.toDegrees(a);
+        double a = Math.atan2(x, y);
+        float angle = (float) Math.toDegrees(a);
 
-        if (angle <= 0){
-            angle= angle + 360;
+        if (angle <= 0) {
+            angle = angle + 360;
         }
         //System.out.println(angle);
 
@@ -303,18 +326,18 @@ public class Level {
     }
 
     //Moves the enemy to a new X and Y coordinates
-    public void moveEnemy(Enemy enemy, float newX, float newY, float delta){
-        if (enemy.getBody().x != newX || enemy.getBody().y != newY){
-            if (enemy.getBody().x < newX){
+    public void moveEnemy(Enemy enemy, float newX, float newY, float delta) {
+        if (enemy.getBody().x != newX || enemy.getBody().y != newY) {
+            if (enemy.getBody().x < newX) {
                 enemy.getBody().x += enemyMoveSpeed * delta;
             }
-            if (enemy.getBody().x > newX){
+            if (enemy.getBody().x > newX) {
                 enemy.getBody().x -= enemyMoveSpeed * delta;
             }
-            if (enemy.getBody().y < newY){
+            if (enemy.getBody().y < newY) {
                 enemy.getBody().y += enemyMoveSpeed * delta;
             }
-            if (enemy.getBody().y > newY){
+            if (enemy.getBody().y > newY) {
                 enemy.getBody().y -= enemyMoveSpeed * delta;
             }
         }

@@ -3,10 +3,7 @@ package net.uridium.game.gameplay.ai;
 import com.badlogic.gdx.math.Vector2;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Pathfinder {
 
@@ -28,7 +25,7 @@ public class Pathfinder {
      * The maximum y value in the grid.
      */
     private int maxY;
-    private static final Vector2 GRID_SIZE = new Vector2(1280, 720);
+    private static final Vector2 GRID_SIZE = new Vector2(15, 10);
 
 
     /**
@@ -80,6 +77,7 @@ public class Pathfinder {
          While the goal has not been reached continue to travel
          through the world.
           */
+        //System.out.println(grid.toString());
         while (!hasReachedGoal) {
             currentNode.setType(ObjectType.VISITED_PATH);
             /*
@@ -173,6 +171,13 @@ public class Pathfinder {
             currentNode = currentNode.getPrecedPoint();
         }
         Collections.reverse(route);
+        for (int n = 0; n < route.size(); n++) {
+            route.get(n).x = 76.0f + (route.get(n).x-1) * 64.0f;
+            route.get(n).y = 76.0f + (route.get(n).y-1) * 64.0f;
+        }
+        System.out.println("start");
+        System.out.println(route);
+        System.out.println("end");
         return route;
     }
 

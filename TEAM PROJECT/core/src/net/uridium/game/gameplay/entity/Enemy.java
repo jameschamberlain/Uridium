@@ -12,6 +12,7 @@ import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.ai.Pathfinder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Enemy {
     final Rectangle body;
@@ -23,6 +24,10 @@ public class Enemy {
      * The starting coord of the enemy (pathfinding).
      */
     private Vector2 pathfindingStart;
+    /**
+     * The next coord for the enemy to travel to (pathfinding).
+     */
+    private Vector2 nextPoint;
     /**
      * The goal coord of the enemy (pathfinding).
      */
@@ -79,7 +84,7 @@ public class Enemy {
     }
 
     public void setPathfindingStart(Vector2 pathfindingStart) {
-        this.pathfindingStart = pathfindingStart;
+        this.pathfindingStart = convertCoord(pathfindingStart);
     }
 
     public Vector2 getPathfindingEnd() {
@@ -87,7 +92,7 @@ public class Enemy {
     }
 
     public void setPathfindingEnd(Vector2 pathfindingEnd) {
-        this.pathfindingEnd = pathfindingEnd;
+        this.pathfindingEnd = convertCoord(pathfindingEnd);
     }
 
     public Pathfinder getPathfinder() {
@@ -97,4 +102,120 @@ public class Enemy {
     public void setPathfinder(Pathfinder pathfinder) {
         this.pathfinder = pathfinder;
     }
+
+    public Vector2 getNextPoint() {
+        return nextPoint;
+    }
+
+    public void setNextPoint(Vector2 nextPoint) {
+        this.nextPoint = nextPoint;
+    }
+
+    public Vector2 pixelToGrid(Vector2 coord) {
+        float x = coord.x;
+        float y = coord.y;
+        x = ((x-76) / 64) + 1;
+        y = ((y-76) / 64) + 1;
+        return new Vector2(x, y);
+    }
+
+    public Vector2 gridToPixel(Vector2 coord) {
+        float x = coord.x;
+        float y = coord.y;
+        x = ((x-1) * 64) + 76;
+        y = ((y-1) * 64) + 76;
+        return new Vector2(x, y);
+    }
+
+    public Vector2 convertCoord(Vector2 coord) {
+        float x = coord.x;
+        float y = coord.y;
+        if (x <= 44) {
+            x = 0.0f;
+        }
+        else if (x <= 108) {
+            x = 1.0f;
+        }
+        else if (x <= 172) {
+            x = 2.0f;
+        }
+        else if (x <= 236) {
+            x = 3.0f;
+        }
+        else if (x <= 300) {
+            x = 4.0f;
+        }
+        else if (x <= 364) {
+            x = 5.0f;
+        }
+        else if (x <= 428) {
+            x = 5.0f;
+        }
+        else if (x <= 492) {
+            x = 6.0f;
+        }
+        else if (x <= 556) {
+            x = 7.0f;
+        }
+        else if (x <= 620) {
+            x = 8.0f;
+        }
+        else if (x <= 684) {
+            x = 9.0f;
+        }
+        else if (x <= 748) {
+            x = 10.0f;
+        }
+        else if (x <= 812) {
+            x = 11.0f;
+        }
+        else if (x <= 876) {
+            x = 12.0f;
+        }
+        else if (x <= 940) {
+            x = 13.0f;
+        }
+        else {
+            x = 14.0f;
+        }
+
+        if (y <= 44) {
+            y = 0.0f;
+        }
+        else if (y <= 108) {
+            y = 1.0f;
+        }
+        else if (y <= 172) {
+            y = 2.0f;
+        }
+        else if (y <= 236) {
+            y = 3.0f;
+        }
+        else if (y <= 300) {
+            y = 4.0f;
+        }
+        else if (y <= 364) {
+            y = 5.0f;
+        }
+        else if (y <= 428) {
+            y = 5.0f;
+        }
+        else if (y <= 492) {
+            y = 6.0f;
+        }
+        else if (y <= 556) {
+            y = 7.0f;
+        }
+        else if (y <= 620) {
+            y = 8.0f;
+        }
+        else if (y <= 684) {
+            y = 9.0f;
+        }
+        else {
+            y = 10.0f;
+        }
+        return new Vector2(x, y);
+    }
+
 }
