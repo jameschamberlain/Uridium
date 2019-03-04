@@ -1,6 +1,8 @@
 package net.uridium.game.gameplay.entity.damageable;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -29,6 +31,10 @@ public class Player extends DamageableEntity {
 
     private boolean canShoot() {
         return System.currentTimeMillis() - lastShot > reloadTime;
+    }
+
+    public void addScore(int s) {
+        score += s;
     }
 
     public void setScore(int s){

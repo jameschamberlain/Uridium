@@ -33,6 +33,14 @@ public abstract class Entity implements Serializable {
         return body;
     }
 
+    public void setX(float x) {
+        body.setX(x);
+    }
+
+    public void setY(float y) {
+        body.setY(y);
+    }
+
     public void setPosition(Vector2 pos) {
         body.setPosition(pos);
         changed = true;
@@ -44,6 +52,10 @@ public abstract class Entity implements Serializable {
 
     public Vector2 getCenter(Vector2 center) {
         return body.getCenter(center);
+    }
+
+    public Vector2 getLastPos() {
+        return lastPos;
     }
 
     public void setVelocity(float x, float y) {
@@ -76,6 +88,8 @@ public abstract class Entity implements Serializable {
     }
 
     public void update(float delta) {
+        getPosition(lastPos);
+
         body.x += vel.x * delta;
         body.y += vel.y * delta;
 

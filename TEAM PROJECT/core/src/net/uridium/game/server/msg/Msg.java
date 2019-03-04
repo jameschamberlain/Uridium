@@ -23,6 +23,8 @@ public class Msg implements Serializable {
         NEW_LEVEL,
         NEW_ENTITY,
         ENTITY_UPDATE,
+        REMOVE_ENTITY,
+        REPLACE_TILE,
         PLAYER_MOVE,
         PLAYER_SHOOT
     }

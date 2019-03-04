@@ -18,11 +18,12 @@ public class DesktopLauncher {
 		config.height = GAME_HEIGHT;
 		config.resizable = false;
 		config.title = "Uridium";
-//		try {
-//			new Server();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+
+		try {
+			Server s = new Server();
+		} catch (IOException e) {
+			System.out.println("Server already exists. Connecting.");
+		}
 
 		new LwjglApplication(new Uridium(), config);
 	}

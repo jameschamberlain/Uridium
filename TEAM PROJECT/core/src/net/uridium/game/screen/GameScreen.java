@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.entity.Entity;
-import net.uridium.game.server.msg.EntityUpdateData;
-import net.uridium.game.server.msg.LevelData;
-import net.uridium.game.server.msg.Msg;
-import net.uridium.game.server.msg.PlayerMoveData;
+import net.uridium.game.server.msg.*;
 import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.HealthBar;
 
@@ -159,6 +156,12 @@ public class GameScreen extends UridiumScreen {
                 break;
             case ENTITY_UPDATE:
                 level.updateEntity((EntityUpdateData) msg.getData());
+                break;
+            case REMOVE_ENTITY:
+                level.removeEntity((RemoveEntityData) msg.getData());
+                break;
+            case REPLACE_TILE:
+                level.replaceTile((ReplaceTileData) msg.getData());
                 break;
         }
     }

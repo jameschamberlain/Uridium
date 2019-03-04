@@ -1,17 +1,18 @@
 package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.gameplay.entity.projectile.Bullet;
 import net.uridium.game.gameplay.tile.Tile;
-import net.uridium.game.server.msg.EntityUpdateData;
-import net.uridium.game.server.msg.LevelData;
-import net.uridium.game.server.msg.PlayerMoveData;
+import net.uridium.game.server.msg.*;
 import net.uridium.game.server.msg.PlayerMoveData.Dir;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
@@ -28,14 +29,14 @@ public class Level {
 
     float enemyMoveSpeed = 30;
 
-    HashMap<Integer, Entity> entities;
+    ConcurrentHashMap<Integer, Entity> entities;
     int playerID;
 
 //    String outputScore;
 //    BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
 
     public Level(LevelData levelData) {
-        entities = new HashMap<>();
+        entities = new ConcurrentHashMap<>();
 
         this.grid = levelData.grid;
         this.gridWidth = levelData.gridWidth;
@@ -56,12 +57,6 @@ public class Level {
 
         for(Entity e : entities.values())
             e.loadTexture();
-
-        /*try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public void addEntity(Entity e) {
@@ -75,15 +70,54 @@ public class Level {
         e.setVelocity(entityUpdateData.vel);
     }
 
+    public void removeEntity(RemoveEntityData removeEntityData) {
+        entities.remove(removeEntityData.entityID);
+    }
+
+    public void replaceTile(ReplaceTileData replaceTileData) {
+        replaceTileData.t.loadTexture();
+        grid[replaceTileData.x][replaceTileData.y] = replaceTileData.t;
+    }
+
+    public boolean checkCollisionsForPlayer(Player player) {
+        Rectangle playerBody = player.getBody();
+        Rectangle overlap = new Rectangle();
+
+        Tile tile;
+        Rectangle obstacle;
+        for(int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                tile = grid[i][j];
+
+                if(tile.isObstacle()) {
+                    obstacle = tile.getBody();
+
+                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                        if(overlap.width > overlap.height)
+                            player.setY(player.getLastPos().y);
+                        else
+                            player.setX(player.getLastPos().x);
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public Player getPlayer() {
         return (Player) entities.get(playerID);
     }
 
     public void update(float delta) {
-        for(Entity e : entities.values())
+        for(Entity e : entities.values()) {
             e.update(delta);
 
-//        checkPlayerCollisions();
+            if (e instanceof Player)
+                checkCollisionsForPlayer((Player) e);
+        }
 
         //bottom two values are temporary
 //        float newX = 200;
@@ -98,14 +132,9 @@ public class Level {
 //            moveEnemy(enemy, newX, newY, delta);
 //        }
 
-//        for(Bullet b : bullets) {
-//            b.update(delta);
-//        }
-
 //        checkBulletCollisions();
 //        purgeBullets();
 //        purgeEnemies();
-//        outputScore = String.valueOf(player.getScore());
     }
 
     public void render(SpriteBatch batch) {
@@ -130,11 +159,6 @@ public class Level {
 //        }
 //        myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
-
-//    public void initEnemies() {
-//        enemies.add(new Enemy(700, 450, 40, 40, this));
-//        enemies.add(new Enemy(220, 330, 40, 40, this));
-//    }
 
     /*public boolean checkPlayerCollisions() {
         Rectangle playerBody = player.getBody();
@@ -181,69 +205,9 @@ public class Level {
         return false;
     }*/
 
-    /*public void checkBulletCollisions() {
-        for(Bullet bullet : bullets)
-            checkBullet(bullet);
-    }*/
+    /**/
 
-    /*public boolean checkBullet(Bullet bullet) {
-        Rectangle bulletBody = bullet.getBody();
-        Rectangle overlap = new Rectangle();
-
-        Tile tile;
-        Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                tile = grid[i][j];
-
-                if(tile.isObstacle()) {
-                    obstacle = tile.getBody();
-
-                    if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
-                        bulletsToRemove.add(bullet);
-
-                        if(tile instanceof BreakableTile) {
-                            BreakableTile bt = (BreakableTile) tile;
-                            bt.health--;
-
-                            if(bt.health == 0) {
-                                grid[i][j] = bt.getReplacementTile();
-                            }
-                        }
-
-                        return true;
-                    }
-                }
-            }
-        }
-
-        for (Enemy enemy : enemies){
-            Rectangle enemyBody = enemy.getBody();
-            if(Intersector.intersectRectangles(bulletBody, enemyBody, overlap)) {
-                if (bullet.getEnemyBullet() == false){
-                    bulletsToRemove.add(bullet);
-                    enemiesToRemove.add(enemy);
-                    player.setScore(player.getScore() + 100);
-                }
-                return true;
-            }
-        }
-
-        Rectangle playerBody = player.getBody();
-        if(Intersector.intersectRectangles(bulletBody, playerBody, overlap)) {
-            if (bullet.getEnemyBullet() == true){
-                bulletsToRemove.add(bullet);
-                player.setHealth(player.getHealth() - 1);
-                if (player.getHealth() <= 0){
-                    player.setIsDead(true);
-                }
-
-            }
-            return true;
-        }
-
-        return false;
-    }*/
+    /**/
 
     /*private void purgeBullets() {
         bullets.removeAll(bulletsToRemove);

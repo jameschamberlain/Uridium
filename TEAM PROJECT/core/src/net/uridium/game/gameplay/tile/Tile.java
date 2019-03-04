@@ -40,7 +40,7 @@ public abstract class Tile implements Serializable {
     }
 
     public void loadTexture() {
-        t = new Texture(Gdx.files.internal(textureFile));
+        Gdx.app.postRunnable(() -> t = new Texture(Gdx.files.internal(textureFile)));
     }
 
     public boolean isObstacle() {
@@ -64,6 +64,6 @@ public abstract class Tile implements Serializable {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(t, body.x, body.y, body.width, body.height);
+        if(t != null) batch.draw(t, body.x, body.y, body.width, body.height);
     }
 }
