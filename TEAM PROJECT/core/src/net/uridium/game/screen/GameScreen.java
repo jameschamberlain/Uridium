@@ -42,7 +42,7 @@ public class GameScreen extends UridiumScreen {
     @Override
     public void init() {
         try {
-            s = new Socket("192.168.43.177",9988);
+            s = new Socket("localhost",9988);
             oos = new ObjectOutputStream(s.getOutputStream());
             ois = new ObjectInputStream(s.getInputStream());
 
