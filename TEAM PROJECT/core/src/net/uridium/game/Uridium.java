@@ -30,7 +30,7 @@ public class Uridium extends ApplicationAdapter {
 		Gdx.graphics.setCursor(c);
 		pixmap.dispose();
 
-		getUSMInstance().push(new GameScreen());
+		getUSMInstance().push(new MenuScreen());
 	}
 
 	@Override
