@@ -149,30 +149,27 @@ public class Enemy {
             x = 5.0f;
         }
         else if (x <= 428) {
-            x = 5.0f;
-        }
-        else if (x <= 492) {
             x = 6.0f;
         }
-        else if (x <= 556) {
+        else if (x <= 492) {
             x = 7.0f;
         }
-        else if (x <= 620) {
+        else if (x <= 556) {
             x = 8.0f;
         }
-        else if (x <= 684) {
+        else if (x <= 620) {
             x = 9.0f;
         }
-        else if (x <= 748) {
+        else if (x <= 684) {
             x = 10.0f;
         }
-        else if (x <= 812) {
+        else if (x <= 748) {
             x = 11.0f;
         }
-        else if (x <= 876) {
+        else if (x <= 812) {
             x = 12.0f;
         }
-        else if (x <= 940) {
+        else if (x <= 876) {
             x = 13.0f;
         }
         else {
@@ -198,22 +195,16 @@ public class Enemy {
             y = 5.0f;
         }
         else if (y <= 428) {
-            y = 5.0f;
-        }
-        else if (y <= 492) {
             y = 6.0f;
         }
-        else if (y <= 556) {
+        else if (y <= 492) {
             y = 7.0f;
         }
-        else if (y <= 620) {
+        else if (y <= 556) {
             y = 8.0f;
         }
-        else if (y <= 684) {
-            y = 9.0f;
-        }
         else {
-            y = 10.0f;
+            y = 9.0f;
         }
         return new Vector2(x, y);
     }

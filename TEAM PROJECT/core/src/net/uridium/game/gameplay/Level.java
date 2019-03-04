@@ -73,6 +73,7 @@ public class Level {
 
 
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
+        currentPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
         initEnemies();
         Gdx.input.setInputProcessor(player);
 
@@ -87,7 +88,6 @@ public class Level {
             enemy.setPathfinder(new Pathfinder(obstacles));
 
             enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
-            System.out.println("Start pos: " + (76 + (enemy.getPathfindingStart().x-1) * 64) + ", " + (76 + (enemy.getPathfindingStart().y-1) * 64));
             enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
             enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
             enemy.setNextPoint(enemy.gridToPixel(enemy.getPathfindingStart()));
@@ -210,38 +210,41 @@ public class Level {
         Vector2 newPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
         float shootAngle;
         for (Enemy enemy : enemies) {
+            currentPlayerPos = enemy.convertCoord(new Vector2(player.getBody().x, player.getBody().y));
             shootAngle = calculateAngleToPlayer(enemy);
             if (enemy.canShoot()) {
                 //enemy.shoot(shootAngle);
             }
+            if (!(enemy.convertCoord(enemy.getCenter()).equals(currentPlayerPos))) {
             //if (((int) enemy.getBody().x != (int) player.getBody().x) && ((int) enemy.getBody().y != (int) player.getBody().y)) {
-                //if (enemy.getRouteToPlayer().isEmpty()
-                 //       || Math.abs(newPlayerPos.x - currentPlayerPos.x) > 100
-                   //     || Math.abs(newPlayerPos.y - currentPlayerPos.y) > 100) {
-//                    currentPlayerPos.x = player.getBody().x;
-  //          currentPlayerPos.y = player.getBody().y;
-            if (enemy.getRouteToPlayer().isEmpty()) {
-                enemy.getPathfinder().resetPaths();
-                enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
-                enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
-                if ((enemy.getPathfindingStart().equals(enemy.getPathfindingEnd()))) {
-                    enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
-                    System.out.println(enemy.getRouteToPlayer());
+                //System.out.println("1");
+                if (enemy.getRouteToPlayer().isEmpty()){
+                        //|| Math.abs(newPlayerPos.x - currentPlayerPos.x) > 100
+                        //|| Math.abs(newPlayerPos.y - currentPlayerPos.y) > 100) {
+                    enemy.getPathfinder().resetPaths();
+                    enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
+                    enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
+                    if (!(enemy.getPathfindingStart().equals(enemy.getPathfindingEnd()))) {
+                        enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
+                        System.out.println(enemy.getRouteToPlayer());
+                    }
                 }
+                //System.out.println("2");
             }
-                //}
-            //}
-            System.out.println("Body pos: " + enemy.getBody().x + ", " + enemy.getBody().y);
-            System.out.println("Next pos: " + enemy.getNextPoint().x + ", " + enemy.getNextPoint().y);
-            if ((enemy.getBody().x == enemy.getNextPoint().x) && (enemy.getBody().y == enemy.getNextPoint().y)) {
+            if ((((float) Math.round(enemy.getBody().x)) == enemy.getNextPoint().x) && (((float) Math.round(enemy.getBody().y)) == enemy.getNextPoint().y)) {
+                System.out.println(enemy.getBody());
                 if (!(enemy.getRouteToPlayer().isEmpty())) {
-                    System.out.println("Current pos: " + enemy.getBody());
+
+                    //System.out.println("Current pos: " + enemy.getBody());
                     enemy.setNextPoint(enemy.getRouteToPlayer().get(0));
-                    System.out.println("Next pos: " + enemy.getNextPoint());
-                    moveEnemy(enemy, enemy.getNextPoint().x, enemy.getNextPoint().y, delta);
+                    //System.out.println("Next pos: " + enemy.getNextPoint());
                     enemy.getRouteToPlayer().remove(0);
+                    //System.out.println(enemy.getRouteToPlayer());
                 }
             }
+
+            //System.out.println("3");
+            moveEnemy(enemy, enemy.getNextPoint().x, enemy.getNextPoint().y, delta);
 
         }
 

@@ -77,7 +77,7 @@ public class Pathfinder {
          While the goal has not been reached continue to travel
          through the world.
           */
-        //System.out.println(grid.toString());
+        // System.out.println(grid.toString());
         while (!hasReachedGoal) {
             currentNode.setType(ObjectType.VISITED_PATH);
             /*
@@ -175,9 +175,6 @@ public class Pathfinder {
             route.get(n).x = 76.0f + (route.get(n).x-1) * 64.0f;
             route.get(n).y = 76.0f + (route.get(n).y-1) * 64.0f;
         }
-        System.out.println("start");
-        System.out.println(route);
-        System.out.println("end");
         return route;
     }
 
