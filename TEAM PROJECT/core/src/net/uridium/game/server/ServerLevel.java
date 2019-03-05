@@ -33,6 +33,7 @@ public class ServerLevel {
     BlockingQueue<Msg> msgs;
 
     int nextEntityID;
+    int noOfEnemies = 5;
 
     public ServerLevel(Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations) {
         this.grid = grid;
@@ -55,6 +56,18 @@ public class ServerLevel {
     public void addStartEnemies() {
         Enemy e = new Enemy(getNextEntityID(), new Rectangle(700, 450, 40, 40), 1, 1);
         addEntity(e);
+        for(int i = 0; i < gridWidth; i++) {
+            for(int j = 0; j < gridHeight; j++) {
+                if (grid[i][j].getSpawnTile() == true){
+                    for (int k = 0; k < noOfEnemies; k++) {
+                        System.out.println("Enemy Spawn tile found at \nX:" + grid[i][j].getBody().getX() + "\nY: " + grid[i][j].getBody().getY());
+                        Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * k, 40, 40), 1, 1);
+                        addEntity(e1);
+                        System.out.println(e1.getID());
+                    }
+                }
+            }
+        }
     }
 
     public Vector2 getNewPlayerSpawn() {
