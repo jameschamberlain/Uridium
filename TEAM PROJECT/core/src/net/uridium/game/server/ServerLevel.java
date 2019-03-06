@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ServerLevel {
     Tile[][] grid;
@@ -34,6 +35,9 @@ public class ServerLevel {
 
     int nextEntityID;
     int noOfEnemies = 5;
+    int spawnPos = 1;
+    long lastEnemySpawn = 0;
+    long enemySpawnRate = 3500;
 
     public ServerLevel(Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations) {
         this.grid = grid;
@@ -47,24 +51,28 @@ public class ServerLevel {
         entities = new ConcurrentHashMap<>();
         msgs = new LinkedBlockingQueue<>();
 
-        addStartEnemies();
+        spawnEnemies();
     }
 
     /**
      * @Deprecated just for testing
      */
-    public void addStartEnemies() {
+    public void spawnEnemies() {
         Enemy e = new Enemy(getNextEntityID(), new Rectangle(700, 450, 40, 40), 1, 1);
         addEntity(e);
         for(int i = 0; i < gridWidth; i++) {
             for(int j = 0; j < gridHeight; j++) {
                 if (grid[i][j].getSpawnTile() == true){
-                    for (int k = 0; k < noOfEnemies; k++) {
-                        System.out.println("Enemy Spawn tile found at \nX:" + grid[i][j].getBody().getX() + "\nY: " + grid[i][j].getBody().getY());
-                        Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * k, 40, 40), 1, 1);
+                    if (canSpawn()) {
+                        Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * spawnPos, 40, 40), 1, 1);
                         addEntity(e1);
                         System.out.println(e1.getID());
+                        noOfEnemies -= 1;
+                        spawnPos += 1;
+                        System.out.println("Enemies Remaining: " + noOfEnemies);
+                        lastEnemySpawn = System.currentTimeMillis();
                     }
+
                 }
             }
         }
@@ -246,8 +254,17 @@ public class ServerLevel {
 
             if(e.checkChanged())
                 msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
+
+            if (canSpawn()) {
+                spawnEnemies();
+            }
         }
 
         purgeEntities();
     }
+
+    private boolean canSpawn() {
+        return ((System.currentTimeMillis() - lastEnemySpawn > enemySpawnRate) && (noOfEnemies > 0));
+    }
+
 }
