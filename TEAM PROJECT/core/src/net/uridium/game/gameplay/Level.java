@@ -251,7 +251,7 @@ public class Level {
         matrix4.translate(-xOffset, -yOffset, 0);
         batch.setProjectionMatrix(matrix4);
         if (player.getIsDead()){
-            myFont.draw(batch, "YOU'RE DEAD BITCH",500,500);
+            myFont.draw(batch, "YOU'RE DEAD",500,500);
 
         }
         myFont.draw(batch, "Score \n  " + outputScore,1130,670);
