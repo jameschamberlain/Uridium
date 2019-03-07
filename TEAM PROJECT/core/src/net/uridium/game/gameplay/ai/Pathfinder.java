@@ -25,6 +25,7 @@ public class Pathfinder {
      * The maximum y value in the grid.
      */
     private int maxY;
+    private boolean isBrokenRoute = false;
     private static final Vector2 GRID_SIZE = new Vector2(15, 10);
 
 
@@ -58,8 +59,6 @@ public class Pathfinder {
         // Add the start and end point to the grid.
         grid.addObject(new Object(ObjectType.START, start));
         grid.addObject(new Object(ObjectType.END, end));
-        // Prints the grid.
-        // System.out.println(grid.toString());
         // Setup a list of visible paths.
         PriorityQueue<Object> paths = new PriorityQueue<Object>(10, new sortByF());
         Object currentNode = getStartNode();
@@ -77,9 +76,15 @@ public class Pathfinder {
          While the goal has not been reached continue to travel
          through the world.
           */
-        // System.out.println(grid.toString());
+        //System.out.println(grid.toString());
         while (!hasReachedGoal) {
-            currentNode.setType(ObjectType.VISITED_PATH);
+            try {
+                currentNode.setType(ObjectType.VISITED_PATH);
+            }
+            catch (NullPointerException e) {
+                isBrokenRoute = true;
+                break;
+            }
             /*
             Use a control flow to check the surrounding nodes for available paths
             while also making sure that the algorithm doesn't attempt to process a node
@@ -159,22 +164,44 @@ public class Pathfinder {
              */
             currentNode = paths.poll();
             paths.remove(0);
-            currentNode.setSymbol('Z');
-            if (currentNode.getType() == ObjectType.END) {
-                hasReachedGoal = true;
+            try {
+                if (currentNode.getType() == ObjectType.END) {
+                    hasReachedGoal = true;
+                }
+                else {
+                    currentNode.setSymbol('Z');
+                }
+            }
+            catch (NullPointerException e) {
+                System.out.println("Problem with route");
+                System.out.println("start: " + start);
+                System.out.println("end: " + end);
+                System.out.println(grid.toString());
+                isBrokenRoute = true;
             }
         }
         // Setup and populate a list of the route found.
         ArrayList<Vector2> route = new ArrayList<>();
-        while (currentNode.getPrecedPoint() != null) {
-            route.add(currentNode.getPosition());
-            currentNode = currentNode.getPrecedPoint();
+        // If route breaks, just don't move
+        if (isBrokenRoute) {
+            route.clear();
+            float tempX =  76.0f + (start.x - 1) * 64.0f;
+            float tempY =  76.0f + (start.y - 1) * 64.0f;
+            route.add(new Vector2(tempX, tempY));
         }
-        Collections.reverse(route);
-        for (int n = 0; n < route.size(); n++) {
-            route.get(n).x = 76.0f + (route.get(n).x-1) * 64.0f;
-            route.get(n).y = 76.0f + (route.get(n).y-1) * 64.0f;
+        else {
+            while (currentNode.getPrecedPoint() != null) {
+                route.add(currentNode.getPosition());
+                currentNode = currentNode.getPrecedPoint();
+            }
+            Collections.reverse(route);
+            for (int n = 0; n < route.size(); n++) {
+                // Convert between grid coordinates and pixels
+                route.get(n).x = 76.0f + (route.get(n).x - 1) * 64.0f;
+                route.get(n).y = 76.0f + (route.get(n).y - 1) * 64.0f;
+            }
         }
+        System.out.println(grid.toString());
         return route;
     }
 

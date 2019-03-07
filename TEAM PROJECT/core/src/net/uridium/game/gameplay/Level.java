@@ -32,7 +32,14 @@ public class Level {
     public static final float TILE_WIDTH = 64;
     public static final float TILE_HEIGHT = 64;
 
+    /**
+     * Current coordinate of the player
+     */
     private Vector2 currentPlayerPos;
+    /**
+     * Last coordinate of the player
+     */
+    private Vector2 oldPlayerPos;
 
     public Tile[][] grid;
 
@@ -73,6 +80,7 @@ public class Level {
 
 
         player = new Player(playerSpawnCenter.x - 27.5f, playerSpawnCenter.y - 27.5f, 55, 55, this);
+        // Setup the current player coordinate
         currentPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
         initEnemies();
         Gdx.input.setInputProcessor(player);
@@ -82,16 +90,29 @@ public class Level {
     public void initEnemies() {
         enemies.add(new Enemy(652, 460, 40, 40, this));
         enemies.add(new Enemy(204, 332, 40, 40, this));
+        // The list of obstacles in the world.
+        ArrayList<Vector2> obstacles = new ArrayList<>();
+        obstacles.add(new Vector2(10, 1));
+        obstacles.add(new Vector2(10, 2));
+        obstacles.add(new Vector2(9, 3));
+        obstacles.add(new Vector2(10, 3));
+        obstacles.add(new Vector2(10, 5));
+        obstacles.add(new Vector2(4, 6));
+        obstacles.add(new Vector2(5, 6));
+        obstacles.add(new Vector2(6, 6));
+        obstacles.add(new Vector2(10, 6));
+        obstacles.add(new Vector2(11, 6));
+        obstacles.add(new Vector2(4, 7));
+        obstacles.add(new Vector2(5, 7));
+        obstacles.add(new Vector2(6, 7));
         for (Enemy enemy : enemies) {
             // Setup the pathfinder for the enemies to use.
-            ArrayList<Vector2> obstacles = new ArrayList<>();
             enemy.setPathfinder(new Pathfinder(obstacles));
-
             enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
             enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
             enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
             enemy.setNextPoint(enemy.gridToPixel(enemy.getPathfindingStart()));
-            System.out.println(enemy.getRouteToPlayer());
+            oldPlayerPos = enemy.convertCoord(new Vector2(player.getBody().x, player.getBody().y));
         }
     }
 
@@ -207,43 +228,40 @@ public class Level {
     public void update(float delta) {
         player.update(delta);
         checkPlayerCollisions();
-        Vector2 newPlayerPos = new Vector2(player.getBody().x, player.getBody().y);
         float shootAngle;
         for (Enemy enemy : enemies) {
             currentPlayerPos = enemy.convertCoord(new Vector2(player.getBody().x, player.getBody().y));
             shootAngle = calculateAngleToPlayer(enemy);
             if (enemy.canShoot()) {
-                //enemy.shoot(shootAngle);
+                enemy.shoot(shootAngle);
             }
+            // Check whether the enemy is in the same position as the player
             if (!(enemy.convertCoord(enemy.getCenter()).equals(currentPlayerPos))) {
-            //if (((int) enemy.getBody().x != (int) player.getBody().x) && ((int) enemy.getBody().y != (int) player.getBody().y)) {
-                //System.out.println("1");
-                if (enemy.getRouteToPlayer().isEmpty()){
-                        //|| Math.abs(newPlayerPos.x - currentPlayerPos.x) > 100
-                        //|| Math.abs(newPlayerPos.y - currentPlayerPos.y) > 100) {
+                // Check whether the route is empty or the player has moved
+                if (enemy.getRouteToPlayer().isEmpty()
+                        || Math.abs(oldPlayerPos.x - currentPlayerPos.x) > 0
+                        || Math.abs(oldPlayerPos.y - currentPlayerPos.y) > 0) {
+                    // Reset the pathfinding grid and set the start and end position
                     enemy.getPathfinder().resetPaths();
                     enemy.setPathfindingStart(new Vector2(enemy.getBody().x, enemy.getBody().y));
                     enemy.setPathfindingEnd(new Vector2(getPlayer().getBody().x, getPlayer().getBody().y));
+                    // Check to see if the desired route is valid e.g. the start doesn't equal the end
                     if (!(enemy.getPathfindingStart().equals(enemy.getPathfindingEnd()))) {
                         enemy.setRouteToPlayer(enemy.getPathfinder().findPath(enemy.getPathfindingStart(), enemy.getPathfindingEnd()));
-                        System.out.println(enemy.getRouteToPlayer());
+                        oldPlayerPos = enemy.convertCoord(new Vector2(player.getBody().x, player.getBody().y));
+                        enemy.setNextPoint(enemy.getRouteToPlayer().get(0));
+                        enemy.getRouteToPlayer().remove(0);
                     }
                 }
-                //System.out.println("2");
             }
-            if ((((float) Math.round(enemy.getBody().x)) == enemy.getNextPoint().x) && (((float) Math.round(enemy.getBody().y)) == enemy.getNextPoint().y)) {
-                System.out.println(enemy.getBody());
+            // If the enemy has traveled to the desired coordinate then get the next coordinate in the list
+            if ((((float) Math.ceil(enemy.getBody().x)) == enemy.getNextPoint().x) && (((float) Math.ceil(enemy.getBody().y)) == enemy.getNextPoint().y)) {
+                // Only attempt to get the next point if the list is not empty
                 if (!(enemy.getRouteToPlayer().isEmpty())) {
-
-                    //System.out.println("Current pos: " + enemy.getBody());
                     enemy.setNextPoint(enemy.getRouteToPlayer().get(0));
-                    //System.out.println("Next pos: " + enemy.getNextPoint());
                     enemy.getRouteToPlayer().remove(0);
-                    //System.out.println(enemy.getRouteToPlayer());
                 }
             }
-
-            //System.out.println("3");
             moveEnemy(enemy, enemy.getNextPoint().x, enemy.getNextPoint().y, delta);
 
         }

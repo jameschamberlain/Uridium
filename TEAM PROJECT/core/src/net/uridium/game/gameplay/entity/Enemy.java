@@ -25,14 +25,17 @@ public class Enemy {
      */
     private Vector2 pathfindingStart;
     /**
+     * The starting coord of the enemy (pathfinding).
+     */
+    private Vector2 pathfindingEnd;
+    /**
      * The next coord for the enemy to travel to (pathfinding).
      */
     private Vector2 nextPoint;
     /**
-     * The goal coord of the enemy (pathfinding).
+     * The pathfinder object (pathfinding).
      */
     private Pathfinder pathfinder;
-    private Vector2 pathfindingEnd;
     public Vector2 lastPos;
     public long lastShot = 0;
     private long reloadTime = 1000;
@@ -111,6 +114,14 @@ public class Enemy {
         this.nextPoint = nextPoint;
     }
 
+    /**
+     *
+     * Converts a pixel to a grid coordinate.
+     *
+     * @param coord The pixel point.
+     *
+     * @return The grid coordinate.
+     */
     public Vector2 pixelToGrid(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
@@ -119,6 +130,14 @@ public class Enemy {
         return new Vector2(x, y);
     }
 
+    /**
+     *
+     * Converts a grid coordinate to a pixel point.
+     *
+     * @param coord The grid coordinate.
+     *
+     * @return The pixel point.
+     */
     public Vector2 gridToPixel(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
@@ -127,6 +146,14 @@ public class Enemy {
         return new Vector2(x, y);
     }
 
+    /**
+     *
+     * Classifies any pixel point into the grid position it is contained in.
+     *
+     * @param coord The pixel point.
+     *
+     * @return The grid coordinate.
+     */
     public Vector2 convertCoord(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
