@@ -201,7 +201,6 @@ public class Pathfinder {
                 route.get(n).y = 76.0f + (route.get(n).y - 1) * 64.0f;
             }
         }
-        System.out.println(grid.toString());
         return route;
     }
 
