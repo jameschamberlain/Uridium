@@ -5,16 +5,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import net.uridium.game.gameplay.tile.*;
+import net.uridium.game.server.ServerLevel;
 
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
 
 public class LevelFactory {
 
-    public static Level buildLevelFromFileHandle(FileHandle fileHandle) {
+    public static ServerLevel buildLevelFromFileHandle(FileHandle fileHandle) {
         String json = fileHandle.readString();
         return buildLevelFromJSON(json);
     }
@@ -24,7 +24,7 @@ public class LevelFactory {
      * @param json The json to create the level from
      * @return The level created
      */
-    public static Level buildLevelFromJSON(String json) {
+    public static ServerLevel buildLevelFromJSON(String json) {
         // GET THE MAIN OBJECT FROM THE JSON FILE
         JsonValue level = new JsonReader().parse(json);
 
@@ -55,11 +55,16 @@ public class LevelFactory {
         }
 
         // GET THE PLAYER SPAWN
-        JsonValue playerSpawn = level.get("playerSpawn");
-        int playerSpawnX =  playerSpawn.getInt("x");
-        int playerSpawnY = playerSpawn.getInt("y");
+        JsonValue jsonPlayerSpawns = level.get("playerSpawns");
+        ArrayList<Vector2> playerSpawns = new ArrayList<>();
+        for(JsonValue playerSpawn : jsonPlayerSpawns.iterator()) {
+            int x = playerSpawn.getInt("x");
+            int y = playerSpawn.getInt("y");
 
-        return new Level(grid, gridWidth, gridHeight, new Vector2((playerSpawnX + 0.5f) * TILE_WIDTH, (playerSpawnY + 0.5f) * TILE_HEIGHT));
+            playerSpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
+        }
+
+        return new ServerLevel(grid, gridWidth, gridHeight, playerSpawns);
     }
 
     /**

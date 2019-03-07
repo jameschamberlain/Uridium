@@ -6,7 +6,7 @@
       "WWWWWWWDWWWWWWW",
       "W             W",
       "W   OOO       W",
-      "W   OOE   OO  W",
+      "W   OOO   OO  W",
       "W         O   W",
       "W             W",
       "W        OO   D",
@@ -15,10 +15,20 @@
       "WWWWWWWWWWWWWWW"
     ]
   },
-  "playerSpawn": {
-    "x": 2,
-    "y": 4
-  },
+  "playerSpawns": [
+    {
+      "x": 2,
+      "y": 4
+    },
+    {
+      "x": 3,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 4
+    }
+  ],
   "enemies": [
     {
       "type": "chicken",
