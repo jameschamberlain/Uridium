@@ -256,7 +256,7 @@ public class Level {
         }
         myFont.draw(batch, "Score \n  " + outputScore,1130,670);
     }
-
+    
     //Calculates the angle to the player is from the enemy
     public float calculateAngleToPlayer(Enemy enemy){
         float playerX = player.lastPos.x;
