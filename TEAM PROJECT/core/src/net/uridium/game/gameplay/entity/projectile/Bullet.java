@@ -14,8 +14,8 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.util.Colors;
 
 public class Bullet extends Projectile {
-    public static final float BULLET_WIDTH = 25;
-    public static final float BULLET_HEIGHT = 25;
+    public static final float BULLET_WIDTH = 200;
+    public static final float BULLET_HEIGHT = 200;
 
     float shootAngle;
 

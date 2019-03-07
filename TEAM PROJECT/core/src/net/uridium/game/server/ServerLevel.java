@@ -64,13 +64,14 @@ public class ServerLevel {
             for(int j = 0; j < gridHeight; j++) {
                 if (grid[i][j].getSpawnTile() == true){
                     if (canSpawn()) {
+                        lastEnemySpawn = System.currentTimeMillis();
                         Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * spawnPos, 40, 40), 1, 1);
                         addEntity(e1);
                         System.out.println(e1.getID());
                         noOfEnemies -= 1;
                         spawnPos += 1;
-                        System.out.println("Enemies Remaining: " + noOfEnemies);
                         lastEnemySpawn = System.currentTimeMillis();
+                        System.out.println("Enemies Remaining: " + noOfEnemies);
                     }
 
                 }
