@@ -5,7 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.uridium.game.screen.GameScreen;
-import net.uridium.game.screen.MenuScreen;
+import net.uridium.game.util.Audio;
+import net.uridium.game.util.Audio.*;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
@@ -29,7 +30,9 @@ public class Uridium extends ApplicationAdapter {
 		Gdx.graphics.setCursor(c);
 		pixmap.dispose();
 
-		getUSMInstance().push(new MenuScreen());
+		getUSMInstance().push(new GameScreen());
+		Audio.getAudioInstance().play(true, "C:\\Users\\Rahul Kalia\\Downloads\\URIDIUM_AUDIO\\background.wav");
+
 	}
 
 	@Override
