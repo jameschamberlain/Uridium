@@ -92,19 +92,19 @@ public class Level {
         enemies.add(new Enemy(204, 332, 40, 40, this));
         // The list of obstacles in the world.
         ArrayList<Vector2> obstacles = new ArrayList<>();
-        obstacles.add(new Vector2(10, 1));
-        obstacles.add(new Vector2(10, 2));
-        obstacles.add(new Vector2(9, 3));
-        obstacles.add(new Vector2(10, 3));
+        obstacles.add(new Vector2(9, 0));
+        obstacles.add(new Vector2(9, 1));
+        obstacles.add(new Vector2(8, 2));
+        obstacles.add(new Vector2(9, 2));
+        obstacles.add(new Vector2(9, 4));
+        obstacles.add(new Vector2(3, 5));
+        obstacles.add(new Vector2(4, 5));
+        obstacles.add(new Vector2(5, 5));
+        obstacles.add(new Vector2(9, 5));
         obstacles.add(new Vector2(10, 5));
+        obstacles.add(new Vector2(3, 6));
         obstacles.add(new Vector2(4, 6));
         obstacles.add(new Vector2(5, 6));
-        obstacles.add(new Vector2(6, 6));
-        obstacles.add(new Vector2(10, 6));
-        obstacles.add(new Vector2(11, 6));
-        obstacles.add(new Vector2(4, 7));
-        obstacles.add(new Vector2(5, 7));
-        obstacles.add(new Vector2(6, 7));
         for (Enemy enemy : enemies) {
             // Setup the pathfinder for the enemies to use.
             enemy.setPathfinder(new Pathfinder(obstacles));

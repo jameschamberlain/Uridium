@@ -26,7 +26,7 @@ public class Pathfinder {
      */
     private int maxY;
     private boolean isBrokenRoute = false;
-    private static final Vector2 GRID_SIZE = new Vector2(15, 10);
+    private static final Vector2 GRID_SIZE = new Vector2(14, 9);
 
 
     /**
@@ -185,8 +185,8 @@ public class Pathfinder {
         // If route breaks, just don't move
         if (isBrokenRoute) {
             route.clear();
-            float tempX =  76.0f + (start.x - 1) * 64.0f;
-            float tempY =  76.0f + (start.y - 1) * 64.0f;
+            float tempX =  140.0f + (start.x - 1) * 64.0f;
+            float tempY =  140.0f + (start.y - 1) * 64.0f;
             route.add(new Vector2(tempX, tempY));
         }
         else {
@@ -197,10 +197,11 @@ public class Pathfinder {
             Collections.reverse(route);
             for (int n = 0; n < route.size(); n++) {
                 // Convert between grid coordinates and pixels
-                route.get(n).x = 76.0f + (route.get(n).x - 1) * 64.0f;
-                route.get(n).y = 76.0f + (route.get(n).y - 1) * 64.0f;
+                route.get(n).x = 140.0f + (route.get(n).x - 1) * 64.0f;
+                route.get(n).y = 140.0f + (route.get(n).y - 1) * 64.0f;
             }
         }
+        System.out.println(grid.toString());
         return route;
     }
 

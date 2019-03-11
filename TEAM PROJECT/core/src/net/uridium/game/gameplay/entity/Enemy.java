@@ -125,8 +125,8 @@ public class Enemy {
     public Vector2 pixelToGrid(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
-        x = ((x-76) / 64) + 1;
-        y = ((y-76) / 64) + 1;
+        x = ((x-140) / 64) + 1;
+        y = ((y-140) / 64) + 1;
         return new Vector2(x, y);
     }
 
@@ -141,8 +141,8 @@ public class Enemy {
     public Vector2 gridToPixel(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
-        x = ((x-1) * 64) + 76;
-        y = ((y-1) * 64) + 76;
+        x = ((x-1) * 64) + 140;
+        y = ((y-1) * 64) + 140;
         return new Vector2(x, y);
     }
 
@@ -157,81 +157,75 @@ public class Enemy {
     public Vector2 convertCoord(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
-        if (x <= 44) {
+        if (x <= 108) {
             x = 0.0f;
         }
-        else if (x <= 108) {
+        else if (x <= 172) {
             x = 1.0f;
         }
-        else if (x <= 172) {
+        else if (x <= 236) {
             x = 2.0f;
         }
-        else if (x <= 236) {
+        else if (x <= 300) {
             x = 3.0f;
         }
-        else if (x <= 300) {
+        else if (x <= 364) {
             x = 4.0f;
         }
-        else if (x <= 364) {
+        else if (x <= 428) {
             x = 5.0f;
         }
-        else if (x <= 428) {
+        else if (x <= 492) {
             x = 6.0f;
         }
-        else if (x <= 492) {
+        else if (x <= 556) {
             x = 7.0f;
         }
-        else if (x <= 556) {
+        else if (x <= 620) {
             x = 8.0f;
         }
-        else if (x <= 620) {
+        else if (x <= 684) {
             x = 9.0f;
         }
-        else if (x <= 684) {
+        else if (x <= 748) {
             x = 10.0f;
         }
-        else if (x <= 748) {
+        else if (x <= 812) {
             x = 11.0f;
         }
-        else if (x <= 812) {
+        else if (x <= 876) {
             x = 12.0f;
         }
-        else if (x <= 876) {
+        else {
             x = 13.0f;
         }
-        else {
-            x = 14.0f;
-        }
 
-        if (y <= 44) {
+        if (y <= 108) {
             y = 0.0f;
         }
-        else if (y <= 108) {
+        else if (y <= 172) {
             y = 1.0f;
         }
-        else if (y <= 172) {
+        else if (y <= 236) {
             y = 2.0f;
         }
-        else if (y <= 236) {
+        else if (y <= 300) {
             y = 3.0f;
         }
-        else if (y <= 300) {
+        else if (y <= 364) {
             y = 4.0f;
         }
-        else if (y <= 364) {
+        else if (y <= 428) {
             y = 5.0f;
         }
-        else if (y <= 428) {
+        else if (y <= 492) {
             y = 6.0f;
         }
-        else if (y <= 492) {
+        else if (y <= 556) {
             y = 7.0f;
         }
-        else if (y <= 556) {
-            y = 8.0f;
-        }
         else {
-            y = 9.0f;
+            y = 8.0f;
         }
         return new Vector2(x, y);
     }
