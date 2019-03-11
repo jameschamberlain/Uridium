@@ -10,7 +10,9 @@ public class Player extends DamageableEntity {
     int score = 0;
 
     public long lastShot = 0;
-    private long reloadTime = 350;
+    private long reloadTime = 250;
+
+    boolean scoreChanged = false;
 
     public Player(int ID, Vector2 spawn) {
         this(ID, spawn, 5, 5);
@@ -24,21 +26,30 @@ public class Player extends DamageableEntity {
         super(ID, new Rectangle(spawn.x, spawn.y, 40, 40), new Vector2(), textureFile, maxHealth, health);
     }
 
-    private void shoot(Vector2 bulletSpawn, float shootAngle) {
-//        level.spawnBullet(new Bullet(bulletSpawn, shootAngle), false);
-//        lastShot = System.currentTimeMillis();
+    public void shoot() {
+        lastShot = System.currentTimeMillis();
     }
 
-    private boolean canShoot() {
+    public boolean canShoot() {
         return System.currentTimeMillis() - lastShot > reloadTime;
     }
 
     public void addScore(int s) {
         score += s;
+        scoreChanged = true;
     }
 
     public void setScore(int s){
         score = s;
+        scoreChanged = true;
+    }
+
+    public boolean isScoreChanged() {
+        return scoreChanged;
+    }
+
+    public void setScoreChangedFalse() {
+        scoreChanged = false;
     }
 
     public int getScore(){

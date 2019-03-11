@@ -33,8 +33,8 @@ public class Bullet extends Projectile {
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, float velocity, String textureFile, int ownerID) {
         super(ID, new Rectangle(spawnPos.x - BULLET_WIDTH / 2, spawnPos.y - BULLET_HEIGHT / 2, BULLET_WIDTH, BULLET_HEIGHT), new Vector2(), textureFile, ownerID);
 
-        vel.x = velocity * (float) Math.sin(Math.toRadians(shootAngle));
-        vel.y = velocity * (float) Math.cos(Math.toRadians(shootAngle));
+        vel.x = velocity * (float) Math.cos(Math.toRadians(shootAngle));
+        vel.y = velocity * (float) Math.sin(Math.toRadians(shootAngle));
     }
 
     public Bullet(int ID, Vector2 spawnPos, Vector2 vel, int ownerID) {

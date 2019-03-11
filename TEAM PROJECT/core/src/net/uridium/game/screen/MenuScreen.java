@@ -5,7 +5,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,8 +21,8 @@ import net.uridium.game.Uridium;
 import net.uridium.game.util.GameConstants;
 import net.uridium.game.util.MyAssetManager;
 
-import static net.uridium.game.Uridium.GAME_HEIGHT;
-import static net.uridium.game.Uridium.GAME_WIDTH;
+import static net.uridium.game.Uridium.*;
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class MenuScreen extends UridiumScreen {
 
@@ -30,11 +32,21 @@ public class MenuScreen extends UridiumScreen {
     private Skin mySkin;
     private Stage stage;
 
+    Texture bgTexture;
+    TextureRegion bg;
+
     public MenuScreen(){
+        setCursor("cursor.png", 0, 0);
+
+        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        bg = new TextureRegion(bgTexture);
+        bg.setRegion(0, 0, 640, 640);
+
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get(GameConstants.skin);
+        mySkin = myAssetManager.manager.get("skin/glassy-ui.json");
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -45,47 +57,69 @@ public class MenuScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Label gameTitle = new Label("GAME MENU",mySkin,"big");
-        gameTitle.setSize(GameConstants.col_width*2,GameConstants.row_height*2);
-        gameTitle.setPosition(GameConstants.centerX - gameTitle.getWidth()/2,GameConstants.centerY + GameConstants.row_height);
+        Label gameTitle = new Label("U R I D I U M",mySkin,"big");
+        gameTitle.setSize(1280, 360);
+        gameTitle.setPosition(0, 360);
+        gameTitle.setFontScale(1.4f);
         gameTitle.setAlignment(Align.center);
 
-        Button startBtn = new TextButton("START GAME",mySkin,"small");
-        startBtn.setSize(GameConstants.col_width*2,GameConstants.row_height);
-        startBtn.setPosition(GameConstants.centerX - startBtn.getWidth()/2,GameConstants.centerY);
+        Button startBtn = new TextButton("P L A Y",mySkin,"small");
+        startBtn.setSize(340,80);
+        startBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
+        ((TextButton) startBtn).getLabel().setFontScale(1.4f);
         startBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//                game.gotoGameScreen();
+                System.out.println("hi");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                super.touchUp(event, x, y, pointer, button);
+                System.out.println("hello");
+                getUSMInstance().push(new GameScreen());
+                super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        Button settingsBtn = new TextButton("SETTINGS",mySkin,"small");
-        settingsBtn.setSize(GameConstants.col_width*2,GameConstants.row_height);
-        settingsBtn.setPosition(GameConstants.centerX - settingsBtn.getWidth()/2,startBtn.getY() - GameConstants.row_height -15);
+        Button settingsBtn = new TextButton("S E T T I N G S",mySkin,"small");
+        settingsBtn.setSize(340, 80);
+        settingsBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
+        ((TextButton) settingsBtn).getLabel().setFontScale(1.4f);
         settingsBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//                game.gotoSettingsScreen();
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //TODO goto settings screen
                 super.touchUp(event, x, y, pointer, button);
             }
         });
 
+        Button exitBtn = new TextButton("E X I T", mySkin, "small");
+        exitBtn.setSize(340, 80);
+        exitBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
+        ((TextButton) exitBtn).getLabel().setFontScale(1.4f);
+        exitBtn.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //TODO exit
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
 
         stage.addActor(gameTitle);
         stage.addActor(startBtn);
         stage.addActor(settingsBtn);
+        stage.addActor(exitBtn);
     }
 
     @Override
@@ -102,6 +136,12 @@ public class MenuScreen extends UridiumScreen {
     public void render() {
         Gdx.gl.glClearColor(1,0,0,0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+        batch.end();
+
         stage.act();
         stage.draw();
     }

@@ -9,9 +9,11 @@ import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.gameplay.entity.projectile.Bullet;
 import net.uridium.game.gameplay.entity.projectile.Projectile;
 import net.uridium.game.gameplay.tile.BreakableTile;
+import net.uridium.game.gameplay.tile.DoorTile;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ServerLevel {
+    int id;
     Tile[][] grid;
     int gridWidth;
     int gridHeight;
@@ -34,7 +37,15 @@ public class ServerLevel {
 
     int nextEntityID;
 
-    public ServerLevel(Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations) {
+    private boolean shouldChangeLevel;
+    private int newLevelId;
+
+    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations) {
+        this(id, grid, gridWidth, gridHeight, playerSpawnLocations, new ArrayList<>());
+    }
+
+    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations, ArrayList<Vector2> initialEnemySpawns) {
+        this.id = id;
         this.grid = grid;
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
@@ -46,7 +57,10 @@ public class ServerLevel {
         entities = new ConcurrentHashMap<>();
         msgs = new LinkedBlockingQueue<>();
 
-        addStartEnemies();
+        for(Vector2 pos : initialEnemySpawns) {
+            Enemy e = new Enemy(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40), 1, 1);
+            addEntity(e);
+        }
     }
 
     /**
@@ -62,19 +76,49 @@ public class ServerLevel {
     }
 
     public int getNextEntityID() {
-        return nextEntityID++;
+        int x = nextEntityID++;
+
+        if(entities.containsKey(x))
+            return getNextEntityID();
+
+        return x;
     }
 
     public void addEntity(Entity entity) {
         entities.put(entity.getID(), entity);
-        if(entity instanceof Player)
+        msgs.add(new Msg(Msg.MsgType.NEW_ENTITY, entity));
+
+        if(entity instanceof Player) {
             playerIDs.add(entity.getID());
 
-        msgs.add(new Msg(Msg.MsgType.NEW_ENTITY, entity));
+            for(Integer i : playerIDs) {
+                Player p = (Player) entities.get(i);
+                msgs.add(new Msg(Msg.MsgType.PLAYER_SCORE, new PlayerScoreData(p.getID(), p.getScore())));
+            }
+        }
     }
+
+    public void addEntities(ArrayList<? extends Entity> entities) {
+        for(Entity entity : entities)
+            addEntity(entity);
+    }
+
 
     public Player getPlayer(int playerID) {
         return (Player) entities.get(playerID);
+    }
+
+    public ArrayList<Player> removePlayers() {
+        ArrayList<Player> players = new ArrayList<>();
+
+        for(int id : playerIDs) {
+            players.add((Player) entities.get(id));
+            entities.remove(id);
+        }
+
+        playerIDs.clear();
+
+        return players;
     }
 
     public void purgeEntities() {
@@ -94,27 +138,12 @@ public class ServerLevel {
         return new LevelData(grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
     }
 
-    public void createBullet(int playerID, PlayerMoveData.Dir dir) {
-        float shootAngle;
-        switch(dir) {
-            case UP:
-                shootAngle = 0;
-                break;
-            case DOWN:
-                shootAngle = 180;
-                break;
-            case LEFT:
-                shootAngle = 270;
-                break;
-            case RIGHT:
-                shootAngle = 90;
-                break;
-            default:
-                shootAngle = 0;
-                break;
-        }
+    public int getID() {
+        return id;
+    }
 
-        Bullet bullet = new Bullet(getNextEntityID(), getPlayer(playerID).getCenter(new Vector2()), shootAngle, playerID);
+    public void createBullet(int playerID, double shootAngle) {
+        Bullet bullet = new Bullet(getNextEntityID(), getPlayer(playerID).getCenter(new Vector2()), (float) shootAngle, playerID);
         addEntity(bullet);
     }
 
@@ -136,6 +165,16 @@ public class ServerLevel {
                             player.setY(player.getLastPos().y);
                         else
                             player.setX(player.getLastPos().x);
+
+                        return true;
+                    }
+                } else if (tile instanceof DoorTile) {
+                    obstacle = tile.getBody();
+                    int dest = ((DoorTile) tile).getDest();
+
+                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                        newLevelId = dest;
+                        shouldChangeLevel = true;
 
                         return true;
                     }
@@ -199,7 +238,9 @@ public class ServerLevel {
                     entityIDsToRemove.add(p.getID());
                     entityIDsToRemove.add(e.getID());
 
-                    getPlayer(p.getOwnerID()).addScore(100);
+                    Player killer = getPlayer(p.getOwnerID());
+                    killer.addScore(100);
+                    msgs.add(new Msg(Msg.MsgType.PLAYER_SCORE, new PlayerScoreData(killer.getID(), killer.getScore())));
                 }
 
                 return true;
@@ -236,5 +277,13 @@ public class ServerLevel {
         }
 
         purgeEntities();
+    }
+
+    public int shouldChangeLevel() {
+        return shouldChangeLevel ? newLevelId : -1;
+    }
+
+    public void dontNeedToChangeAnymore() {
+        shouldChangeLevel = false;
     }
 }

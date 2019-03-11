@@ -22,10 +22,10 @@ public class Level {
     public int gridWidth;
     public int gridHeight;
 
-    public static final float TILE_WIDTH = 64;
-    public static final float TILE_HEIGHT = 64;
-    float xOffset;
-    float yOffset;
+    public static final float TILE_WIDTH = 48;
+    public static final float TILE_HEIGHT = 48;
+    public float xOffset;
+    public float yOffset;
 
     float enemyMoveSpeed = 30;
 
@@ -46,7 +46,7 @@ public class Level {
 
         xOffset = GAME_WIDTH - (gridWidth * TILE_WIDTH);
         xOffset /= 2;
-        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
+        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT) - 80;
         yOffset /= 2;
 
         for(int i = 0; i < gridWidth; i++) {
@@ -77,6 +77,21 @@ public class Level {
     public void replaceTile(ReplaceTileData replaceTileData) {
         replaceTileData.t.loadTexture();
         grid[replaceTileData.x][replaceTileData.y] = replaceTileData.t;
+    }
+
+    public void updateScore(PlayerScoreData playerScoreData) {
+        Player player = (Player) entities.get(playerScoreData.playerID);
+        player.setScore(playerScoreData.score);
+    }
+
+    public void printEntities() {
+        for(Entity e : entities.values()) {
+            System.out.println(e.getID() + " is type " + e.getClass());
+        }
+    }
+
+    public int getPlayerID() {
+        return playerID;
     }
 
     public boolean checkCollisionsForPlayer(Player player) {

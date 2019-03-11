@@ -11,7 +11,7 @@ public class MyAssetManager {
     public final AssetManager manager = new AssetManager();
 
     public void queueAddSkin(){
-        SkinParameter parameter = new SkinParameter(GameConstants.skinAtlas);
-        manager.load(GameConstants.skin,Skin.class,parameter);
+        SkinParameter parameter = new SkinParameter("skin/glassy-ui.atlas");
+        manager.load("skin/glassy-ui.json" ,Skin.class,parameter);
     }
 }
