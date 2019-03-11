@@ -15,6 +15,7 @@ public class Uridium extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+<<<<<<< HEAD
 
 		TextureRegion cursorImage = new TextureRegion(new Texture(Gdx.files.internal("cursor.png")));
 		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -28,6 +29,9 @@ public class Uridium extends ApplicationAdapter {
 		pixmap.dispose();
 
 		getUSMInstance().push(new GameScreen());
+=======
+		getUSMInstance().push(new MenuScreen());
+>>>>>>> 4523ee12b167edf48ea973e7be25ed3990583e85
 	}
 
 	@Override
@@ -37,9 +41,22 @@ public class Uridium extends ApplicationAdapter {
 
 		getUSMInstance().updateAndRender();
 	}
-	
+
 	@Override
 	public void dispose () {
 
+	}
+
+	public static void setCursor(String cursor, int xHotspot, int yHotspot) {
+		TextureRegion cursorImage = new TextureRegion(new Texture(Gdx.files.internal(cursor)));
+		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		if (!cursorImage.getTexture().getTextureData().isPrepared()) {
+			cursorImage.getTexture().getTextureData().prepare();
+		}
+		Pixmap pixmap = cursorImage.getTexture().getTextureData().consumePixmap();
+
+		Cursor c = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+		Gdx.graphics.setCursor(c);
+		pixmap.dispose();
 	}
 }

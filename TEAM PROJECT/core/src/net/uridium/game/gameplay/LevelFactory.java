@@ -1,9 +1,11 @@
 package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import net.uridium.game.gameplay.entity.damageable.Enemy;
 import net.uridium.game.gameplay.tile.*;
 import net.uridium.game.server.ServerLevel;
 
@@ -27,6 +29,9 @@ public class LevelFactory {
     public static ServerLevel buildLevelFromJSON(String json) {
         // GET THE MAIN OBJECT FROM THE JSON FILE
         JsonValue level = new JsonReader().parse(json);
+
+        // GET THE LEVEL ID
+        int id = level.getInt("id");
 
         // GET THE GRID FROM THE JSON FILE
         JsonValue jsonGrid = level.get("grid");
@@ -54,6 +59,16 @@ public class LevelFactory {
             }
         }
 
+        JsonValue jsonDoors = level.get("doors");
+        for(JsonValue jsonDoor : jsonDoors.iterator()) {
+            int x = jsonDoor.getInt("x");
+            int y = jsonDoor.getInt("y");
+            int dest = jsonDoor.getInt("dest");
+
+            DoorTile door = (DoorTile) grid[x][y];
+            door.setDest(dest);
+        }
+
         // GET THE PLAYER SPAWN
         JsonValue jsonPlayerSpawns = level.get("playerSpawns");
         ArrayList<Vector2> playerSpawns = new ArrayList<>();
@@ -64,7 +79,16 @@ public class LevelFactory {
             playerSpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
         }
 
-        return new ServerLevel(grid, gridWidth, gridHeight, playerSpawns);
+        JsonValue jsonEnemySpawns = level.get("enemies");
+        ArrayList<Vector2> enemySpawns = new ArrayList<>();
+        for(JsonValue enemySpawn : jsonEnemySpawns.iterator()) {
+            int x = enemySpawn.getInt("x");
+            int y = enemySpawn.getInt("y");
+
+            enemySpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
+        }
+
+        return new ServerLevel(id, grid, gridWidth, gridHeight, playerSpawns, enemySpawns);
     }
 
     /**

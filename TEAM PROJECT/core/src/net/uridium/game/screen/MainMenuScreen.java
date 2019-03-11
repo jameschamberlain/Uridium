@@ -42,7 +42,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-        System.out.println("MAIN MENU");
+        System.out.println("MENU");
         Gdx.input.setInputProcessor(stage);
         stage.clear();
 

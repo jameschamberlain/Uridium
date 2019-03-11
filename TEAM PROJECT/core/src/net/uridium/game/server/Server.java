@@ -2,10 +2,9 @@ package net.uridium.game.server;
 
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.LevelFactory;
+import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
-import net.uridium.game.server.msg.LevelData;
-import net.uridium.game.server.msg.Msg;
-import net.uridium.game.server.msg.PlayerMoveData;
+import net.uridium.game.server.msg.*;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -13,6 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Server{
@@ -24,7 +24,8 @@ public class Server{
 
     ArrayList<Sender> users;
 
-    ServerLevel level;
+    ConcurrentHashMap<Integer, ServerLevel> levels;
+    ServerLevel currentLevel;
     long lastUpdate;
 
     public Server() throws IOException {
@@ -33,8 +34,13 @@ public class Server{
 
         System.out.println("Creating Level ...");
 
+        levels = new ConcurrentHashMap<>();
+
         File f = new File("level1.json");
-        level = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
+        ServerLevel l = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
+        currentLevel = l;
+        levels.put(l.getID(), l);
+
         lastUpdate = System.currentTimeMillis();
 
         users = new ArrayList<>();
@@ -47,20 +53,56 @@ public class Server{
         while (true) {
             float delta = System.currentTimeMillis() - lastUpdate;
             delta /= 1000;
-            level.update(delta);
+            currentLevel.update(delta);
             lastUpdate = System.currentTimeMillis();
 
             ArrayList<Msg> newMsgs = new ArrayList<>();
-            level.getMsgs().drainTo(newMsgs);
-            if(newMsgs.size() > 0) {
-                System.out.println("Msgs: " + newMsgs.size());
-                for(Msg msg : newMsgs)
-                    System.out.println("\t" + msg.getType().name());
-            }
+            currentLevel.getMsgs().drainTo(newMsgs);
+//            if(newMsgs.size() > 0) {
+//                System.out.println("Msgs: " + newMsgs.size());
+//                for(Msg msg : newMsgs)
+//                    System.out.println("\t" + msg.getType().name());
+//            }
 
             for(Sender s : users)
                 for (Msg msg : newMsgs)
                     s.getMsgQueue().add(msg);
+
+            int id;
+            if((id = currentLevel.shouldChangeLevel()) != -1) {
+                currentLevel.dontNeedToChangeAnymore();
+
+                if(levels.get(id) == null) {
+                    File f = new File("level" + id + ".json");
+                    try {
+                        ServerLevel newLevel = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
+
+                        for(Player p : currentLevel.removePlayers()) {
+                            p.setPosition(newLevel.getNewPlayerSpawn());
+                            newLevel.addEntity(p);
+                        }
+
+                        currentLevel = newLevel;
+                        levels.put(newLevel.getID(), currentLevel);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    ServerLevel newLevel = levels.get(id);
+
+                    for(Player p : currentLevel.removePlayers()) {
+                        p.setPosition(newLevel.getNewPlayerSpawn());
+                        newLevel.addEntity(p);
+                    }
+                    currentLevel = newLevel;
+                }
+
+                for(Sender s : users) {
+                    LevelData levelData = currentLevel.getLevelData();
+                    levelData.playerID = s.getPlayerID();
+                    s.getMsgQueue().add(new Msg(Msg.MsgType.NEW_LEVEL, levelData));
+                }
+            }
 
             try {
                 Thread.sleep(5);
@@ -90,13 +132,13 @@ public class Server{
                     oos = new ObjectOutputStream(s.getOutputStream());
                     ois = new ObjectInputStream(s.getInputStream());
 
-                    playerID = level.getNextEntityID();
-                    Vector2 playerSpawn = level.getNewPlayerSpawn();
+                    playerID = currentLevel.getNextEntityID();
+                    Vector2 playerSpawn = currentLevel.getNewPlayerSpawn();
 
                     Player player = new Player(playerID, playerSpawn);
-                    level.addEntity(player);
+                    currentLevel.addEntity(player);
 
-                    LevelData levelData = level.getLevelData();
+                    LevelData levelData = currentLevel.getLevelData();
                     levelData.playerID = playerID;
                     oos.writeObject(new Msg(Msg.MsgType.NEW_LEVEL, levelData));
                     oos.reset();
@@ -107,6 +149,7 @@ public class Server{
                 Sender sender = new Sender(oos, s, playerID);
                 Receiver receiver = new Receiver(ois, s, playerID);
                 users.add(sender);
+
                 new Thread(sender).start();
                 new Thread(receiver).start();
             }
@@ -124,6 +167,10 @@ public class Server{
             this.playerID = playerID;
         }
 
+        public int getPlayerID() {
+            return playerID;
+        }
+
         @Override
         public void run() {
             boolean connected = true;
@@ -137,25 +184,28 @@ public class Server{
                             PlayerMoveData moveData = (PlayerMoveData) msg.getData();
                             switch(moveData.dir) {
                                 case STOP:
-                                    level.getPlayer(playerID).setVelocity(new Vector2(0, 0));
+                                    currentLevel.getPlayer(playerID).setVelocity(new Vector2(0, 0));
                                     break;
                                 case UP:
-                                    level.getPlayer(playerID).setVelocity(0, 200);
+                                    currentLevel.getPlayer(playerID).setVelocity(0, 200);
                                     break;
                                 case DOWN:
-                                    level.getPlayer(playerID).setVelocity(0, -200);
+                                    currentLevel.getPlayer(playerID).setVelocity(0, -200);
                                     break;
                                 case LEFT:
-                                    level.getPlayer(playerID).setVelocity(-200, 0);
+                                    currentLevel.getPlayer(playerID).setVelocity(-200, 0);
                                     break;
                                 case RIGHT:
-                                    level.getPlayer(playerID).setVelocity(200, 0);
+                                    currentLevel.getPlayer(playerID).setVelocity(200, 0);
                                     break;
                             }
                             break;
                         case PLAYER_SHOOT:
-                            PlayerMoveData shootData = (PlayerMoveData) msg.getData();
-                            level.createBullet(playerID, shootData.dir);
+                            PlayerShootData shootData = (PlayerShootData) msg.getData();
+                            if(currentLevel.getPlayer(playerID).canShoot()){
+                                currentLevel.createBullet(playerID, shootData.angle);
+                                currentLevel.getPlayer(playerID).shoot();
+                            }
                             break;
                     }
                 } catch (ClassNotFoundException e) {
@@ -182,6 +232,10 @@ public class Server{
             msgs = new LinkedBlockingQueue<>();
         }
 
+        public int getPlayerID() {
+            return playerID;
+        }
+
         @Override
         public void run() {
             boolean connected = true;
@@ -191,7 +245,7 @@ public class Server{
                     ArrayList<Msg> msgsToSend = new ArrayList<>();
 
                     if(msgs.drainTo(msgsToSend) > 0) {
-                        System.out.println("Sent " + msgsToSend.size() + " message(s) to player " + playerID);
+//                        System.out.println("Sent " + msgsToSend.size() + " message(s) to player " + playerID);
                         oos.writeObject(msgsToSend);
                         oos.reset();
                     }
