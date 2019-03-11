@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.uridium.game.screen.GameScreen;
+import net.uridium.game.screen.MenuScreen;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
@@ -15,23 +16,7 @@ public class Uridium extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-<<<<<<< HEAD
-
-		TextureRegion cursorImage = new TextureRegion(new Texture(Gdx.files.internal("cursor.png")));
-		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		if (!cursorImage.getTexture().getTextureData().isPrepared()) {
-			cursorImage.getTexture().getTextureData().prepare();
-		}
-		Pixmap pixmap = cursorImage.getTexture().getTextureData().consumePixmap();
-
-		Cursor c = Gdx.graphics.newCursor(pixmap, 0, 0);
-		Gdx.graphics.setCursor(c);
-		pixmap.dispose();
-
-		getUSMInstance().push(new GameScreen());
-=======
 		getUSMInstance().push(new MenuScreen());
->>>>>>> 4523ee12b167edf48ea973e7be25ed3990583e85
 	}
 
 	@Override
@@ -44,7 +29,7 @@ public class Uridium extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
-
+		// FOR LATER USE
 	}
 
 	public static void setCursor(String cursor, int xHotspot, int yHotspot) {

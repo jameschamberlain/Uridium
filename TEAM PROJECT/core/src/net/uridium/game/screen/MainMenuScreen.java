@@ -49,9 +49,9 @@ public class MainMenuScreen implements Screen {
 
 
         this.skin = new Skin();
-        this.skin.addRegions(userInterface.assets.get("ui/uiskin.atlas", TextureAtlas.class));
+        this.skin.addRegions(userInterface.assets.get("skin/glassy-ui.atlas", TextureAtlas.class));
         this.skin.add("default-font", userInterface.font);
-        this.skin.load(Gdx.files.internal("ui/uiskin.json"));
+        this.skin.load(Gdx.files.internal("skin/glassy-ui.json"));
 
 
 

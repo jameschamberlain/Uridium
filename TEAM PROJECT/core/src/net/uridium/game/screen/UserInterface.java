@@ -41,6 +41,7 @@ public class UserInterface extends Game {
 		playScreen = new PlayScreen(this);
 		optionScreen = new OptionScreen(this);
 
+
 		this.setScreen(new LoadingScreen(this));
 	}
 
