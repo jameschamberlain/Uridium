@@ -19,7 +19,7 @@ public class UserInterface extends Game {
 	public BitmapFont font24;
 	public BitmapFont font;
 	public AssetManager assets;
-	public LoadingScreen loadingScreen;
+	//public LoadingScreen loadingScreen;
 	public SplashScreen splashScreen;
 	public MainMenuScreen mainMenuScreen;
 	public PlayScreen playScreen;
@@ -35,14 +35,14 @@ public class UserInterface extends Game {
 		font = new BitmapFont();
 		//initFonts();
 
-		loadingScreen = new LoadingScreen(this);
+		//loadingScreen = new LoadingScreen(this);
 		splashScreen = new SplashScreen(this);
 		mainMenuScreen = new MainMenuScreen(this);
 		playScreen = new PlayScreen(this);
 		optionScreen = new OptionScreen(this);
 
 
-		this.setScreen(new LoadingScreen(this));
+		//this.setScreen(new LoadingScreen(this));
 	}
 
 	@Override
@@ -57,19 +57,10 @@ public class UserInterface extends Game {
 		font.dispose();
 		assets.dispose();
 		this.getScreen().dispose();
-		loadingScreen.dispose();
+		//loadingScreen.dispose();
 		splashScreen.dispose();
 		mainMenuScreen.dispose();
 		playScreen.dispose();
 
 	}
-
-	/*private void initFonts() {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Arcon.ttf"));
-		FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-		params.size = 24;
-		params.color = Color.BLACK;
-		font24 = generator.generateFont(params);
-	}*/
 }
