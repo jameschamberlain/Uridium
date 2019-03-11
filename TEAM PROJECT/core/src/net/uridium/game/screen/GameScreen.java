@@ -77,11 +77,6 @@ public class GameScreen extends UridiumScreen {
         healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
         scoreboard = new Scoreboard();
 
-        scoreboard.setScore(1, 100);
-        scoreboard.setScore(2, -400);
-        scoreboard.setScore(3, 700);
-        scoreboard.setScore(4, 9999);
-
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);

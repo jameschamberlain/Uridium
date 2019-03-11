@@ -1,6 +1,7 @@
 package net.uridium.game.gameplay.ai;
 
-import java.awt.*;
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.Scanner;
 
 public class Grid {
@@ -19,7 +20,6 @@ public class Grid {
     private Object[][] grid;
 
     /**
-     *
      * Constructor for a new grid object
      *
      * @param x The size of the grid in the x-axis
@@ -50,7 +50,6 @@ public class Grid {
 
 
     /**
-     *
      * Adds objects to the grid, including
      * the start position, end position, and
      * any obstacles
@@ -58,8 +57,8 @@ public class Grid {
      * @param object The object to be placed
      */
     void addObject(Object object) {
-        int xCoord = (int) object.getPosition().getX();
-        int yCoord = (int) object.getPosition().getY();
+        int xCoord = (int) object.getPosition().x;
+        int yCoord = (int) object.getPosition().y;
         grid[yCoord][xCoord] = object;
     }
 
@@ -71,7 +70,7 @@ public class Grid {
     private void resetGrid() {
         for (int i = 0; i < y; i++) {
             for (int j = 0; j < x; j++) {
-                grid[i][j] = new Object(ObjectType.PATH, new Point(j, i));
+                grid[i][j] = new Object(ObjectType.PATH, new Vector2(j, i));
             }
         }
     }
@@ -81,7 +80,7 @@ public class Grid {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         String prefix;
-        for (int i = y-1; i >= 0; i--) {
+        for (int i = y - 1; i >= 0; i--) {
             prefix = "";
             for (int j = 0; j < x; j++) {
                 stringBuilder.append(prefix);
@@ -94,7 +93,6 @@ public class Grid {
     }
 
     /**
-     *
      * Checks that the x-coordinate entered
      * by the user is valid
      *
@@ -121,7 +119,6 @@ public class Grid {
 
 
     /**
-     *
      * Checks that the y-coordinate entered
      * by the user is valid
      *
@@ -148,7 +145,6 @@ public class Grid {
 
 
     /**
-     *
      * Get the grid
      *
      * @return The grid
