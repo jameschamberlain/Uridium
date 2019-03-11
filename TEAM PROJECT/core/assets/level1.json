@@ -1,30 +1,48 @@
 {
   "grid": {
-    "width": 15,
+    "width": 20,
     "height": 10,
     "rows": [
-      "WWWWWWWDWWWWWWW",
-      "W             W",
-      "W   OOO       W",
-      "W   OOE   OO  W",
-      "W         O   W",
-      "W             W",
-      "W        OO   D",
-      "W         O   W",
-      "W         O   W",
-      "WWWWWWWWWWWWWWW"
+      "WWWWWWWDWWWWWWWWWWWW",
+      "W                  W",
+      "W        OOO       W",
+      "W        OOO   OO  W",
+      "W              O   W",
+      "W                  W",
+      "W             OO   D",
+      "W              O   W",
+      "W              O   W",
+      "WWWWWWWWWWWWWWWWWWWW"
     ]
   },
-  "playerSpawn": {
-    "x": 2,
-    "y": 4
-  },
+  "playerSpawns": [
+    {
+      "x": 2,
+      "y": 4
+    },
+    {
+      "x": 3,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 4
+    }
+  ],
   "enemies": [
     {
       "type": "chicken",
       "x": 12,
-      "y": 12
+      "y": 4
     }
   ],
-  "name": "The Start"
+  "doors": [
+    {
+      "x": 7,
+      "y": 9,
+      "dest": 2
+    }
+  ],
+  "name": "The Start",
+  "id": 1
 }

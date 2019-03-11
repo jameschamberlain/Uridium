@@ -1,20 +1,22 @@
 package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import net.uridium.game.gameplay.entity.damageable.Enemy;
 import net.uridium.game.gameplay.tile.*;
+import net.uridium.game.server.ServerLevel;
 
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
 
 public class LevelFactory {
 
-    public static Level buildLevelFromFileHandle(FileHandle fileHandle) {
+    public static ServerLevel buildLevelFromFileHandle(FileHandle fileHandle) {
         String json = fileHandle.readString();
         return buildLevelFromJSON(json);
     }
@@ -24,9 +26,12 @@ public class LevelFactory {
      * @param json The json to create the level from
      * @return The level created
      */
-    public static Level buildLevelFromJSON(String json) {
+    public static ServerLevel buildLevelFromJSON(String json) {
         // GET THE MAIN OBJECT FROM THE JSON FILE
         JsonValue level = new JsonReader().parse(json);
+
+        // GET THE LEVEL ID
+        int id = level.getInt("id");
 
         // GET THE GRID FROM THE JSON FILE
         JsonValue jsonGrid = level.get("grid");
@@ -54,12 +59,36 @@ public class LevelFactory {
             }
         }
 
-        // GET THE PLAYER SPAWN
-        JsonValue playerSpawn = level.get("playerSpawn");
-        int playerSpawnX =  playerSpawn.getInt("x");
-        int playerSpawnY = playerSpawn.getInt("y");
+        JsonValue jsonDoors = level.get("doors");
+        for(JsonValue jsonDoor : jsonDoors.iterator()) {
+            int x = jsonDoor.getInt("x");
+            int y = jsonDoor.getInt("y");
+            int dest = jsonDoor.getInt("dest");
 
-        return new Level(grid, gridWidth, gridHeight, new Vector2((playerSpawnX + 0.5f) * TILE_WIDTH, (playerSpawnY + 0.5f) * TILE_HEIGHT));
+            DoorTile door = (DoorTile) grid[x][y];
+            door.setDest(dest);
+        }
+
+        // GET THE PLAYER SPAWN
+        JsonValue jsonPlayerSpawns = level.get("playerSpawns");
+        ArrayList<Vector2> playerSpawns = new ArrayList<>();
+        for(JsonValue playerSpawn : jsonPlayerSpawns.iterator()) {
+            int x = playerSpawn.getInt("x");
+            int y = playerSpawn.getInt("y");
+
+            playerSpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
+        }
+
+        JsonValue jsonEnemySpawns = level.get("enemies");
+        ArrayList<Vector2> enemySpawns = new ArrayList<>();
+        for(JsonValue enemySpawn : jsonEnemySpawns.iterator()) {
+            int x = enemySpawn.getInt("x");
+            int y = enemySpawn.getInt("y");
+
+            enemySpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
+        }
+
+        return new ServerLevel(id, grid, gridWidth, gridHeight, playerSpawns, enemySpawns);
     }
 
     /**
