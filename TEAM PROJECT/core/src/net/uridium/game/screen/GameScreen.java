@@ -168,7 +168,6 @@ public class GameScreen extends UridiumScreen {
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 screenY = GAME_HEIGHT - screenY;
                 shoot(screenX, screenY);
-
                 return true;
             }
         });

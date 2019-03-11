@@ -66,6 +66,8 @@ public class Level {
 
     public void updateEntity(EntityUpdateData entityUpdateData) {
         Entity e = entities.get(entityUpdateData.ID);
+        if(e == null) return;
+
         e.setPosition(entityUpdateData.pos);
         e.setVelocity(entityUpdateData.vel);
     }
@@ -237,32 +239,6 @@ public class Level {
     /*public void spawnBullet(Bullet bullet, Boolean enemyBullet) {
         bullet.setEnemyBullet(enemyBullet);
         bullets.add(bullet);
-    }*/
-
-    //Calculates the angle to the player is from the enemy
-    /*public float calculateAngleToPlayer(Enemy enemy){
-        float playerX = player.lastPos.x;
-        float enemyX =  enemy.getBody().getX();
-        float xDifference = playerX - enemyX;
-
-        float playerY = player.lastPos.y;
-        float enemyY = enemy.getBody().getY();
-        float yDifference = playerY - enemyY;
-
-        double x = xDifference;
-        double y = yDifference;
-
-        float distanceToPlayer = ((float)x * (float)x) + ((float)y*(float)y);
-
-        double a = Math.atan2(x,y);
-        float angle = (float)Math.toDegrees(a);
-
-        if (angle <= 0){
-            angle= angle + 360;
-        }
-        //System.out.println(angle);
-
-        return angle;
     }*/
 
     //Moves the enemy to a new X and Y coordinates

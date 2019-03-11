@@ -3,6 +3,7 @@ package net.uridium.game.server;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.gameplay.ai.Pathfinder;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
@@ -40,7 +41,7 @@ public class ServerLevel {
     int noOfEnemies = 15;
     int spawnPos = 1;
     long lastEnemySpawn = 0;
-    long enemySpawnRate = 800;
+    long enemySpawnRate = 1200;
 
     private boolean shouldChangeLevel;
     private int newLevelId;
@@ -67,7 +68,8 @@ public class ServerLevel {
             addEntity(e);
         }
 
-        spawnEnemies();
+//        lastEnemySpawn = System.currentTimeMillis();
+//        spawnEnemies();
     }
 
     /**
@@ -81,11 +83,10 @@ public class ServerLevel {
                         lastEnemySpawn = System.currentTimeMillis();
                         Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * spawnPos, 40, 40), 1, 1);
                         addEntity(e1);
-                        System.out.println(e1.getID());
+//                        System.out.println(e1.getID());
                         noOfEnemies -= 1;
                         spawnPos += 1;
-                        lastEnemySpawn = System.currentTimeMillis();
-                        System.out.println("Enemies Remaining: " + noOfEnemies);
+//                        System.out.println("Enemies Remaining: " + noOfEnemies);
                     }
 
                 }
@@ -116,6 +117,25 @@ public class ServerLevel {
             for(Integer i : playerIDs) {
                 Player p = (Player) entities.get(i);
                 msgs.add(new Msg(Msg.MsgType.PLAYER_SCORE, new PlayerScoreData(p.getID(), p.getScore())));
+            }
+
+            retargetEnemies();
+        } else if(entity instanceof Enemy) {
+            Enemy enemy = (Enemy) entity;
+            enemy.setPathfinder(new Pathfinder(getObstacleGridPositionList(), gridWidth, gridHeight));
+
+            Player player;
+            if((player = getClosestPlayerToEnemy(enemy)) != null)
+                enemy.setTarget(player);
+        }
+    }
+
+    public void retargetEnemies() {
+        for(Entity e : entities.values()) {
+            if(e instanceof Enemy) {
+                Enemy enemy = (Enemy) e;
+
+                enemy.setTarget(getClosestPlayerToEnemy(enemy));
             }
         }
     }
@@ -185,8 +205,11 @@ public class ServerLevel {
                     if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
                         if(overlap.width > overlap.height)
                             player.setY(player.getLastPos().y);
-                        else
+                        else if(overlap.width < overlap.height)
                             player.setX(player.getLastPos().x);
+                        else {
+                            player.setPosition(player.getLastPos());
+                        }
 
                         return true;
                     }
@@ -216,6 +239,37 @@ public class ServerLevel {
 //                }
 //            }
 //        }
+
+        return false;
+    }
+
+    public boolean checkCollisionsForEnemy(Enemy enemy) {
+        Rectangle enemyBody = enemy.getBody();
+        Rectangle overlap = new Rectangle();
+
+        Tile tile;
+        Rectangle obstacle;
+        for(int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                tile = grid[i][j];
+
+                if(tile.isObstacle() || tile instanceof DoorTile) {
+                    obstacle = tile.getBody();
+
+                    if(Intersector.intersectRectangles(enemyBody, obstacle, overlap)) {
+                        if(overlap.width > overlap.height)
+                            enemy.setY(enemy.getLastPos().y);
+                        else if(overlap.width < overlap.height)
+                            enemy.setX(enemy.getLastPos().x);
+                        else {
+                            enemy.setPosition(enemy.getLastPos());
+                        }
+
+                        return true;
+                    }
+                }
+            }
+        }
 
         return false;
     }
@@ -285,6 +339,45 @@ public class ServerLevel {
         return false;
     }
 
+    public ArrayList<Vector2> getObstacleGridPositionList() {
+        ArrayList<Vector2> positions = new ArrayList<>();
+
+        for(int i = 1; i < gridWidth-1; i++) {
+            for (int j = 1; j < gridHeight-1; j++) {
+                Tile tile = grid[i][j];
+
+                if(tile.isObstacle())
+                    positions.add(new Vector2(tile.getGridX() - 1, tile.getGridY() - 1));
+            }
+        }
+
+        return positions;
+    }
+
+    public Player getClosestPlayerToEnemy(Enemy enemy) {
+        Player closestPlayer = null;
+        float shortestDistance = Float.MAX_VALUE;
+
+        Vector2 enemyPos = new Vector2();
+        enemy.getPosition(enemyPos);
+        Vector2 playerPos = new Vector2();
+        for(Integer playerID : playerIDs) {
+            Player player = (Player) entities.get(playerID);
+            player.getPosition(playerPos);
+
+            float xDif = playerPos.x - enemyPos.x;
+            float yDif = playerPos.y - enemyPos.y;
+            float distance = (float) Math.sqrt(Math.pow(xDif, 2) + Math.pow(yDif, 2));
+
+            if(distance < shortestDistance) {
+                shortestDistance = distance;
+                closestPlayer = player;
+            }
+        }
+
+        return closestPlayer;
+    }
+
     public void update(float delta) {
         for(Entity e : entities.values()) {
             e.update(delta);
@@ -293,6 +386,8 @@ public class ServerLevel {
                 checkCollisionsForPlayer((Player) e);
             else if(e instanceof Projectile)
                 checkCollisionsForProjectile((Projectile) e);
+            else if(e instanceof Enemy)
+                checkCollisionsForEnemy((Enemy) e);
 
             if(e.checkChanged())
                 msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));

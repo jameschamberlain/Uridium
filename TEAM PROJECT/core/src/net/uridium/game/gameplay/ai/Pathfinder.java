@@ -1,14 +1,12 @@
 package net.uridium.game.gameplay.ai;
 
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.gameplay.entity.damageable.Enemy;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
-class Pathfinder {
+public class Pathfinder {
 
 
     /**
@@ -28,20 +26,15 @@ class Pathfinder {
      * The maximum y value in the grid.
      */
     private int maxY;
-
+    private boolean isBrokenRoute = false;
 
     /**
      * Constructor for a new pathfinding object.
      *
-     * @param gridSize  The size of the grid.
-     * @param start     The start position.
-     * @param end       The end position.
      * @param obstacles The list of obstacles.
      */
-    Pathfinder(Vector2 gridSize, Vector2 start, Vector2 end, ArrayList<Vector2> obstacles) {
-        this.grid = new Grid((int) gridSize.x, (int) gridSize.y);
-        grid.addObject(new Object(ObjectType.START, start));
-        grid.addObject(new Object(ObjectType.END, end));
+    public Pathfinder(ArrayList<Vector2> obstacles, int gridWidth, int gridHeight) {
+        this.grid = new Grid(gridWidth - 2, gridHeight - 2);
         for (Vector2 obstacle : obstacles) {
             grid.addObject(new Object(ObjectType.OBSTACLE, obstacle));
         }
@@ -56,11 +49,15 @@ class Pathfinder {
      * through the world from a start node to an
      * end node.
      *
+     * @param start     The start position.
+     * @param end       The end position.
+     *
      * @return An arraylist of coordinates for the route.
      */
-    ArrayList<Vector2> findPath() {
-        // Prints the grid.
-        // System.out.println(grid.toString());
+    public ArrayList<Vector2> findPath(Vector2 start, Vector2 end) {
+        // Add the start and end point to the grid.
+        grid.addObject(new Object(ObjectType.START, start));
+        grid.addObject(new Object(ObjectType.END, end));
         // Setup a list of visible paths.
         PriorityQueue<Object> paths = new PriorityQueue<Object>(10, new sortByF());
         Object currentNode = getStartNode();
@@ -78,8 +75,15 @@ class Pathfinder {
          While the goal has not been reached continue to travel
          through the world.
           */
+        //System.out.println(grid.toString());
         while (!hasReachedGoal) {
-            currentNode.setType(ObjectType.VISITED_PATH);
+            try {
+                currentNode.setType(ObjectType.VISITED_PATH);
+            }
+            catch (NullPointerException e) {
+                isBrokenRoute = true;
+                break;
+            }
             /*
             Use a control flow to check the surrounding nodes for available paths
             while also making sure that the algorithm doesn't attempt to process a node
@@ -159,18 +163,47 @@ class Pathfinder {
              */
             currentNode = paths.poll();
             paths.remove(0);
-            currentNode.setSymbol('Z');
-            if (currentNode.getType() == ObjectType.END) {
-                hasReachedGoal = true;
+            try {
+                if (currentNode.getType() == ObjectType.END) {
+                    hasReachedGoal = true;
+                }
+                else {
+                    currentNode.setSymbol('Z');
+                }
+            }
+            catch (NullPointerException e) {
+//                System.out.println("Problem with route");
+//                System.out.println("start: " + start);
+//                System.out.println("end: " + end);
+//                System.out.println(grid.toString());
+                isBrokenRoute = true;
             }
         }
         // Setup and populate a list of the route found.
         ArrayList<Vector2> route = new ArrayList<>();
-        while (currentNode.getPrecedPoint() != null) {
-            route.add(currentNode.getPosition());
-            currentNode = currentNode.getPrecedPoint();
+        // If route breaks, just don't move
+        if (isBrokenRoute) {
+            route.clear();
+            float tempX =  140.0f + (start.x - 1) * 64.0f;
+            float tempY =  140.0f + (start.y - 1) * 64.0f;
+            route.add(new Vector2(tempX, tempY));
         }
-        Collections.reverse(route);
+        else {
+            while (currentNode.getPrecedPoint() != null) {
+                route.add(currentNode.getPosition());
+                currentNode = currentNode.getPrecedPoint();
+            }
+            Collections.reverse(route);
+            System.out.println(route);
+            for (int n = 0; n < route.size(); n++) {
+                // Convert between grid coordinates and pixels
+                Vector2 inPixels = Enemy.gridToPixel(route.get(n));
+                route.get(n).x = inPixels.x;
+                route.get(n).y = inPixels.y;
+            }
+        }
+        System.out.println(route);
+//        System.out.println(grid.toString());
         return route;
     }
 
@@ -254,6 +287,11 @@ class Pathfinder {
                 }
             }
         }
+    }
+
+
+    public void resetPaths() {
+        grid.resetGrid();
     }
 
 }
