@@ -1,6 +1,7 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import net.uridium.game.Uridium;
 
 import java.util.LinkedList;
 
@@ -8,13 +9,13 @@ public class UridiumScreenManager {
     private static UridiumScreenManager instance = new UridiumScreenManager();
     public static UridiumScreenManager getUSMInstance() { return instance; }
 
-    private LinkedList<UridiumScreen> screens;
+    private LinkedList<Uridium> screens;
 
     private UridiumScreenManager() {
-        screens = new LinkedList<UridiumScreen>();
+        screens = new LinkedList<Uridium>();
     }
 
-    public void push(LoadingScreen screen) {
+    public void push(Uridium screen) {
         screens.push(screen);
     }
 
@@ -34,7 +35,5 @@ public class UridiumScreenManager {
         peek().render();
     }
 
-    public UridiumScreen peek() {
-        return screens.peek();
-    }
+
 }

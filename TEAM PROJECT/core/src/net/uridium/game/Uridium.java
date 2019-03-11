@@ -2,51 +2,32 @@ package net.uridium.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import net.uridium.game.screen.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
+
 public class Uridium extends ApplicationAdapter {
-	public static final String TITLE = "Uridium";
-	public static final float VERSION = .8f;
-	public static final int V_WIDTH = 540;
-	public static final int V_HEIGHT = 480;
-
-	public OrthographicCamera camera;
-	public SpriteBatch batch;
-
-	public BitmapFont font24;
-	public BitmapFont font;
-	public AssetManager assets;
-	public LoadingScreen loadingScreen;
-	public SplashScreen splashScreen;
-	public MainMenuScreen mainMenuScreen;
-	public PlayScreen playScreen;
-	public OptionScreen optionScreen;
+	public static final int GAME_WIDTH = 1280;
+	public static final int GAME_HEIGHT = 720;
 
 	@Override
 	public void create () {
+//		LevelFactory.buildLevel(Gdx.files.internal("level1.json").readString());
 
-		assets = new AssetManager();
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, V_WIDTH, V_HEIGHT);
-		batch = new SpriteBatch();
-		font = new BitmapFont();
-		//initFonts();
+		TextureRegion cursorImage = new TextureRegion(new Texture(Gdx.files.internal("cursor.png")));
+		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		if (!cursorImage.getTexture().getTextureData().isPrepared()) {
+			cursorImage.getTexture().getTextureData().prepare();
+		}
+		Pixmap pixmap = cursorImage.getTexture().getTextureData().consumePixmap();
 
-		loadingScreen = new LoadingScreen(this);
-		splashScreen = new SplashScreen(this);
-		mainMenuScreen = new MainMenuScreen(this);
-		playScreen = new PlayScreen(this);
-		optionScreen = new OptionScreen(this);
+		Cursor c = Gdx.graphics.newCursor(pixmap, 0, 0);
+		Gdx.graphics.setCursor(c);
+		pixmap.dispose();
 
-		//this.setScreen(new LoadingScreen(this));
-		getUSMInstance().push(this.loadingScreen);
+		getUSMInstance().push(new MenuScreen());
 	}
 
 	@Override
