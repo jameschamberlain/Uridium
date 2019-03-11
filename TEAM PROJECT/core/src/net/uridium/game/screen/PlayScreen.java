@@ -1,6 +1,7 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -30,6 +31,7 @@ public class PlayScreen implements Screen {
 
     // Nav-Buttons
     private TextButton buttonBack, Player1, Player2;
+    private String text;
 
 
     public PlayScreen(final UserInterface app) {
@@ -92,7 +94,7 @@ public class PlayScreen implements Screen {
         stage.dispose();
     }
 
-    // Initialize the back button
+    // Initialize the BackButton
     private void NavigationButtons() {
         buttonBack = new TextButton("Back", skin, "default");
         buttonBack.setPosition(200, app.camera.viewportHeight - 310);
@@ -106,8 +108,8 @@ public class PlayScreen implements Screen {
                 System.out.println("BackButton Clicked");
             }
         });
-
-        Player1 = new TextButton("1 Player", skin, "default");
+    //Initialize SinglePlayer Button
+        Player1 = new TextButton("SinglePlayer", skin, "default");
         Player1.setPosition(200, app.camera.viewportHeight - 150);
         Player1.setSize(100, 50);
         Player1.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -119,8 +121,8 @@ public class PlayScreen implements Screen {
                 System.out.println("1Player Clicked");
             }
         });
-
-        Player2 = new TextButton("2 Players", skin, "default");
+    //Intialize Multiplayer Button
+        Player2 = new TextButton("MultiPlayers", skin, "default");
         Player2.setPosition(200, app.camera.viewportHeight - 230);
         Player2.setSize(100, 50);
         Player2.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -128,7 +130,21 @@ public class PlayScreen implements Screen {
         Player2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                app.setScreen(app.mainMenuScreen);
+                //app.setScreen(app.mainMenuScreen);
+                Input.TextInputListener inputListener = new Input.TextInputListener() {
+                    @Override
+                    public void input(String input) {
+                        text = input;
+                        System.out.println(text);
+                    }
+
+                    @Override
+                    public void canceled() {
+
+                    }
+                };
+
+                Gdx.input.getTextInput(inputListener,  "Key", text, "");
                 System.out.println("2Player Clicked");
             }
         });
