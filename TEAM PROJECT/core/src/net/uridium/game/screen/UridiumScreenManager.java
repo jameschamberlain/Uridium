@@ -14,7 +14,7 @@ public class UridiumScreenManager {
         screens = new LinkedList<UridiumScreen>();
     }
 
-    public void push(UridiumScreen screen) {
+    public void push(LoadingScreen screen) {
         screens.push(screen);
     }
 

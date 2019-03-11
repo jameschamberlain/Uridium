@@ -2,18 +2,51 @@ package net.uridium.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
-import net.uridium.game.screen.TempScreen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import net.uridium.game.screen.*;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class Uridium extends ApplicationAdapter {
-	public static final int GAME_WIDTH = 1280;
-	public static final int GAME_HEIGHT = 720;
+	public static final String TITLE = "Uridium";
+	public static final float VERSION = .8f;
+	public static final int V_WIDTH = 540;
+	public static final int V_HEIGHT = 480;
+
+	public OrthographicCamera camera;
+	public SpriteBatch batch;
+
+	public BitmapFont font24;
+	public BitmapFont font;
+	public AssetManager assets;
+	public LoadingScreen loadingScreen;
+	public SplashScreen splashScreen;
+	public MainMenuScreen mainMenuScreen;
+	public PlayScreen playScreen;
+	public OptionScreen optionScreen;
 
 	@Override
 	public void create () {
-		getUSMInstance().push(new TempScreen());
+
+		assets = new AssetManager();
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, V_WIDTH, V_HEIGHT);
+		batch = new SpriteBatch();
+		font = new BitmapFont();
+		//initFonts();
+
+		loadingScreen = new LoadingScreen(this);
+		splashScreen = new SplashScreen(this);
+		mainMenuScreen = new MainMenuScreen(this);
+		playScreen = new PlayScreen(this);
+		optionScreen = new OptionScreen(this);
+
+		//this.setScreen(new LoadingScreen(this));
+		getUSMInstance().push(this.loadingScreen);
 	}
 
 	@Override

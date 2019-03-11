@@ -8,16 +8,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import net.uridium.game.Uridium;
+
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 
 public class LoadingScreen implements Screen {
 
-    private final UserInterface app;
+    private final Uridium app;
 
     private ShapeRenderer shapeRenderer;
     private float progress;
 
-    public LoadingScreen(final UserInterface app) {
+    public LoadingScreen(final Uridium app) {
         this.app = app;
         this.shapeRenderer = new ShapeRenderer();
     }
@@ -38,7 +41,8 @@ public class LoadingScreen implements Screen {
     private void update(float delta) {
         progress = MathUtils.lerp(progress, app.assets.getProgress(), .1f);
         if (app.assets.update() && progress >= app.assets.getProgress() - .001f) {
-            app.setScreen(app.splashScreen);
+           // app.setScreen(app.splashScreen);
+            getUSMInstance().push(app.splashScreen);
         }
     }
 
