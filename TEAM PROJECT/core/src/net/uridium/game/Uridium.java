@@ -15,7 +15,6 @@ public class Uridium extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-//		LevelFactory.buildLevel(Gdx.files.internal("level1.json").readString());
 
 		TextureRegion cursorImage = new TextureRegion(new Texture(Gdx.files.internal("cursor.png")));
 		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -41,6 +40,6 @@ public class Uridium extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
-		// FOR LATER USE
+
 	}
 }
