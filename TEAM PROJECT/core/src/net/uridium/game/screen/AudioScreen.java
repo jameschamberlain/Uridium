@@ -18,7 +18,9 @@ import net.uridium.game.util.MyAssetManager;
 import static net.uridium.game.Uridium.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
-public class SettingsScreen extends MenuScreen {
+public class AudioScreen extends SettingsScreen {
+
+
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
@@ -28,7 +30,7 @@ public class SettingsScreen extends MenuScreen {
     Texture bgTexture;
     TextureRegion bg;
 
-    public SettingsScreen(){
+    public AudioScreen() {
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
@@ -50,50 +52,26 @@ public class SettingsScreen extends MenuScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Button volBtn = new TextButton("VOLUME",mySkin,"small");
-        volBtn.setSize(340,80);
-        volBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
-        ((TextButton) volBtn).getLabel().setFontScale(1.4f);
-        volBtn.addListener(new InputListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Volume Clicked");
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Vol");
-                getUSMInstance().push(new AudioScreen());
-                super.touchDown(event, x, y, pointer, button);
-            }
-        });
-
-
-        Button backBtn = new TextButton("BACK",mySkin,"small");
+        Button backBtn = new TextButton("BACK", mySkin, "small");
         backBtn.setSize(340, 80);
-        backBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
+        backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
         ((TextButton) backBtn).getLabel().setFontScale(1.4f);
-        backBtn.addListener(new InputListener(){
+        backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Back Clicked");
                 return true;
-
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new MenuScreen());
-                super.touchUp(event, x, y, pointer, button);
+                System.out.println("Back");
+                getUSMInstance().push(new SettingsScreen());
+                super.touchDown(event, x, y, pointer, button);
             }
         });
-
         stage.addActor(backBtn);
-        stage.addActor(volBtn);
-
     }
-
     @Override
     public void init() {
 
@@ -117,7 +95,6 @@ public class SettingsScreen extends MenuScreen {
         stage.act();
         stage.draw();
     }
-
     public void dispose() {
         mySkin.dispose();
         stage.dispose();
