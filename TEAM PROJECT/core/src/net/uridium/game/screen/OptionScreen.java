@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
