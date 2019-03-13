@@ -195,6 +195,9 @@ public class GameScreen extends UridiumScreen {
                 level.updateScore(data);
                 scoreboard.setScore(data.playerID, data.score);
                 break;
+            case PLAYER_HEALTH:
+                level.updateHealth((PlayerHealthData) msg.getData());
+                break;
         }
     }
 

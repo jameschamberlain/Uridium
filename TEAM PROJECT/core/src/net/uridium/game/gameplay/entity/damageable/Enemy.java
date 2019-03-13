@@ -63,7 +63,7 @@ public class Enemy extends DamageableEntity {
         if(target == null) return;
 
         // Check whether the route is empty or the player has moved
-        if (getRouteToPlayer().isEmpty()) {
+        if (getRouteToPlayer().isEmpty() || target.getVelocity(new Vector2()).len2() > 0) {
 //                || Math.abs(oldPlayerPos.x - currentPlayerPos.x) > 0
 //                || Math.abs(oldPlayerPos.y - currentPlayerPos.y) > 0) {
 

@@ -15,7 +15,7 @@ public class Player extends DamageableEntity {
     boolean scoreChanged = false;
 
     public Player(int ID, Vector2 spawn) {
-        this(ID, spawn, 5, 5);
+        this(ID, spawn, 100, 100);
     }
 
     public Player(int ID, Vector2 spawn, int maxHealth, int health) {

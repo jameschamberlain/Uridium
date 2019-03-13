@@ -6,12 +6,9 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
-import net.uridium.game.gameplay.entity.projectile.Bullet;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
-import net.uridium.game.server.msg.PlayerMoveData.Dir;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
@@ -84,6 +81,12 @@ public class Level {
     public void updateScore(PlayerScoreData playerScoreData) {
         Player player = (Player) entities.get(playerScoreData.playerID);
         player.setScore(playerScoreData.score);
+    }
+
+    public void updateHealth(PlayerHealthData playerHealthData) {
+        Player player = (Player) entities.get(playerHealthData.playerID);
+        player.setHealth(playerHealthData.health);
+        player.setMaxHealth(playerHealthData.maxHealth);
     }
 
     public void printEntities() {

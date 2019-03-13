@@ -18,6 +18,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -227,18 +228,18 @@ public class ServerLevel {
             }
         }
 
-//        for (Entity e : entities.values()) {
-//            if(e instanceof Player) continue;
-//
-//            if(e instanceof Enemy) {
-//                Enemy enemy = (Enemy) e;
-//
-//                if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
-//
-//                    return true;
-//                }
-//            }
-//        }
+        for (Entity e : entities.values()) {
+            if(e instanceof Enemy) {
+                Enemy enemy = (Enemy) e;
+
+                if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
+                    entityIDsToRemove.add(enemy.getID());
+                    player.damage(10 + 10 * new Random().nextInt(4));
+                    msgs.add(new Msg(Msg.MsgType.PLAYER_HEALTH, new PlayerHealthData(player.getID(), player.getHealth(), player.getMaxHealth())));
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
