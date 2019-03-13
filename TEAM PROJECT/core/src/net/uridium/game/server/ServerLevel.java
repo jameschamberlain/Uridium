@@ -65,9 +65,14 @@ public class ServerLevel {
                 if (grid[i][j].getSpawnTile() == true){
                     if (canSpawn()) {
                         lastEnemySpawn = System.currentTimeMillis();
-                        Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * spawnPos, 40, 40), 1, 1);
+                        Enemy e1;
+                        if (spawnPos % 2 == 0) {
+                            e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY(), 40, 40), 1, 1);
+                        }
+                        else{
+                            e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX(), grid[i][j].getBody().getY() - 75, 40, 40), 1, 1);
+                        }
                         addEntity(e1);
-                        System.out.println(e1.getID());
                         noOfEnemies -= 1;
                         spawnPos += 1;
                         lastEnemySpawn = System.currentTimeMillis();
