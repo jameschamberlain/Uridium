@@ -112,19 +112,19 @@ public class GameScreen extends UridiumScreen {
                         return true;
                     case Input.Keys.UP:
                         sendShootMsg(Dir.UP);
-                        Audio.getAudioInstance().play(false, "C:\\Users\\Rahul Kalia\\Downloads\\URIDIUM_AUDIO\\shoot.wav");
+                        Audio.getAudioInstance().libPlay("audio\\shoot.wav");
                         return true;
                     case Input.Keys.LEFT:
                         sendShootMsg(Dir.LEFT);
-                        Audio.getAudioInstance().play(false, "C:\\Users\\Rahul Kalia\\Downloads\\URIDIUM_AUDIO\\shoot.wav");
+                        Audio.getAudioInstance().libPlay("audio\\shoot.wav");
                         return true;
                     case Input.Keys.DOWN:
                         sendShootMsg(Dir.DOWN);
-                        Audio.getAudioInstance().play(false, "C:\\Users\\Rahul Kalia\\Downloads\\URIDIUM_AUDIO\\shoot.wav");
+                        Audio.getAudioInstance().libPlay("audio\\shoot.wav");
                         return true;
                     case Input.Keys.RIGHT:
                         sendShootMsg(Dir.RIGHT);
-                        Audio.getAudioInstance().play(false, "C:\\Users\\Rahul Kalia\\Downloads\\URIDIUM_AUDIO\\shoot.wav");
+                        Audio.getAudioInstance().libPlay("audio\\shoot.wav");
                         return true;
                 }
 

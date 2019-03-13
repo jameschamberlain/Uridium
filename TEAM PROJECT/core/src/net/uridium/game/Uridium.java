@@ -31,7 +31,7 @@ public class Uridium extends ApplicationAdapter {
 		pixmap.dispose();
 
 		getUSMInstance().push(new GameScreen());
-		Audio.getAudioInstance().play(true, "C:\\Users\\Rahul Kalia\\Downloads\\URIDIUM_AUDIO\\background.wav");
+		Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
 	}
 
