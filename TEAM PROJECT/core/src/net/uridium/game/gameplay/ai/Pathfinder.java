@@ -194,7 +194,7 @@ public class Pathfinder {
                 currentNode = currentNode.getPrecedPoint();
             }
             Collections.reverse(route);
-            System.out.println(route);
+//            System.out.println(route);
             for (int n = 0; n < route.size(); n++) {
                 // Convert between grid coordinates and pixels
                 Vector2 inPixels = Enemy.gridToPixel(route.get(n));
@@ -202,7 +202,7 @@ public class Pathfinder {
                 route.get(n).y = inPixels.y;
             }
         }
-        System.out.println(route);
+//        System.out.println(route);
 //        System.out.println(grid.toString());
         return route;
     }

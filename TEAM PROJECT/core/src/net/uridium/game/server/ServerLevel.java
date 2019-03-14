@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.ai.Pathfinder;
+import net.uridium.game.gameplay.entity.EnemySpawner;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
@@ -24,6 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
+import static net.uridium.game.gameplay.Level.TILE_WIDTH;
+
 public class ServerLevel {
     int id;
     Tile[][] grid;
@@ -39,10 +43,7 @@ public class ServerLevel {
     BlockingQueue<Msg> msgs;
 
     int nextEntityID;
-    int noOfEnemies = 15;
-    int spawnPos = 1;
-    long lastEnemySpawn = 0;
-    long enemySpawnRate = 1200;
+    Random r;
 
     private boolean shouldChangeLevel;
     private int newLevelId;
@@ -51,7 +52,7 @@ public class ServerLevel {
         this(id, grid, gridWidth, gridHeight, playerSpawnLocations, new ArrayList<>());
     }
 
-    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations, ArrayList<Vector2> initialEnemySpawns) {
+    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations, ArrayList<EnemySpawner> spawners) {
         this.id = id;
         this.grid = grid;
         this.gridWidth = gridWidth;
@@ -64,36 +65,14 @@ public class ServerLevel {
         entities = new ConcurrentHashMap<>();
         msgs = new LinkedBlockingQueue<>();
 
-        for(Vector2 pos : initialEnemySpawns) {
-            Enemy e = new Enemy(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40), 1, 1);
-            addEntity(e);
-        }
+        r = new Random();
 
-//        lastEnemySpawn = System.currentTimeMillis();
-//        spawnEnemies();
-    }
-
-    /**
-     * @Deprecated just for testing
-     */
-    public void spawnEnemies() {
-        for(int i = 0; i < gridWidth; i++) {
-            for(int j = 0; j < gridHeight; j++) {
-                if (grid[i][j].getSpawnTile() == true){
-                    if (canSpawn()) {
-                        lastEnemySpawn = System.currentTimeMillis();
-                        Enemy e1 = new Enemy(getNextEntityID(), new Rectangle(grid[i][j].getBody().getX() + 75, grid[i][j].getBody().getY() - 50 * spawnPos, 40, 40), 1, 1);
-                        addEntity(e1);
-//                        System.out.println(e1.getID());
-                        noOfEnemies -= 1;
-                        spawnPos += 1;
-//                        System.out.println("Enemies Remaining: " + noOfEnemies);
-                    }
-
-                }
-            }
+        for(EnemySpawner spawner : spawners) {
+            spawner.setID(getNextEntityID());
+            addEntity(spawner);
         }
     }
+
 
     public Vector2 getNewPlayerSpawn() {
         return playerSpawnLocations.get(playerIDs.size());
@@ -389,27 +368,43 @@ public class ServerLevel {
                 checkCollisionsForProjectile((Projectile) e);
             else if(e instanceof Enemy)
                 checkCollisionsForEnemy((Enemy) e);
+            else if(e instanceof EnemySpawner)
+                handleEnemySpawner((EnemySpawner) e);
 
             if(e.checkChanged())
                 msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
-
-            if (canSpawn()) {
-                spawnEnemies();
-            }
         }
 
         purgeEntities();
+    }
+
+    public void handleEnemySpawner(EnemySpawner spawner) {
+        if(!spawner.canSpawn()) return;
+
+        int x = spawner.getGridX();
+        int y = spawner.getGridY();
+        ArrayList<Vector2> availableTiles = new ArrayList<>();
+
+        for(int i = x - 1; i <= x + 1; i++) {
+            for(int j = y - 1; j <= y + 1; j++) {
+                if(i != x || j != y) {
+                    Tile t = grid[i][j];
+                    if(!t.isObstacle()) availableTiles.add(new Vector2(t.getBody().getX(), t.getBody().getY()));
+                }
+            }
+        }
+
+        Vector2 spawnPos = availableTiles.get(r.nextInt(availableTiles.size()));
+        Enemy e = spawner.spawn(getNextEntityID(), spawnPos);
+        e.setPosition(e.getPosition(new Vector2()).add(new Vector2((TILE_WIDTH - e.getBody().width) / 2, (TILE_HEIGHT - e.getBody().height) / 2)));
+        addEntity(e);
     }
 
     public int shouldChangeLevel() {
         return shouldChangeLevel ? newLevelId : -1;
     }
 
-    public void dontNeedToChangeAnymore() {
+    public void changedLevel() {
         shouldChangeLevel = false;
-    }
-
-    private boolean canSpawn() {
-        return ((System.currentTimeMillis() - lastEnemySpawn > enemySpawnRate) && (noOfEnemies > 0) && playerIDs.size() > 0);
     }
 }

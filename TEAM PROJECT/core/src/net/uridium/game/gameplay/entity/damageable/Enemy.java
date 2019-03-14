@@ -40,10 +40,9 @@ public class Enemy extends DamageableEntity {
      */
     private transient Pathfinder pathfinder;
 
-    private float speed = 125;
+    private float speed = 160;
 
     private transient Player target;
-
 
     public Enemy(int ID, Rectangle body, int maxHealth, int health) {
         super(ID, body, new Vector2(0, 0), "chicken.png", maxHealth, health);

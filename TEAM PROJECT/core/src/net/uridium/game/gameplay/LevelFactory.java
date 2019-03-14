@@ -1,11 +1,10 @@
 package net.uridium.game.gameplay;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import net.uridium.game.gameplay.entity.damageable.Enemy;
+import net.uridium.game.gameplay.entity.EnemySpawner;
 import net.uridium.game.gameplay.tile.*;
 import net.uridium.game.server.ServerLevel;
 
@@ -79,16 +78,16 @@ public class LevelFactory {
             playerSpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
         }
 
-        JsonValue jsonEnemySpawns = level.get("enemies");
-        ArrayList<Vector2> enemySpawns = new ArrayList<>();
-        for(JsonValue enemySpawn : jsonEnemySpawns.iterator()) {
+        JsonValue jsonEnemySpawners = level.get("spawners");
+        ArrayList<EnemySpawner> enemySpawners = new ArrayList<>();
+        for(JsonValue enemySpawn : jsonEnemySpawners.iterator()) {
             int x = enemySpawn.getInt("x");
             int y = enemySpawn.getInt("y");
 
-            enemySpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
+            enemySpawners.add(new EnemySpawner(x, y));
         }
 
-        return new ServerLevel(id, grid, gridWidth, gridHeight, playerSpawns, enemySpawns);
+        return new ServerLevel(id, grid, gridWidth, gridHeight, playerSpawns, enemySpawners);
     }
 
     /**
@@ -107,8 +106,6 @@ public class LevelFactory {
                 return new CrateTile(x, y);
             case 'D':
                 return new DoorTile(x, y);
-            case 'E':
-                return new enemySpawnTile(x, y);
             default:
                 return new GroundTile(x, y);
         }

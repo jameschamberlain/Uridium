@@ -29,11 +29,11 @@
       "y": 4
     }
   ],
-  "enemies": [
+  "spawners": [
     {
       "type": "chicken",
-      "x": 12,
-      "y": 4
+      "x": 11,
+      "y": 6
     }
   ],
   "doors": [
