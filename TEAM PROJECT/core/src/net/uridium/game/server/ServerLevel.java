@@ -39,7 +39,7 @@ public class ServerLevel {
     BlockingQueue<Msg> msgs;
 
     int nextEntityID;
-    int noOfEnemies = 15;
+    int noOfEnemies = 3;
     int spawnPos = 1;
     long lastEnemySpawn = 0;
     long enemySpawnRate = 1200;
