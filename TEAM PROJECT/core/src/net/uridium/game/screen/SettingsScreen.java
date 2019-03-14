@@ -1,10 +1,6 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,42 +11,26 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import net.uridium.game.Uridium;
-import net.uridium.game.util.GameConstants;
 import net.uridium.game.util.MyAssetManager;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
-public class MenuScreen extends UridiumScreen {
-
+public class SettingsScreen extends MenuScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
-
-    public Sound sound;
 
     private Skin mySkin;
     private Stage stage;
 
-    public long id;
-
     Texture bgTexture;
     TextureRegion bg;
 
-
-    public MenuScreen(){
-
-        sound = Gdx.audio.newSound(Gdx.files.internal("SampleAudio.mp3"));
-        id = sound.play(1.0f);
-        sound.loop(1f);
-
-
+    public SettingsScreen(){
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
@@ -72,72 +52,50 @@ public class MenuScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Label gameTitle = new Label("U R I D I U M",mySkin,"big");
-        gameTitle.setSize(1280, 360);
-        gameTitle.setPosition(0, 360);
-        gameTitle.setFontScale(1.4f);
-        gameTitle.setAlignment(Align.center);
-
-        Button startBtn = new TextButton("P L A Y",mySkin,"small");
-        startBtn.setSize(340,80);
-        startBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
-        ((TextButton) startBtn).getLabel().setFontScale(1.4f);
-        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        startBtn.addListener(new InputListener(){
+        Button volBtn = new TextButton("VOLUME",mySkin,"small");
+        volBtn.setSize(340,80);
+        volBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
+        ((TextButton) volBtn).getLabel().setFontScale(1.4f);
+        volBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        volBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("hi");
+                System.out.println("Volume Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("hello");
-                getUSMInstance().push(new GameScreen());
+                System.out.println("Vol");
+                getUSMInstance().push(new AudioScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        Button settingsBtn = new TextButton("S E T T I N G S",mySkin,"small");
-        settingsBtn.setSize(340, 80);
-        settingsBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
-        ((TextButton) settingsBtn).getLabel().setFontScale(1.4f);
-        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        settingsBtn.addListener(new InputListener(){
+
+        Button backBtn = new TextButton("BACK",mySkin,"small");
+        backBtn.setSize(340, 80);
+        backBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
+        ((TextButton) backBtn).getLabel().setFontScale(1.4f);
+        backBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        backBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Back Clicked");
                 return true;
+
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new SettingsScreen());
+                getUSMInstance().push(new MenuScreen());
                 super.touchUp(event, x, y, pointer, button);
             }
         });
 
-        Button exitBtn = new TextButton("E X I T", mySkin, "small");
-        exitBtn.setSize(340, 80);
-        exitBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
-        ((TextButton) exitBtn).getLabel().setFontScale(1.4f);
-        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        exitBtn.addListener(new InputListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
+        stage.addActor(backBtn);
+        stage.addActor(volBtn);
 
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.exit();
-                super.touchUp(event, x, y, pointer, button);
-            }
-        });
-
-        stage.addActor(gameTitle);
-        stage.addActor(startBtn);
-        stage.addActor(settingsBtn);
-        stage.addActor(exitBtn);
     }
 
     @Override

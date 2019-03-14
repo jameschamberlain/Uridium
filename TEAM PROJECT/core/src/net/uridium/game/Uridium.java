@@ -28,7 +28,7 @@ public class Uridium extends ApplicationAdapter {
 
 		getUSMInstance().updateAndRender();
 	}
-	
+
 	@Override
 	public void dispose () {
 		// FOR LATER USE
