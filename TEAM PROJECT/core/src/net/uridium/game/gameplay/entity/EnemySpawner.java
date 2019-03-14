@@ -13,7 +13,7 @@ public class EnemySpawner extends Entity {
 
     int numEnemies = 15;
     long lastSpawn = 0;
-    long spawnRate = 1600;
+    long spawnRate = 4000;
 
     public EnemySpawner(int gridX, int gridY) {
         super(-1, new Rectangle(gridX * TILE_WIDTH, gridY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT), new Vector2(0, 0), "crate_01.png");

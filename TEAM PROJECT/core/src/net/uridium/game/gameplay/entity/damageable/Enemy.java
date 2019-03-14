@@ -40,6 +40,9 @@ public class Enemy extends DamageableEntity {
      */
     private transient Pathfinder pathfinder;
 
+    /**
+     * The speed the enemy travels.
+     */
     private float speed = 160;
 
     private transient Player target;
@@ -55,72 +58,87 @@ public class Enemy extends DamageableEntity {
     @Override
     public void update(float delta) {
         super.update(delta);
-        if(t == null) updatePathfinding(delta);
+        if (t == null) updatePathfinding(delta);
     }
 
-    public void updatePathfinding(float delta) {
-        if(target == null) return;
+    /**
+     *
+     * Updates the pathfinding for the enemy.
+     *
+     * @param delta Delta.
+     */
+    private void updatePathfinding(float delta) {
+        if (target == null) return;
 
-        // Check whether the route is empty or the player has moved
-        if (getRouteToPlayer().isEmpty() || target.getVelocity(new Vector2()).len2() > 0) {
-//                || Math.abs(oldPlayerPos.x - currentPlayerPos.x) > 0
-//                || Math.abs(oldPlayerPos.y - currentPlayerPos.y) > 0) {
+        // Check whether the route is empty or the player has moved.
+        if (routeToPlayer.isEmpty() || target.getVelocity(new Vector2()).len2() > 0) {
 
+            // Reset the pathfinding grid and set the start and end position (converting from pixel to grid).
+            pathfinder.resetPaths();
+            pathfindingStart = convertCoord(new Vector2(getBody().x, getBody().y));
+            pathfindingEnd = convertCoord(new Vector2(target.getBody().x, target.getBody().y));
 
-            // Reset the pathfinding grid and set the start and end position
-
-            getPathfinder().resetPaths();
-            setPathfindingStart(new Vector2(getBody().x, getBody().y));
-            setPathfindingEnd(new Vector2(target.getBody().x, target.getBody().y));
-
-            // Check to see if the desired route is valid e.g. the start doesn't equal the end
-            if (!(getPathfindingStart().equals(getPathfindingEnd()))) {
-                setRouteToPlayer(getPathfinder().findPath(getPathfindingStart(), getPathfindingEnd()));
-//                oldPlayerPos = convertCoord(new Vector2(player.getBody().x, player.getBody().y));
-                setNextPoint(getRouteToPlayer().get(0));
-                getRouteToPlayer().remove(0);
+            // Check to see if the desired route is valid e.g. the start doesn't equal the end.
+            if (!(pathfindingStart.equals(pathfindingEnd))) {
+                routeToPlayer = pathfinder.findPath(pathfindingStart, pathfindingEnd);
+                nextPoint = routeToPlayer.get(0);
+                routeToPlayer.remove(0);
 
                 setVelocityFromAngle(calculateAngleToNextPoint());
             }
         }
 
-        // If the enemy has traveled to the desired coordinate then get the next coordinate in the list
+        // If the enemy has traveled to the desired coordinate then get the next coordinate in the list.
         if (hasReachedNextPoint()) {
-            // Only attempt to get the next point if the list is not empty
-//            System.out.println("FUCK");
-            if (!(getRouteToPlayer().isEmpty())) {
-                setNextPoint(getRouteToPlayer().get(0));
-                getRouteToPlayer().remove(0);
+            // Attempt to get the next point if the list is not empty.
+            if (!(routeToPlayer.isEmpty())) {
+                nextPoint = routeToPlayer.get(0);
+                routeToPlayer.remove(0);
 
                 setVelocityFromAngle(calculateAngleToNextPoint());
-            } else {
+            }
+            else {
                 setVelocity(0, 0);
             }
-        } else {
-//            System.out.println("body.x -> " + Math.ceil(body.x) + " body.y -> " + Math.ceil(body.y) + " next.x -> " + nextPoint.x + " next.y" + nextPoint.y);
         }
     }
 
-    // PATHFINDING SHIZZLE WIZZLE
+    /**
+     *
+     * Sets the target (one of the players).
+     *
+     * @param target The chosen player.
+     */
     public void setTarget(Player target) {
         this.target = target;
     }
 
-    public boolean hasReachedNextPoint() {
+    /**
+     *
+     * Checks whether the enemey has reached te next point in the route.
+     *
+     * @return A boolean denoting whether the next point was reached.
+     */
+    private boolean hasReachedNextPoint() {
         double ceilX = Math.ceil(body.x);
         double floorX = Math.floor(body.x);
         double ceilY = Math.ceil(body.y);
         double floorY = Math.floor(body.y);
 
-        if(ceilX == getNextPoint().x || floorX == getNextPoint().x)
-            if(ceilY == getNextPoint().y || floorY == getNextPoint().y)
+        if (ceilX == nextPoint.x || floorX == nextPoint.x)
+            if (ceilY == nextPoint.y || floorY == nextPoint.y)
                 return true;
 
         return false;
     }
 
-    //Calculates the angle to the player is from the enemy
-    public float calculateAngleToNextPoint(){
+    /**
+     *
+     * Calculates the angle to the player from the enemy.
+     *
+     * @return The angle to the player.
+     */
+    private float calculateAngleToNextPoint() {
         float x = body.x;
         float nextX = nextPoint.x;
         float xDifference = x - nextX;
@@ -134,177 +152,72 @@ public class Enemy extends DamageableEntity {
         return (float) a;
     }
 
-    public void setVelocityFromAngle(float a) {
+    /**
+     *
+     * Sets the velocity from a given angle.
+     *
+     * @param a The angle to the player from the enemy.
+     */
+    private void setVelocityFromAngle(float a) {
         float xVel = -speed * (float) Math.cos(a);
         float yVel = -speed * (float) Math.sin(a);
 
         setVelocity(xVel, yVel);
     }
 
-    public void setRouteToPlayer(ArrayList<Vector2> routeToPlayer) {
-        this.routeToPlayer = routeToPlayer;
-    }
-
-    public ArrayList<Vector2> getRouteToPlayer() {
-        return routeToPlayer;
-    }
-
-    public Vector2 getPathfindingStart() {
-        return pathfindingStart;
-    }
-
-    public void setPathfindingStart(Vector2 pathfindingStart) {
-        this.pathfindingStart = convertCoord(pathfindingStart);
-    }
-
-    public Vector2 getPathfindingEnd() {
-        return pathfindingEnd;
-    }
-
-    public void setPathfindingEnd(Vector2 pathfindingEnd) {
-        this.pathfindingEnd = convertCoord(pathfindingEnd);
-    }
-
-    public Pathfinder getPathfinder() {
-        return pathfinder;
-    }
-
+    /**
+     *
+     * Sets the pathfinding object.
+     *
+     * @param pathfinder The new pathfinder object.
+     */
     public void setPathfinder(Pathfinder pathfinder) {
         this.pathfinder = pathfinder;
     }
 
-    public Vector2 getNextPoint() {
-        return nextPoint;
-    }
-
-    public void setNextPoint(Vector2 nextPoint) {
-        this.nextPoint = nextPoint;
-    }
-
     /**
-     *
      * Converts a pixel to a grid coordinate.
      *
      * @param coord The pixel point.
-     *
      * @return The grid coordinate.
      */
-    public Vector2 pixelToGrid(Vector2 coord) {
+    private Vector2 pixelToGrid(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
-        x = ((x-(2.5f*TILE_WIDTH)) / TILE_WIDTH) + 1;
-        y = ((y-(2.5f*TILE_HEIGHT)) / TILE_HEIGHT) + 1;
+        float a1 = TILE_WIDTH * 2 + ((TILE_WIDTH - body.width) / 2);
+        x = ((x - a1) / TILE_WIDTH) + 1;
+        y = ((y - a1) / TILE_WIDTH) + 1;
         return new Vector2(x, y);
     }
 
     /**
-     *
      * Converts a grid coordinate to a pixel point.
      *
      * @param coord The grid coordinate.
-     *
      * @return The pixel point.
      */
     public static Vector2 gridToPixel(Vector2 coord) {
         float x = coord.x;
         float y = coord.y;
-        x = ((x-1) * TILE_WIDTH) + (2.5f*TILE_WIDTH);
-        y = ((y-1) * TILE_HEIGHT) + (2.5f*TILE_HEIGHT);
+        // USING CONSTANT 40 INSTEAD OF BODY.WIDTH AS REFERENCED FROM STATIC CONTEXT
+        float a1 = TILE_WIDTH * 2 + ((TILE_WIDTH - 40) / 2);
+        x = ((x - 1) * TILE_WIDTH) + a1;
+        y = ((y - 1) * TILE_WIDTH) + a1;
         return new Vector2(x, y);
     }
 
     /**
-     *
      * Classifies any pixel point into the grid position it is contained in.
      *
      * @param coord The pixel point.
-     *
      * @return The grid coordinate.
      */
-    public Vector2  convertCoord(Vector2 coord) {
+    private Vector2 convertCoord(Vector2 coord) {
+        coord = pixelToGrid(coord);
+        coord.x = Math.round(coord.x);
+        coord.y = Math.round(coord.y);
         float x = coord.x;
         float y = coord.y;
-        x -= TILE_WIDTH * 1.5;
-        x -= (TILE_WIDTH - body.width) / 2;
-        x /= TILE_WIDTH;
-        x -= (x%1);
-        x += 1;
-
-        y -= TILE_HEIGHT * 1.5;
-        y -= (TILE_HEIGHT - body.height) / 2;
-        y /= TILE_HEIGHT;
-        y -= (y%1);
-        y += 1;
-//        if (x <= 76) {
-//            x = 0.0f;
-//        }
-//        else if (x <= 172) {
-//            x = 1.0f;
-//        }
-//        else if (x <= 236) {
-//            x = 2.0f;
-//        }
-//        else if (x <= 300) {
-//            x = 3.0f;
-//        }
-//        else if (x <= 364) {
-//            x = 4.0f;
-//        }
-//        else if (x <= 428) {
-//            x = 5.0f;
-//        }
-//        else if (x <= 492) {
-//            x = 6.0f;
-//        }
-//        else if (x <= 556) {
-//            x = 7.0f;
-//        }
-//        else if (x <= 620) {
-//            x = 8.0f;
-//        }
-//        else if (x <= 684) {
-//            x = 9.0f;
-//        }
-//        else if (x <= 748) {
-//            x = 10.0f;
-//        }
-//        else if (x <= 812) {
-//            x = 11.0f;
-//        }
-//        else if (x <= 876) {
-//            x = 12.0f;
-//        }
-//        else {
-//            x = 13.0f;
-//        }
-
-//        if (y <= 108) {
-//            y = 0.0f;
-//        }
-//        else if (y <= 172) {
-//            y = 1.0f;
-//        }
-//        else if (y <= 236) {
-//            y = 2.0f;
-//        }
-//        else if (y <= 300) {
-//            y = 3.0f;
-//        }
-//        else if (y <= 364) {
-//            y = 4.0f;
-//        }
-//        else if (y <= 428) {
-//            y = 5.0f;
-//        }
-//        else if (y <= 492) {
-//            y = 6.0f;
-//        }
-//        else if (y <= 556) {
-//            y = 7.0f;
-//        }
-//        else {
-//            y = 8.0f;
-//        }
-        return new Vector2(x, y);
+        return coord;
     }
 }

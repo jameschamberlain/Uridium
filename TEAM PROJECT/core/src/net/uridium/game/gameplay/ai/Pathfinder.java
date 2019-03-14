@@ -6,6 +6,8 @@ import net.uridium.game.gameplay.entity.damageable.Enemy;
 import java.awt.*;
 import java.util.*;
 
+import static net.uridium.game.gameplay.Level.TILE_WIDTH;
+
 public class Pathfinder {
 
 
@@ -184,8 +186,8 @@ public class Pathfinder {
         // If route breaks, just don't move
         if (isBrokenRoute) {
             route.clear();
-            float tempX =  140.0f + (start.x - 1) * 64.0f;
-            float tempY =  140.0f + (start.y - 1) * 64.0f;
+            float tempX =  140.0f + (start.x - 1) * TILE_WIDTH;
+            float tempY =  140.0f + (start.y - 1) * TILE_WIDTH;
             route.add(new Vector2(tempX, tempY));
         }
         else {
@@ -194,16 +196,13 @@ public class Pathfinder {
                 currentNode = currentNode.getPrecedPoint();
             }
             Collections.reverse(route);
-//            System.out.println(route);
             for (int n = 0; n < route.size(); n++) {
                 // Convert between grid coordinates and pixels
-                Vector2 inPixels = Enemy.gridToPixel(route.get(n));
-                route.get(n).x = inPixels.x;
-                route.get(n).y = inPixels.y;
+                Vector2 convertedCoord = Enemy.gridToPixel(route.get(n));
+                route.get(n).x = convertedCoord.x;
+                route.get(n).y = convertedCoord.y;
             }
         }
-//        System.out.println(route);
-//        System.out.println(grid.toString());
         return route;
     }
 
