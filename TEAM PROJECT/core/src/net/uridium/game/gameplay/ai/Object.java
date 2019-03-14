@@ -181,6 +181,7 @@ public class Object {
 
     @Override
     public String toString() {
+        System.out.println("hi");
         float x = position.x;
         float y = position.y;
         return "(" + x + ", " + y + ")";

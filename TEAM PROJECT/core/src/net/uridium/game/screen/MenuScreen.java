@@ -33,24 +33,14 @@ public class MenuScreen extends UridiumScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
-    public Sound sound;
-
     private Skin mySkin;
     private Stage stage;
-
-    public long id;
 
     Texture bgTexture;
     TextureRegion bg;
 
 
     public MenuScreen(){
-
-        sound = Gdx.audio.newSound(Gdx.files.internal("SampleAudio.mp3"));
-        id = sound.play(1.0f);
-        sound.loop(1f);
-
-
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
@@ -82,7 +72,7 @@ public class MenuScreen extends UridiumScreen {
         startBtn.setSize(340,80);
         startBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
         ((TextButton) startBtn).getLabel().setFontScale(1.4f);
-        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+//        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         startBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -102,7 +92,7 @@ public class MenuScreen extends UridiumScreen {
         settingsBtn.setSize(340, 80);
         settingsBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
         ((TextButton) settingsBtn).getLabel().setFontScale(1.4f);
-        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+//        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         settingsBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -120,7 +110,7 @@ public class MenuScreen extends UridiumScreen {
         exitBtn.setSize(340, 80);
         exitBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
         ((TextButton) exitBtn).getLabel().setFontScale(1.4f);
-        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+//        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         exitBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

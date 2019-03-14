@@ -3,7 +3,6 @@ package net.uridium.game.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import net.uridium.game.Uridium;
-import net.uridium.game.screen.UserInterface;
 import net.uridium.game.server.Server;
 
 import java.io.IOException;

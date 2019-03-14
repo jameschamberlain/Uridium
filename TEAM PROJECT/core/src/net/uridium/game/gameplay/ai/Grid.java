@@ -29,7 +29,7 @@ public class Grid {
         this.x = x;
         this.y = y;
         this.grid = new Object[y][x];
-        resetGrid();
+        setupGrid();
     }
 
     int getX() {
@@ -63,14 +63,24 @@ public class Grid {
     }
 
 
+    private void setupGrid() {
+        for (int i = 0; i < y; i++) {
+            for (int j = 0; j < x; j++) {
+                grid[i][j] = new Object(ObjectType.PATH, new Vector2(j, i));
+            }
+        }
+    }
+
     /**
      * Resets the grid to a state of all paths,
      * hence there are no objects on the grid
      */
-    private void resetGrid() {
+    void resetGrid() {
         for (int i = 0; i < y; i++) {
             for (int j = 0; j < x; j++) {
-                grid[i][j] = new Object(ObjectType.PATH, new Vector2(j, i));
+                if (grid[i][j].getSymbol() == 'S' || grid[i][j].getSymbol() == 'E' || grid[i][j].getSymbol() == 'Z') {
+                    grid[i][j] = new Object(ObjectType.PATH, new Vector2(j, i));
+                }
             }
         }
     }

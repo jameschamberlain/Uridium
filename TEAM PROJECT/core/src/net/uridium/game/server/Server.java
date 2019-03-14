@@ -2,7 +2,6 @@ package net.uridium.game.server;
 
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.LevelFactory;
-import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.server.msg.*;
 
@@ -70,7 +69,7 @@ public class Server{
 
             int id;
             if((id = currentLevel.shouldChangeLevel()) != -1) {
-                currentLevel.dontNeedToChangeAnymore();
+                currentLevel.changedLevel();
 
                 if(levels.get(id) == null) {
                     File f = new File("level" + id + ".json");
