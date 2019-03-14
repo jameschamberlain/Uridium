@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.util.MyAssetManager;
+import net.uridium.game.screen.MenuScreen;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
@@ -40,6 +41,7 @@ public class AudioScreen extends SettingsScreen {
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
 
+
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
@@ -52,6 +54,73 @@ public class AudioScreen extends SettingsScreen {
 
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
+
+
+        Button plusBtn = new TextButton("  +  ", mySkin, "small");
+        plusBtn.setSize(80, 40);
+        plusBtn.setPosition((GAME_WIDTH + 100)/2 , (GAME_HEIGHT +50 )/2);
+        ((TextButton) plusBtn).getLabel().setFontScale(1.4f);
+       // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        plusBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Plus Clicked");
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Plus");
+                //getUSMInstance().push(new SettingsScreen());
+                super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+
+        Button minusBtn = new TextButton("  -  ", mySkin, "small");
+        minusBtn.setSize(80, 40);
+        minusBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +50 )/2);
+        ((TextButton) minusBtn).getLabel().setFontScale(1.4f);
+        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        minusBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Minus Clicked");
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Minus");
+                //getUSMInstance().push(new SettingsScreen());
+                super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+        Button pauseBtn = new TextButton(" ||  ", mySkin, "small");
+        pauseBtn.setSize(80, 40);
+        pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
+        ((TextButton) pauseBtn).getLabel().setFontScale(1.4f);
+        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        pauseBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Pause Clicked");
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Pause");
+                //getUSMInstance().push(new SettingsScreen());
+                sound.pause(id);
+                super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+
+
+
 
 
         Button backBtn = new TextButton("BACK", mySkin, "small");
@@ -74,6 +143,9 @@ public class AudioScreen extends SettingsScreen {
             }
         });
         stage.addActor(backBtn);
+        stage.addActor(plusBtn);
+        stage.addActor(minusBtn);
+        stage.addActor(pauseBtn);
     }
     @Override
     public void init() {

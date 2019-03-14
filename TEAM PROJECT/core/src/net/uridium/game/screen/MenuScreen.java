@@ -3,6 +3,8 @@ package net.uridium.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -31,13 +33,24 @@ public class MenuScreen extends UridiumScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
+    public Sound sound;
+
     private Skin mySkin;
     private Stage stage;
+
+    public long id;
 
     Texture bgTexture;
     TextureRegion bg;
 
+
     public MenuScreen(){
+
+        sound = Gdx.audio.newSound(Gdx.files.internal("SampleAudio.mp3"));
+        id = sound.play(1.0f);
+        sound.loop(1f);
+
+
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
