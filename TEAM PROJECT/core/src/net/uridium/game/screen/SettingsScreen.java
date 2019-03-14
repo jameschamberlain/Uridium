@@ -51,7 +51,6 @@ public class SettingsScreen extends MenuScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-
         Button volBtn = new TextButton("VOLUME",mySkin,"small");
         volBtn.setSize(340,80);
         volBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);

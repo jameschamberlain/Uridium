@@ -80,11 +80,13 @@ public class LevelFactory {
 
         JsonValue jsonEnemySpawners = level.get("spawners");
         ArrayList<EnemySpawner> enemySpawners = new ArrayList<>();
-        for(JsonValue enemySpawn : jsonEnemySpawners.iterator()) {
-            int x = enemySpawn.getInt("x");
-            int y = enemySpawn.getInt("y");
+        if(jsonEnemySpawners.size > 0) {
+            for (JsonValue enemySpawn : jsonEnemySpawners.iterator()) {
+                int x = enemySpawn.getInt("x");
+                int y = enemySpawn.getInt("y");
 
-            enemySpawners.add(new EnemySpawner(x, y));
+                enemySpawners.add(new EnemySpawner(x, y));
+            }
         }
 
         return new ServerLevel(id, grid, gridWidth, gridHeight, playerSpawns, enemySpawners);
