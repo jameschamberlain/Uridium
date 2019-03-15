@@ -1,202 +1,186 @@
 package net.uridium.game.gameplay;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import net.uridium.game.gameplay.entity.Bullet;
-import net.uridium.game.gameplay.entity.Player;
-import net.uridium.game.gameplay.entity.Enemy;
-import net.uridium.game.gameplay.entity.myPackage;
-import net.uridium.game.util.Colors;
+import net.uridium.game.gameplay.entity.Entity;
+import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.gameplay.tile.Tile;
+import net.uridium.game.server.msg.*;
 
-import javax.sound.sampled.Clip;
-import java.io.*;
-import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
 public class Level {
-    private myPackage aPackage;
-
+    Tile[][] grid;
     public int gridWidth;
     public int gridHeight;
 
-    public static final float TILE_WIDTH = 64;
-    public static final float TILE_HEIGHT = 64;
+    public static final float TILE_WIDTH = 48;
+    public static final float TILE_HEIGHT = 48;
+    public float xOffset;
+    public float yOffset;
 
-    ArrayList<String> rows;
-    public Tile[][] grid;
+    float enemyMoveSpeed = 30;
 
-    float xOffset;
-    float yOffset;
+    ConcurrentHashMap<Integer, Entity> entities;
+    int playerID;
 
-    Player player;
-    Vector2 playerSpawn;
+//    String outputScore;
+//    BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
 
-    Texture enemyTexture;
+    public Level(LevelData levelData) {
+        entities = new ConcurrentHashMap<>();
 
-    Socket s;
-    PrintStream ps;
-    ObjectInputStream oi;
-
-    HashMap<Integer,Vector2> players;
-    ArrayList<Bullet> bullets;
-    ArrayList<Bullet> bulletsToRemove;
-    ArrayList<Rectangle> enemies;
-    ArrayList<Rectangle> enemiesToRemove;
-
-    public Level(FileHandle fileHandle) {
-        //Client Service starts
-        int port=0;
-        try {
-            Socket s = new Socket("127.0.0.1",9966);
-            PrintStream ps = new PrintStream(s.getOutputStream());
-            ps.println(9998);
-            System.out.println("Sent!!!");
-            BufferedReader bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            port = Integer.valueOf(bfr.readLine());
-            System.out.println("receive"+port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            new Server(port);
-            System.out.println("Server Starts");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            s = new Socket("127.0.0.1",port);
-            ps = new PrintStream(s.getOutputStream());
-            oi = new ObjectInputStream(s.getInputStream());
-            aPackage = null;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        bullets = new ArrayList<>();
-        bulletsToRemove = new ArrayList<>();
-        enemies = new ArrayList<>();
-        enemiesToRemove = new ArrayList<>();
-
-        rows = new ArrayList<>();
-
-        try {
-            String line;
-            BufferedReader reader = fileHandle.reader(2048);
-            while((line = reader.readLine()) != null){
-                rows.add(line);
-            }
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        players = new HashMap<Integer, Vector2>();
-    }
-
-    public void init() {
-
-        enemyTexture = new Texture(Gdx.files.internal("chicken.png"));
-
-        gridHeight = rows.size();
-        gridWidth = rows.get(0).length();
-
-        grid = new Tile[gridWidth][gridHeight];
+        this.grid = levelData.grid;
+        this.gridWidth = levelData.gridWidth;
+        this.gridHeight = levelData.gridHeight;
+        this.entities.putAll(levelData.entities);
+        this.playerID = levelData.playerID;
 
         xOffset = GAME_WIDTH - (gridWidth * TILE_WIDTH);
         xOffset /= 2;
-        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT);
+        yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT) - 80;
         yOffset /= 2;
 
-        initEnemies();
-
-        Texture tileTexture;
-        String row;
-        boolean isObstacle = false;
-        for(int j = 0; j < gridHeight; j++) {
-            row = rows.get(j);
-            for(int i = 0; i < gridWidth; i++) {
-                char c = row.charAt(i);
-                isObstacle = false;
-
-                switch(c) {
-                    case 'W':
-                        tileTexture = new Texture(Gdx.files.internal("block_04.png"));
-                        isObstacle = true;
-                        break;
-                    case 'O':
-                        tileTexture = new Texture(Gdx.files.internal("crate_08.png"));
-                        isObstacle = true;
-                        break;
-                    case 'D':
-                        tileTexture = new Texture(Gdx.files.internal("ground_03.png"));
-                        break;
-                    case 'P':
-                        playerSpawn = new Vector2(xOffset + i * TILE_WIDTH, yOffset + j * TILE_HEIGHT);
-                        System.out.println("Before Send");
-                        System.out.println(playerSpawn.x+" "+playerSpawn.y);
-                        ps.println(playerSpawn.x+" "+playerSpawn.y);
-                        System.out.println("After Send");
-                    default:
-                        tileTexture = new Texture(Gdx.files.internal("ground_06.png"));
-                        break;
-                }
-
-                grid[i][gridHeight - 1 - j] = new Tile(i, gridHeight - 1 - j, tileTexture, xOffset, yOffset, isObstacle);
+        for(int i = 0; i < gridWidth; i++) {
+            for(int j = 0; j < gridHeight; j++) {
+                grid[i][j].loadTexture();
             }
         }
 
-        //Get Init data
-        new Thread(()-> {
-            while(true){
-                try {
-                    aPackage = (myPackage) oi.readObject();
-                    players = aPackage.getPlayers();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+        for(Entity e : entities.values())
+            e.loadTexture();
+    }
+
+    public void addEntity(Entity e) {
+        entities.put(e.getID(), e);
+        e.loadTexture();
+    }
+
+    public void updateEntity(EntityUpdateData entityUpdateData) {
+        Entity e = entities.get(entityUpdateData.ID);
+        if(e == null) return;
+
+        e.setPosition(entityUpdateData.pos);
+        e.setVelocity(entityUpdateData.vel);
+    }
+
+    public void removeEntity(RemoveEntityData removeEntityData) {
+        entities.remove(removeEntityData.entityID);
+    }
+
+    public void replaceTile(ReplaceTileData replaceTileData) {
+        replaceTileData.t.loadTexture();
+        grid[replaceTileData.x][replaceTileData.y] = replaceTileData.t;
+    }
+
+    public void updateScore(PlayerScoreData playerScoreData) {
+        Player player = (Player) entities.get(playerScoreData.playerID);
+        player.setScore(playerScoreData.score);
+    }
+
+    public void updateHealth(PlayerHealthData playerHealthData) {
+        Player player = (Player) entities.get(playerHealthData.playerID);
+        player.setHealth(playerHealthData.health);
+        player.setMaxHealth(playerHealthData.maxHealth);
+    }
+
+    public void printEntities() {
+        for(Entity e : entities.values()) {
+            System.out.println(e.getID() + " is type " + e.getClass());
+        }
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public boolean checkCollisionsForPlayer(Player player) {
+        Rectangle playerBody = player.getBody();
+        Rectangle overlap = new Rectangle();
+
+        Tile tile;
+        Rectangle obstacle;
+        for(int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                tile = grid[i][j];
+
+                if(tile.isObstacle()) {
+                    obstacle = tile.getBody();
+
+                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                        if(overlap.width > overlap.height)
+                            player.setY(player.getLastPos().y);
+                        else
+                            player.setX(player.getLastPos().x);
+
+                        return true;
+                    }
                 }
             }
-        }).start();
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("The size is "+players.size());
-        players = aPackage.getPlayers();
-        for(Vector2 p : players.values()){
-            player = new Player(p.x, p.y, 55, 55, this);
-            //Gdx.input.setInputProcessor(player);
         }
 
+        return false;
     }
 
-    public void initEnemies() {
-        enemies.add(new Rectangle(180, 250, 40, 40));
-        enemies.add(new Rectangle(220, 330, 40, 40));
+    public Player getPlayer() {
+        return (Player) entities.get(playerID);
     }
 
-    public boolean checkPlayerCollisions() {
+    public void update(float delta) {
+        for(Entity e : entities.values()) {
+            e.update(delta);
+
+            if (e instanceof Player)
+                checkCollisionsForPlayer((Player) e);
+        }
+
+        //bottom two values are temporary
+//        float newX = 200;
+//        float newY = 300;
+//        float shootAngle;
+//        for(Enemy enemy : enemies) {
+//            shootAngle = calculateAngleToPlayer(enemy);
+//            if(enemy.canShoot()){
+//                enemy.shoot(shootAngle);
+//            }
+//            //call to james' function to provide update to newx and newy
+//            moveEnemy(enemy, newX, newY, delta);
+//        }
+
+//        checkBulletCollisions();
+//        purgeBullets();
+//        purgeEnemies();
+    }
+
+    public void render(SpriteBatch batch) {
+        Matrix4 matrix4 = batch.getProjectionMatrix();
+        matrix4.translate(xOffset, yOffset, 0);
+        batch.setProjectionMatrix(matrix4);
+
+        for(int i = 0; i < gridWidth; i++) {
+            for(int j = 0; j < gridHeight; j++) {
+                grid[i][j].render(batch);
+            }
+        }
+
+        for(Entity e : entities.values())
+            e.render(batch);
+
+//        matrix4 = batch.getProjectionMatrix();
+//        matrix4.translate(-xOffset, -yOffset, 0);
+//        batch.setProjectionMatrix(matrix4);
+//        if (player.getIsDead()){
+//            myFont.draw(batch, "YOU'RE DEAD BITCH",500,500);
+//        }
+//        myFont.draw(batch, "Score \n  " + outputScore,1130,670);
+    }
+
+    /*public boolean checkPlayerCollisions() {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
 
@@ -206,7 +190,7 @@ public class Level {
                     for (int j = 0; j < gridHeight; j++) {
                         tile = grid[i][j];
 
-                if(tile.isObstacle) {
+                if(tile.isObstacle()) {
                     obstacle = tile.getBody();
 
                     if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
@@ -224,111 +208,57 @@ public class Level {
             }
         }
 
-        return false;
-    }
+        for (Enemy enemy : enemies) {
+            if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
+                Rectangle playerBodyOldX = new Rectangle(player.lastPos.x, playerBody.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldX))
+                    player.goToLastXPos();
 
-    public void checkBulletCollisions() {
-        for(Bullet bullet : bullets)
-            checkBullet(bullet);
-    }
+                Rectangle playerBodyOldY = new Rectangle(playerBody.x, player.lastPos.y, playerBody.width, playerBody.height);
+                if (!overlap.overlaps(playerBodyOldY))
+                    player.goToLastYPos();
 
-    public boolean checkBullet(Bullet bullet) {
-        Rectangle bulletBody = bullet.getBody();
-        Rectangle overlap = new Rectangle();
-
-        Tile tile;
-        Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                tile = grid[i][j];
-
-                if(tile.isObstacle) {
-                    obstacle = tile.getBody();
-
-                    if(Intersector.intersectRectangles(bulletBody, obstacle, overlap)) {
-                        bulletsToRemove.add(bullet);
-                        return true;
-                    }
-                }
-            }
-        }
-
-        for (Rectangle enemy : enemies){
-            if(Intersector.intersectRectangles(bulletBody, enemy, overlap)) {
-                bulletsToRemove.add(bullet);
-                enemiesToRemove.add(enemy);
                 return true;
             }
         }
 
         return false;
-    }
+    }*/
 
-    public void update(float delta) {
-        //player.getBody().getPosition(player.getLastPos());
+    /**/
 
-        //Rectangle body = player.getBody();
-        float moveSpeed = player.getMoveSpeed();
-        if(Gdx.input.isKeyPressed(Input.Keys.W))
-            player.setLastPosY(player.getLastPos().y += moveSpeed * delta);
-        if(Gdx.input.isKeyPressed(Input.Keys.A))
-            player.setLastPosX(player.getLastPos().x -= moveSpeed * delta);
-        if(Gdx.input.isKeyPressed(Input.Keys.S))
-            player.setLastPosY(player.getLastPos().y -= moveSpeed * delta);
-        if(Gdx.input.isKeyPressed(Input.Keys.D))
-            player.setLastPosX(player.getLastPos().x += moveSpeed * delta);
+    /**/
 
+    /*private void purgeBullets() {
+        bullets.removeAll(bulletsToRemove);
+        bulletsToRemove.clear();
+    }*/
 
-        System.out.println("InputProcessor sent "+player.getLastPos().x+"-----"+player.getLastPos().y);
-        //Instead of doing change here, Sending the location to Server
-        //Ensuer Collosion happenes, do not go to first Position.
+    /*private void purgeEnemies() {
+        enemies.removeAll(enemiesToRemove);
+        enemiesToRemove.clear();
+    }*/
 
-        checkPlayerCollisions();
-        ps.println(player.getLastPos().x+" "+player.getLastPos().y);
-
-
-        for(Bullet b : bullets) {
-            b.update(delta);
-        }
-
-        checkBulletCollisions();
-        purgeBullets();
-        purgeEnemies();
-    }
-
-    public void purgeBullets() {
-        for(Bullet bullet : bulletsToRemove)
-            bullets.remove(bullet);
-    }
-
-    public void purgeEnemies() {
-        for(Rectangle enemy : enemiesToRemove)
-            enemies.remove(enemy);
-    }
-
-    public void spawnBullet(Bullet bullet) {
+    /*public void spawnBullet(Bullet bullet, Boolean enemyBullet) {
+        bullet.setEnemyBullet(enemyBullet);
         bullets.add(bullet);
-    }
+    }*/
 
-    public void render(SpriteBatch batch) {
-
-        for(int i = 0; i < gridWidth; i++) {
-            for(int j = 0; j < gridHeight; j++) {
-                grid[i][j].render(batch);
+    //Moves the enemy to a new X and Y coordinates
+   /* public void moveEnemy(Enemy enemy, float newX, float newY, float delta){
+        if (enemy.getBody().x != newX || enemy.getBody().y != newY){
+            if (enemy.getBody().x < newX){
+                enemy.getBody().x += enemyMoveSpeed * delta;
+            }
+            if (enemy.getBody().x > newX){
+                enemy.getBody().x -= enemyMoveSpeed * delta;
+            }
+            if (enemy.getBody().y < newY){
+                enemy.getBody().y += enemyMoveSpeed * delta;
+            }
+            if (enemy.getBody().y > newY){
+                enemy.getBody().y -= enemyMoveSpeed * delta;
             }
         }
-
-        for(Bullet bullet : bullets)
-            bullet.render(batch);
-
-        for (Rectangle enemy : enemies)
-            batch.draw(enemyTexture, enemy.x, enemy.y, enemy.width, enemy.height);
-
-
-        for(Vector2 p:players.values()){
-            player.setBody(p);
-            System.out.println("The body has been set to "+p.x+"---"+p.y);
-            player.render(batch);
-        }
-    }
+    }*/
 }
