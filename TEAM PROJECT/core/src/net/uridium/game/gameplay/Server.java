@@ -55,9 +55,9 @@ public class Server{
     FileInputStream inputStream;
     BufferedReader bufferedReader;
 
-    public Server() throws IOException {
+    public Server(int port) throws IOException {
 
-        ss = new ServerSocket(9988);
+        ss = new ServerSocket(port);
         System.out.println("Server Starts");
         //Texture texture = new Texture(Gdx.files.internal("penguin_square.png"));
         System.out.println("get the photo");
@@ -68,7 +68,6 @@ public class Server{
         new Thread(()->{
             //Update package here.
             while(true){
-                System.out.println("I am running");
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
@@ -79,6 +78,10 @@ public class Server{
         }).start();
 
 
+    }
+
+    public Server() throws IOException{
+        this(3344);
     }
 
     public class accepter implements Runnable {

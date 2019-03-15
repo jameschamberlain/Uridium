@@ -61,8 +61,28 @@ public class Level {
 
     public Level(FileHandle fileHandle) {
         //Client Service starts
+        int port=0;
         try {
-            s = new Socket("127.0.0.1",9988);
+            Socket s = new Socket("127.0.0.1",9966);
+            PrintStream ps = new PrintStream(s.getOutputStream());
+            ps.println(9998);
+            System.out.println("Sent!!!");
+            BufferedReader bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            port = Integer.valueOf(bfr.readLine());
+            System.out.println("receive"+port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            new Server(port);
+            System.out.println("Server Starts");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            s = new Socket("127.0.0.1",port);
             ps = new PrintStream(s.getOutputStream());
             oi = new ObjectInputStream(s.getInputStream());
             aPackage = null;
