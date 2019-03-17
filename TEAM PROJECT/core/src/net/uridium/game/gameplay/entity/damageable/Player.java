@@ -1,29 +1,61 @@
 package net.uridium.game.gameplay.entity.damageable;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Player extends DamageableEntity {
-    int score = 0;
+    public enum Colour {
+        GREEN,
+        PINK,
+        YELLOW,
+        BLUE
+    }
 
-    public long lastShot = 0;
+    public enum POWERUP {
+        NONE,
+        FASTER_SHOOTING,
+        FASTER_MOVING
+    }
+
+    private Colour colour;
+    private int score = 0;
+
+    private long lastShot = 0;
     private long reloadTime = 250;
 
-    boolean scoreChanged = false;
+    private float speed = 200;
 
-    public Player(int ID, Vector2 spawn) {
-        this(ID, spawn, 100, 100);
+    private boolean scoreChanged = false;
+
+    private transient Animation<TextureRegion> animUp;
+    private transient Animation<TextureRegion> animDown;
+    private transient Animation<TextureRegion> animLeft;
+    private transient Animation<TextureRegion> animRight;
+    private transient TextureRegion[][] frames;
+    private transient float stateTime;
+
+    private int level = 1;
+    private float xp;
+    private float xpToLevelUp = 5;
+
+    private boolean isLevelledUp = false;
+
+    private POWERUP powerup = POWERUP.NONE;
+    private float powerupDuration;
+
+    public Player(int ID, Vector2 spawn, Colour colour) {
+        this(ID, spawn, 100, 100, colour);
     }
 
-    public Player(int ID, Vector2 spawn, int maxHealth, int health) {
-        this(ID, spawn, "penguin_square.png", maxHealth, health);
-    }
+    public Player(int ID, Vector2 spawn, int maxHealth, int health, Colour colour) {
+        super(ID, new Rectangle(spawn.x, spawn.y, 40, 55), new Vector2(), "yellow", maxHealth, health);
 
-    public Player(int ID, Vector2 spawn, String textureFile, int maxHealth, int health) {
-        super(ID, new Rectangle(spawn.x, spawn.y, 40, 40), new Vector2(), textureFile, maxHealth, health);
+        this.colour = colour;
     }
 
     public void shoot() {
@@ -31,7 +63,74 @@ public class Player extends DamageableEntity {
     }
 
     public boolean canShoot() {
-        return System.currentTimeMillis() - lastShot > reloadTime;
+        return System.currentTimeMillis() - lastShot > getReloadTime();
+    }
+
+    public long getReloadTime() {
+        if (powerup == POWERUP.FASTER_SHOOTING)
+            return 100;
+
+        return 250;
+    }
+
+    public float getSpeed() {
+        if(powerup == POWERUP.FASTER_MOVING)
+            return 300;
+
+        return speed;
+    }
+
+    public Colour getColour() {
+        return colour;
+    }
+
+    public void setMovementDir(float x, float y) {
+        setVelocity(getSpeed() * x, getSpeed() * y);
+    }
+
+    public float getHealthPercentage() {
+        return 100 * health / maxHealth;
+    }
+
+    public float getXpPercentage() {
+        return 100 * xp / xpToLevelUp;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void levelUp() {
+        level++;
+        xp -= xpToLevelUp;
+        xpToLevelUp += 2.5f;
+        isLevelledUp = true;
+    }
+
+    public void setXp(float xp) {
+        this.xp = xp;
+        if (xp >= xpToLevelUp)
+            levelUp();
+    }
+
+    public void setXpToLevelUp(float xpToLevelUp) {
+        this.xpToLevelUp = xpToLevelUp;
+    }
+
+    public void addXp(float xp) {
+        setXp(this.xp + xp);
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public float getXp() {
+        return xp;
+    }
+
+    public float getXpToLevelUp() {
+        return xpToLevelUp;
     }
 
     public void addScore(int s) {
@@ -39,9 +138,38 @@ public class Player extends DamageableEntity {
         scoreChanged = true;
     }
 
-    public void setScore(int s){
+    public void setScore(int s) {
         score = s;
         scoreChanged = true;
+    }
+
+    @Override
+    public void loadTexture() {
+        Gdx.app.postRunnable(() -> {
+            t = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/stand.png")));
+            frames = new TextureRegion[4][2];
+
+            frames[0][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk1.png")));
+            frames[0][0].flip(true, false);
+            frames[0][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk2.png")));
+            frames[0][1].flip(true, false);
+
+            frames[1][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk1.png")));
+            frames[1][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk2.png")));
+
+            frames[2][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/up1.png")));
+            frames[2][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/up2.png")));
+
+            frames[3][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/down.png")));
+            frames[3][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/stand.png")));
+            frames[3][1].flip(true, false);
+
+            animLeft = new Animation<TextureRegion>(0.1f, frames[0]);
+            animRight = new Animation<TextureRegion>(0.1f, frames[1]);
+            animUp = new Animation<TextureRegion>(0.1f, frames[2]);
+            animDown = new Animation<TextureRegion>(0.1f, frames[3]);
+        });
+
     }
 
     public boolean isScoreChanged() {
@@ -52,37 +180,63 @@ public class Player extends DamageableEntity {
         scoreChanged = false;
     }
 
-    public int getScore(){
+    public boolean isLevelledUp() {
+        return isLevelledUp;
+    }
+
+    public void setLevelledUpFalse() {
+        isLevelledUp = false;
+    }
+
+    public int getScore() {
         return score;
     }
 
-//    @Override
-//    public boolean keyDown(int keycode) {
-//        Vector2 bulletSpawn = new Vector2();
-//
-//        if(canShoot()) {
-//            switch(keycode) {
-//                case Input.Keys.UP:
-//                    bulletSpawn = body.getCenter(bulletSpawn).add(0, body.height / 2);
-//                    shoot(bulletSpawn, 0);
-//                    return true;
-//                case Input.Keys.LEFT:
-//                    bulletSpawn = body.getCenter(bulletSpawn).sub(body.width / 2, 0);
-//                    shoot(bulletSpawn, 270);
-//                    return true;
-//                case Input.Keys.DOWN:
-//                    bulletSpawn = body.getCenter(bulletSpawn).sub(0, body.height / 2);
-//                    shoot(bulletSpawn, 180);
-//                    return true;
-//                case Input.Keys.RIGHT:
-//                    bulletSpawn = body.getCenter(bulletSpawn).add(body.width / 2, 0);
-//                    shoot(bulletSpawn, 90);
-//                    return true;
-//            }
-//        }
-//
-//        return super.keyDown(keycode);
-//    }
+    public POWERUP getPowerup() {
+        return powerup;
+    }
+
+    public boolean isPoweredUp() {
+        return powerupDuration > 0;
+    }
+
+    public void setPowerup(POWERUP powerup, float powerupDuration) {
+        this.powerup = powerup;
+        this.powerupDuration = powerupDuration;
+    }
+
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+
+        stateTime += delta;
+
+        if (powerup != POWERUP.NONE) {
+            powerupDuration -= delta;
+
+            if (powerupDuration <= 0) {
+                powerup = POWERUP.NONE;
+                System.out.println("powerup over");
+            }
+        }
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        if (animRight != null) {
+            if (vel.x > 0) {
+                batch.draw(animRight.getKeyFrame(stateTime, true), body.x, body.y, body.width, body.height);
+            } else if (vel.x < 0) {
+                batch.draw(animLeft.getKeyFrame(stateTime, true), body.x, body.y, body.width, body.height);
+            } else if (vel.y > 0) {
+                batch.draw(animUp.getKeyFrame(stateTime, true), body.x, body.y, body.width, body.height);
+            } else if (vel.y < 0) {
+                batch.draw(animDown.getKeyFrame(stateTime, true), body.x, body.y, body.width, body.height);
+            } else {
+                batch.draw(t, body.x, body.y, body.width, body.height);
+            }
+        }
+    }
 }
 
 

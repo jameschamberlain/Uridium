@@ -15,23 +15,26 @@
       "WWWWWWWWWWWWWWWWWWWW"
     ]
   },
-  "playerSpawns": [
+  "entrances": [
     {
       "x": 2,
       "y": 4
     },
     {
-      "x": 3,
-      "y": 4
-    },
-    {
-      "x": 4,
-      "y": 4
+      "x": 7,
+      "y": 8
     }
   ],
   "spawners": [
     {
-      "type": "chicken",
+      "types": [
+        "BLUE_FISH",
+        "GREEN_FISH",
+        "PINK_FISH",
+        "SPIDER",
+        "SPIDER",
+        "SPIDER"
+      ],
       "x": 11,
       "y": 6
     }
@@ -40,7 +43,8 @@
     {
       "x": 7,
       "y": 9,
-      "dest": 2
+      "dest": 2,
+      "entrance": 1
     }
   ],
   "name": "The Start",

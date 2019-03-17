@@ -51,7 +51,7 @@ public class InGameUI {
         font.draw(batch, "HP:", xOffset, 645 + (75 + gl.height) / 2);
         xOffset += gl.width + 15;
 
-        drawHealthBar(batch, (player.getHealth() * 100) / player.getMaxHealth(), xOffset);
+        drawHealthBar(batch, player.getHealthPercentage(), xOffset);
         xOffset += 230;
     }
 
@@ -70,7 +70,7 @@ public class InGameUI {
 
         // DRAW BAR
         xOffset -= 200;
-        drawXpBar(batch, 60, xOffset);
+        drawXpBar(batch, player.getXpPercentage(), xOffset);
 
         // DRAW XP LABEL
 //        gl = new GlyphLayout(font, "XP:");
@@ -78,8 +78,9 @@ public class InGameUI {
 //        font.draw(batch, "XP:", xOffset, 645 + (75 + gl.height) /2 );
 
         // DRAW PLAYER LEVEL
-        gl = new GlyphLayout(font, "LVL 1:");
+        String text = "LVL " + player.getLevel() + ":";
+        gl = new GlyphLayout(font, text);
         xOffset -= (gl.width + 15);
-        font.draw(batch, "LVL 1:", xOffset, 645 + (75 + gl.height) / 2);
+        font.draw(batch, text, xOffset, 645 + (75 + gl.height) / 2);
     }
 }

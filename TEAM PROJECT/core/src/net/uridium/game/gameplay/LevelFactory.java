@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import net.uridium.game.gameplay.entity.EnemySpawner;
+import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 import net.uridium.game.gameplay.tile.*;
 import net.uridium.game.server.ServerLevel;
 
@@ -63,19 +64,21 @@ public class LevelFactory {
             int x = jsonDoor.getInt("x");
             int y = jsonDoor.getInt("y");
             int dest = jsonDoor.getInt("dest");
+            int entrance = jsonDoor.getInt("entrance");
 
             DoorTile door = (DoorTile) grid[x][y];
             door.setDest(dest);
+            door.setEntrance(entrance);
         }
 
         // GET THE PLAYER SPAWN
-        JsonValue jsonPlayerSpawns = level.get("playerSpawns");
-        ArrayList<Vector2> playerSpawns = new ArrayList<>();
-        for(JsonValue playerSpawn : jsonPlayerSpawns.iterator()) {
-            int x = playerSpawn.getInt("x");
-            int y = playerSpawn.getInt("y");
+        JsonValue jsonEntrances = level.get("entrances");
+        ArrayList<Vector2> entrances = new ArrayList<>();
+        for(JsonValue entrance : jsonEntrances.iterator()) {
+            int x = entrance.getInt("x");
+            int y = entrance.getInt("y");
 
-            playerSpawns.add(new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT));
+            entrances.add(new Vector2(x * TILE_WIDTH, y * TILE_HEIGHT));
         }
 
         JsonValue jsonEnemySpawners = level.get("spawners");
@@ -84,12 +87,14 @@ public class LevelFactory {
             for (JsonValue enemySpawn : jsonEnemySpawners.iterator()) {
                 int x = enemySpawn.getInt("x");
                 int y = enemySpawn.getInt("y");
-
-                enemySpawners.add(new EnemySpawner(x, y));
+                JsonValue jsonSpawnerMonsterTypes = enemySpawn.get("types");
+                ArrayList<Enemy.Type> types = new ArrayList<>();
+                jsonSpawnerMonsterTypes.forEach(type -> types.add(Enemy.Type.valueOf(type.toString())));
+                enemySpawners.add(new EnemySpawner(x, y, types));
             }
         }
 
-        return new ServerLevel(id, grid, gridWidth, gridHeight, playerSpawns, enemySpawners);
+        return new ServerLevel(id, grid, gridWidth, gridHeight, entrances, enemySpawners);
     }
 
     /**

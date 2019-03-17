@@ -3,6 +3,7 @@ package net.uridium.game.gameplay.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -15,7 +16,7 @@ public abstract class Entity implements Serializable {
     public Vector2 lastPos;
     public Vector2 vel;
     public String textureFile;
-    public transient Texture t;
+    public transient TextureRegion t;
 
     boolean changed;
 
@@ -75,7 +76,7 @@ public abstract class Entity implements Serializable {
     }
 
     public void loadTexture() {
-        Gdx.app.postRunnable(() -> t = new Texture(Gdx.files.internal(textureFile)));
+        Gdx.app.postRunnable(() -> t = new TextureRegion(new Texture(Gdx.files.internal(textureFile))));
     }
 
     public boolean checkChanged() {

@@ -15,32 +15,20 @@
       "WWWWWWWDWWWWWWW"
     ]
   },
-  "playerSpawns": [
+  "entrances": [
     {
-      "x": 2,
-      "y": 4
-    },
-    {
-      "x": 3,
-      "y": 4
-    },
-    {
-      "x": 4,
-      "y": 4
+      "x": 7,
+      "y": 1
     }
   ],
-  "enemies": [
-    {
-      "type": "chicken",
-      "x": 8,
-      "y": 4
-    }
+  "spawners": [
   ],
   "doors": [
     {
       "x": 7,
       "y": 0,
-      "dest": 1
+      "dest": 1,
+      "entrance": 2
     }
   ],
   "name": "The Start",

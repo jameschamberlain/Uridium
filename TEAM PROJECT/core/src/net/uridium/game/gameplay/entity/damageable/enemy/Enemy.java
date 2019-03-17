@@ -1,12 +1,16 @@
-package net.uridium.game.gameplay.entity.damageable;
+package net.uridium.game.gameplay.entity.damageable.enemy;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.ai.Pathfinder;
+import net.uridium.game.gameplay.entity.damageable.DamageableEntity;
+import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.gameplay.entity.projectile.Bullet;
 
 import java.util.ArrayList;
@@ -14,7 +18,14 @@ import java.util.ArrayList;
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
 
-public class Enemy extends DamageableEntity {
+public abstract class Enemy extends DamageableEntity {
+    public enum Type {
+        BLUE_FISH,
+        PINK_FISH,
+        GREEN_FISH,
+        SPIDER
+    }
+
     /**
      * A list of Vector2 coords that map the route to the player.
      */
@@ -43,22 +54,49 @@ public class Enemy extends DamageableEntity {
     /**
      * The speed the enemy travels.
      */
-    private float speed = 160;
+    private float speed = 100;
+    private float angle = 0;
 
     private transient Player target;
 
-    public Enemy(int ID, Rectangle body, int maxHealth, int health) {
-        super(ID, body, new Vector2(0, 0), "chicken.png", maxHealth, health);
+    transient Animation<TextureRegion> anim;
+    private transient float stateTime;
+
+    public Enemy(int ID, Rectangle body, int maxHealth, int health, float speed) {
+        this(ID, body, new Vector2(0, 0), maxHealth, health, speed);
     }
 
-    public Enemy(int ID, Rectangle body, Vector2 vel, String textureFile, int maxHealth, int health) {
-        super(ID, body, vel, textureFile, maxHealth, health);
+    public Enemy(int ID, Rectangle body, Vector2 vel, int maxHealth, int health, float speed) {
+        super(ID, body, vel, "", maxHealth, health);
+
+        this.speed = speed;
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
         if (t == null) updatePathfinding(delta);
+        stateTime += delta;
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        if(anim != null) batch.draw(anim.getKeyFrame(stateTime, true), body.x, body.y, body.width / 2, body.height / 2, body.width, body.height, 1, 1, angle);
+    }
+
+    @Override
+    public void loadTexture() {
+        Gdx.app.postRunnable(this::loadAnim);
+    }
+
+    public abstract void loadAnim();
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
     }
 
     /**
@@ -159,6 +197,7 @@ public class Enemy extends DamageableEntity {
      * @param a The angle to the player from the enemy.
      */
     private void setVelocityFromAngle(float a) {
+        angle = (float) Math.toDegrees(a);
         float xVel = -speed * (float) Math.cos(a);
         float yVel = -speed * (float) Math.sin(a);
 
