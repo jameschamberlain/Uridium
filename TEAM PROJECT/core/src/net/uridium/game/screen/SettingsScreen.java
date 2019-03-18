@@ -21,6 +21,7 @@ import static net.uridium.game.Uridium.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class SettingsScreen extends MenuScreen {
+
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
@@ -30,10 +31,10 @@ public class SettingsScreen extends MenuScreen {
     Texture bgTexture;
     TextureRegion bg;
 
-    public SettingsScreen(){
+    public SettingsScreen() {
         setCursor("cursor.png", 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture = new Texture(Gdx.files.internal("ice/iceWaterDeepAlt.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -41,7 +42,7 @@ public class SettingsScreen extends MenuScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("skin/glassy-ui.json");
+        mySkin = myAssetManager.manager.get("skin/freezing-ui.json");
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -51,12 +52,12 @@ public class SettingsScreen extends MenuScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-        Button volBtn = new TextButton("VOLUME",mySkin,"small");
-        volBtn.setSize(340,80);
-        volBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
+        Button volBtn = new TextButton("VOLUME", mySkin);
+        volBtn.setSize(340, 80);
+        volBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
         ((TextButton) volBtn).getLabel().setFontScale(1.4f);
-        volBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        volBtn.addListener(new InputListener(){
+        //volBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        volBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Volume Clicked");
@@ -72,12 +73,12 @@ public class SettingsScreen extends MenuScreen {
         });
 
 
-        Button backBtn = new TextButton("BACK",mySkin,"small");
+        Button backBtn = new TextButton("BACK", mySkin);
         backBtn.setSize(340, 80);
-        backBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
+        backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2 - (80 + 20));
         ((TextButton) backBtn).getLabel().setFontScale(1.4f);
-        backBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        backBtn.addListener(new InputListener(){
+        //backBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Back Clicked");
@@ -109,8 +110,8 @@ public class SettingsScreen extends MenuScreen {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(1,0,0,0);
-        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+        //Gdx.gl.glClearColor(1,0,0,0);
+        //Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

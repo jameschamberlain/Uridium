@@ -43,7 +43,7 @@ public class MenuScreen extends UridiumScreen {
     public MenuScreen(){
         setCursor("cursor.png", 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture = new Texture(Gdx.files.internal("ice/iceWaterDeepAlt.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -51,7 +51,7 @@ public class MenuScreen extends UridiumScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("skin/glassy-ui.json");
+        mySkin = myAssetManager.manager.get("skin/freezing-ui.json");
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -62,17 +62,17 @@ public class MenuScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Label gameTitle = new Label("U R I D I U M",mySkin,"big");
+        Label gameTitle = new Label("U R I D I U M",mySkin, "title");
         gameTitle.setSize(1280, 360);
         gameTitle.setPosition(0, 360);
         gameTitle.setFontScale(1.4f);
         gameTitle.setAlignment(Align.center);
 
         // Setup start button.
-        Button startBtn = new TextButton("P L A Y",mySkin,"small");
-        startBtn.setSize(340,80);
-        startBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
-        ((TextButton) startBtn).getLabel().setFontScale(1.4f);
+        Button startBtn = new TextButton("P L A Y",mySkin);
+        startBtn.setSize(400,80);
+        startBtn.setPosition((GAME_WIDTH - 400) / 2,(GAME_HEIGHT - 80) / 2);
+        ((TextButton) startBtn).getLabel().setFontScale(1.2f);
 //        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         // Listener for start button.
         startBtn.addListener(new InputListener(){
@@ -91,10 +91,10 @@ public class MenuScreen extends UridiumScreen {
         });
 
         // Setup settings button.
-        Button settingsBtn = new TextButton("S E T T I N G S",mySkin,"small");
-        settingsBtn.setSize(340, 80);
-        settingsBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
-        ((TextButton) settingsBtn).getLabel().setFontScale(1.4f);
+        Button settingsBtn = new TextButton("S E T T I N G S",mySkin);
+        settingsBtn.setSize(400, 80);
+        settingsBtn.setPosition((GAME_WIDTH - 400) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
+        ((TextButton) settingsBtn).getLabel().setFontScale(1.2f);
 //        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         // Listener for settings button.
         settingsBtn.addListener(new InputListener(){
@@ -111,10 +111,10 @@ public class MenuScreen extends UridiumScreen {
         });
 
         // Setup exit button.
-        Button exitBtn = new TextButton("E X I T", mySkin, "small");
-        exitBtn.setSize(340, 80);
-        exitBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
-        ((TextButton) exitBtn).getLabel().setFontScale(1.4f);
+        Button exitBtn = new TextButton("E X I T", mySkin);
+        exitBtn.setSize(400, 80);
+        exitBtn.setPosition((GAME_WIDTH - 400) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
+        ((TextButton) exitBtn).getLabel().setFontScale(1.2f);
 //        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         // Listener for exit button.
         exitBtn.addListener(new InputListener(){
