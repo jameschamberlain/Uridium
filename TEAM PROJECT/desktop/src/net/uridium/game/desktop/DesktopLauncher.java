@@ -20,12 +20,6 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.title = "Uridium";
 
-//		try {
-//			Server s = new Server();
-//		} catch (IOException e) {
-//			System.out.println("Server already exists. Connecting.");
-//		}
-
 		try {
 			LobbyServer l = new LobbyServer();
 		} catch (IOException e) {
