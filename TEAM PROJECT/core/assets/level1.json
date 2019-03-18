@@ -6,7 +6,7 @@
       "WWWWWWWDWWWWWWWWWWWW",
       "W                  W",
       "W        OOO       W",
-      "W        OOE   OO  W",
+      "W        OOO   OO  W",
       "W              O   W",
       "W                  W",
       "W             OO   D",
@@ -15,32 +15,33 @@
       "WWWWWWWWWWWWWWWWWWWW"
     ]
   },
-  "playerSpawns": [
+  "entrances": [
     {
       "x": 2,
       "y": 4
     },
     {
-      "x": 3,
-      "y": 4
-    },
-    {
-      "x": 4,
-      "y": 4
+      "x": 7,
+      "y": 8
     }
   ],
   "spawners": [
     {
-      "type": "chicken",
+      "types": [
+        "BLUE_FISH"
+      ],
       "x": 11,
-      "y": 6
+      "y": 6,
+      "numEnemies": 5,
+      "spawnRate": 500
     }
   ],
   "doors": [
     {
       "x": 7,
       "y": 9,
-      "dest": 2
+      "dest": 2,
+      "entrance": 1
     }
   ],
   "name": "The Start",

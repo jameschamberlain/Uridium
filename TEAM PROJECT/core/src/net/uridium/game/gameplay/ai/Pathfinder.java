@@ -1,7 +1,7 @@
 package net.uridium.game.gameplay.ai;
 
 import com.badlogic.gdx.math.Vector2;
-import net.uridium.game.gameplay.entity.damageable.Enemy;
+import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 
 import java.awt.*;
 import java.util.*;

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class DoorTile extends Tile {
 
     private int dest;
+    private int entrance;
 
     public DoorTile(int gridX, int gridY) {
         super(gridX, gridY, "ground_03.png", false);
@@ -17,5 +18,13 @@ public class DoorTile extends Tile {
 
     public int getDest() {
         return dest;
+    }
+
+    public void setEntrance(int e) {
+        entrance = e;
+    }
+
+    public int getEntrance() {
+        return entrance;
     }
 }

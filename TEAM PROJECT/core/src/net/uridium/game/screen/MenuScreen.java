@@ -62,19 +62,17 @@ public class MenuScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Label gameTitle = new Label("U R I D I U M",mySkin, "big");
+        Label gameTitle = new Label("U R I D I U M",mySkin,"big");
         gameTitle.setSize(1280, 360);
         gameTitle.setPosition(0, 360);
         gameTitle.setFontScale(1.4f);
         gameTitle.setAlignment(Align.center);
 
-        // Setup start button.
-        Button startBtn = new TextButton("P L A Y",mySkin, "small");
-        startBtn.setSize(400,80);
-        startBtn.setPosition((GAME_WIDTH - 400) / 2,(GAME_HEIGHT - 80) / 2);
-        ((TextButton) startBtn).getLabel().setFontScale(1.2f);
+        Button startBtn = new TextButton("P L A Y",mySkin,"small");
+        startBtn.setSize(340,80);
+        startBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
+        ((TextButton) startBtn).getLabel().setFontScale(1.4f);
 //        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        // Listener for start button.
         startBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -84,19 +82,16 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("hello");
                 getUSMInstance().push(new LobbyScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        // Setup settings button.
-        Button settingsBtn = new TextButton("S E T T I N G S",mySkin, "small");
-        settingsBtn.setSize(400, 80);
-        settingsBtn.setPosition((GAME_WIDTH - 400) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
-        ((TextButton) settingsBtn).getLabel().setFontScale(1.2f);
+        Button settingsBtn = new TextButton("S E T T I N G S",mySkin,"small");
+        settingsBtn.setSize(340, 80);
+        settingsBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
+        ((TextButton) settingsBtn).getLabel().setFontScale(1.4f);
 //        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        // Listener for settings button.
         settingsBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -110,13 +105,11 @@ public class MenuScreen extends UridiumScreen {
             }
         });
 
-        // Setup exit button.
         Button exitBtn = new TextButton("E X I T", mySkin, "small");
-        exitBtn.setSize(400, 80);
-        exitBtn.setPosition((GAME_WIDTH - 400) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
-        ((TextButton) exitBtn).getLabel().setFontScale(1.2f);
+        exitBtn.setSize(340, 80);
+        exitBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
+        ((TextButton) exitBtn).getLabel().setFontScale(1.4f);
 //        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        // Listener for exit button.
         exitBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

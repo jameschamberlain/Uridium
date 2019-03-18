@@ -10,7 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-public class LobbyLevel {
+public class LobbyServer {
     private ServerSocket ss;
     private Socket s;
     private BufferedReader bfr;
@@ -19,7 +19,7 @@ public class LobbyLevel {
     private PrintStream ps;
     private HashMap<String,int[]> rooms;
 
-    public LobbyLevel() throws IOException {
+    public LobbyServer() throws IOException {
         ss = new ServerSocket(9966);
         rooms = new HashMap<String, int[]>();
         rooms.put("emp1",new int[]{9977, 0});
@@ -27,7 +27,6 @@ public class LobbyLevel {
 
 
         new Thread(() -> {
-
             while (true) {
                 try {
                     portNum = 0;
@@ -50,7 +49,7 @@ public class LobbyLevel {
 
                     if(exist){
                         int[] r = rooms.get(roomCode);
-                        if(r[1]!=2){
+                        if(r[1]!=4){
                             portNum = r[0];
                             r[1]++;
                             rooms.put(roomCode,r);
@@ -90,7 +89,7 @@ public class LobbyLevel {
 
     public static void main(String[] arg) {
         try {
-            LobbyLevel l = new LobbyLevel();
+            LobbyServer l = new LobbyServer();
         } catch (IOException e) {
             e.printStackTrace();
         }

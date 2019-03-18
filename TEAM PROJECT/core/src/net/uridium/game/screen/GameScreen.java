@@ -16,7 +16,6 @@ import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.HealthBar;
 import net.uridium.game.ui.InGameUI;
 import net.uridium.game.ui.Scoreboard;
-import net.uridium.game.util.Audio;
 
 import java.io.*;
 import java.net.Socket;
@@ -55,7 +54,7 @@ public class GameScreen extends UridiumScreen {
 
     public void init(int port) {
         setCursor("crossair_white.png", 32, 32);
-        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+//        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
             s = new Socket("localhost",port);
@@ -79,9 +78,9 @@ public class GameScreen extends UridiumScreen {
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
         batch = new SpriteBatch();
 
-        ui = new InGameUI();
+        ui = new InGameUI(level.getOffsets(new Vector2()).y);
 
-        healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
+//        healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
         scoreboard = new Scoreboard();
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
@@ -197,13 +196,18 @@ public class GameScreen extends UridiumScreen {
             case REPLACE_TILE:
                 level.replaceTile((ReplaceTileData) msg.getData());
                 break;
-            case PLAYER_SCORE:
-                PlayerScoreData data = (PlayerScoreData) msg.getData();
-                level.updateScore(data);
-                scoreboard.setScore(data.playerID, data.score);
+            case PLAYER_UPDATE:
+                PlayerUpdateData data = (PlayerUpdateData) msg.getData();
+                level.updatePlayer(data);
+                scoreboard.updateScoreboard(level.getPlayers());
                 break;
             case PLAYER_HEALTH:
                 level.updateHealth((PlayerHealthData) msg.getData());
+                scoreboard.updateScoreboard(level.getPlayers());
+                break;
+            case PLAYER_POWERUP:
+                PlayerPowerupData ppd = (PlayerPowerupData) msg.getData();
+                if(ppd.playerID == level.getPlayerID()) ui.updatePowerup(ppd);
                 break;
         }
     }
@@ -239,7 +243,8 @@ public class GameScreen extends UridiumScreen {
     public void update(float delta) {
         if(!changingLevel) {
             level.update(delta);
-            healthBar.update(level.getPlayer().getHealth());
+            ui.update(delta);
+//            System.out.println(level.getPlayer().getLevel());
         }
     }
 
@@ -253,7 +258,6 @@ public class GameScreen extends UridiumScreen {
             level.render(batch);
 
             batch.setProjectionMatrix(camera.combined);
-//            healthBar.render(batch);
             ui.render(batch, level.getPlayer());
             if(Gdx.input.isKeyPressed(Input.Keys.TAB)) scoreboard.render(batch);
         }

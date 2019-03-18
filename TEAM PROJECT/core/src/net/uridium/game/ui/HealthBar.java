@@ -11,10 +11,10 @@ public class HealthBar {
 
     Texture heart;
     Texture emptyHeart;
-    int health;
-    int maxHealth = 5;
+    float health;
+    float maxHealth = 5;
 
-    public HealthBar(int health, int maxHealth) {
+    public HealthBar(float health, float maxHealth) {
         heart = new Texture(Gdx.files.internal("heart.png"));
         emptyHeart = new Texture(Gdx.files.internal("heartOutline.png"));
 

@@ -6,8 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.entity.Entity;
 
 public class DamageableEntity extends Entity {
-    int maxHealth;
-    int health;
+    float maxHealth;
+    float health;
 
     public DamageableEntity(int ID, Rectangle body, Vector2 vel, String textureFile) {
         this(ID, body, vel, textureFile, 5, 5);
@@ -20,32 +20,32 @@ public class DamageableEntity extends Entity {
         this.health = health;
     }
 
-    public void setHealth(int health) {
+    public void setHealth(float health) {
         if(health < 0) health = 0;
         if(health > maxHealth) health = maxHealth;
 
         this.health = health;
     }
 
-    public void damage(int damage) {
+    public void damage(float damage) {
         setHealth(health - damage);
     }
 
-    public void heal(int mod) {
+    public void heal(float mod) {
         setHealth(health + mod);
     }
 
-    public int getHealth() {
+    public float getHealth() {
         return health;
     }
 
-    public void setMaxHealth(int maxHealth) {
+    public void setMaxHealth(float maxHealth) {
         if(maxHealth < 1) maxHealth = 1;
         this.maxHealth = maxHealth;
         if(health > maxHealth) health = maxHealth;
     }
 
-    public int getMaxHealth() {
+    public float getMaxHealth() {
         return maxHealth;
     }
 
