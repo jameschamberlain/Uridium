@@ -18,7 +18,6 @@ public abstract class Tile implements Serializable {
 
     private boolean isObstacle;
     public boolean isDamageable;
-    public boolean spawnTile;
     public int health;
 
     private String textureFile;
@@ -66,14 +65,6 @@ public abstract class Tile implements Serializable {
 
     public String getTextureFile(){
         return textureFile;
-    }
-
-    public boolean getSpawnTile(){
-        return spawnTile;
-    }
-
-    public void setSpawnTile(boolean spawnTile){
-        this.spawnTile = spawnTile;
     }
 
     public void render(SpriteBatch batch) {

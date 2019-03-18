@@ -1,0 +1,52 @@
+{
+  "grid": {
+    "width": 15,
+    "height": 8,
+    "rows": [
+      "WWWWWWWWWWWWWWW",
+      "W   OOO   OO  W",
+      "W   OOO   O   W",
+      "W   OOO       W",
+      "W        OO   D",
+      "W         O   W",
+      "W         O   W",
+      "WWWWWWWDWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 7,
+      "y": 1
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "PINK_FISH"
+      ],
+      "x": 11,
+      "y": 6,
+      "numEnemies": 5,
+      "spawnRate": 1200
+    },
+    {
+      "types": [
+        "SPIDER"
+      ],
+      "x": 4,
+      "y": 5,
+      "numEnemies": 12,
+      "spawnRate": 400
+    }
+  ],
+  "doors": [
+    {
+      "x": 7,
+      "y": 0,
+      "dest": 1,
+      "entrance": 2
+    }
+  ],
+  "name": "The Start",
+  "id": 2
+}
