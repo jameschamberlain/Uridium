@@ -27,9 +27,9 @@ public class Server{
     ServerLevel currentLevel;
     long lastUpdate;
 
-    public Server() throws IOException {
+    public Server(int port) throws IOException {
         System.out.println("Server Starting ...");
-        ss = new ServerSocket(9988);
+        ss = new ServerSocket(port);
 
         System.out.println("Creating Level ...");
 
@@ -46,6 +46,10 @@ public class Server{
 
         new Thread(new Acceptor(ss)).start();
         new Thread(this::levelUpdate).start();
+    }
+
+    public Server() throws IOException {
+        this(6666);
     }
 
     private void levelUpdate() {
