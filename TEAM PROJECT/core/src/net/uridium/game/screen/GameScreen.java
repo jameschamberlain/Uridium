@@ -46,13 +46,18 @@ public class GameScreen extends UridiumScreen {
         init();
     }
 
+    public GameScreen(int port){init(port);}
+
     @Override
-    public void init() {
+    public void init(){init(6666);}
+
+
+    public void init(int port) {
         setCursor("crossair_white.png", 32, 32);
 //        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
-            s = new Socket("localhost",9988);
+            s = new Socket("localhost",port);
             oos = new ObjectOutputStream(s.getOutputStream());
             ois = new ObjectInputStream(s.getInputStream());
 

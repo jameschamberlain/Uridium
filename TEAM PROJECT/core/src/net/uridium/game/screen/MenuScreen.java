@@ -76,12 +76,13 @@ public class MenuScreen extends UridiumScreen {
         startBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("hi");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new GameScreen());
+                getUSMInstance().push(new LobbyScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
