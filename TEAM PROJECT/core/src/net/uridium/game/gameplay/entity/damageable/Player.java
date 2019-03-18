@@ -46,6 +46,7 @@ public class Player extends DamageableEntity {
     private transient Animation<TextureRegion> animDown;
     private transient Animation<TextureRegion> animLeft;
     private transient Animation<TextureRegion> animRight;
+
     private transient TextureRegion[][] frames;
     private transient float stateTime;
 
@@ -80,7 +81,7 @@ public class Player extends DamageableEntity {
         if (powerup == POWERUP.FASTER_SHOOTING)
             return 100;
 
-        return 250;
+        return reloadTime;
     }
 
     public float getSpeed() {
