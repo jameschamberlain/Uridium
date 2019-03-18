@@ -50,7 +50,7 @@ public class GameScreen extends UridiumScreen {
     public GameScreen(int port){init(port);}
 
     @Override
-    public void init(){init(9988);}
+    public void init(){init(6666);}
 
 
     public void init(int port) {

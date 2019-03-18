@@ -90,6 +90,11 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                try {
+                    new Server();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 getUSMInstance().push(new GameScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
