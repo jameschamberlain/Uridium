@@ -16,17 +16,19 @@ public class EnemySpawner extends Entity {
     private Enemy.Type[] types;
     private Random r;
 
-    int numEnemies = 15;
-    long lastSpawn = 0;
-    long spawnRate = 1200;
+    int numEnemies;
+    long lastSpawn;
+    long spawnRate;
 
-    public EnemySpawner(int gridX, int gridY, ArrayList<Enemy.Type> types) {
+    public EnemySpawner(int gridX, int gridY, ArrayList<Enemy.Type> types, int numEnemies, long spawnRate) {
         super(-1, new Rectangle(gridX * TILE_WIDTH, gridY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT), new Vector2(0, 0), "crate_01.png");
 
         this.gridX = gridX;
         this.gridY = gridY;
         this.types = new Enemy.Type[types.size()];
         types.toArray(this.types);
+        this.numEnemies = numEnemies;
+        this.spawnRate = spawnRate;
         r = new Random();
     }
 

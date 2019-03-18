@@ -6,7 +6,7 @@
       "WWWWWWWDWWWWWWWWWWWW",
       "W                  W",
       "W        OOO       W",
-      "W        OOE   OO  W",
+      "W        OOO   OO  W",
       "W              O   W",
       "W                  W",
       "W             OO   D",
@@ -28,15 +28,12 @@
   "spawners": [
     {
       "types": [
-        "BLUE_FISH",
-        "GREEN_FISH",
-        "PINK_FISH",
-        "SPIDER",
-        "SPIDER",
-        "SPIDER"
+        "BLUE_FISH"
       ],
       "x": 11,
-      "y": 6
+      "y": 6,
+      "numEnemies": 5,
+      "spawnRate": 500
     }
   ],
   "doors": [

@@ -73,7 +73,7 @@ public class GameScreen extends UridiumScreen {
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
         batch = new SpriteBatch();
 
-        ui = new InGameUI();
+        ui = new InGameUI(level.getOffsets(new Vector2()).y);
 
 //        healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
         scoreboard = new Scoreboard();
@@ -200,6 +200,10 @@ public class GameScreen extends UridiumScreen {
                 level.updateHealth((PlayerHealthData) msg.getData());
                 scoreboard.updateScoreboard(level.getPlayers());
                 break;
+            case PLAYER_POWERUP:
+                PlayerPowerupData ppd = (PlayerPowerupData) msg.getData();
+                if(ppd.playerID == level.getPlayerID()) ui.updatePowerup(ppd);
+                break;
         }
     }
 
@@ -234,6 +238,7 @@ public class GameScreen extends UridiumScreen {
     public void update(float delta) {
         if(!changingLevel) {
             level.update(delta);
+            ui.update(delta);
 //            System.out.println(level.getPlayer().getLevel());
         }
     }

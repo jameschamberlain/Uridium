@@ -84,6 +84,12 @@ public class Level {
         });
     }
 
+    public Vector2 getOffsets(Vector2 offsets) {
+        offsets.x = xOffset;
+        offsets.y = yOffset;
+        return offsets;
+    }
+
     public void addEntity(Entity e) {
         entities.put(e.getID(), e);
         e.loadTexture();

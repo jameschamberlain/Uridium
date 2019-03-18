@@ -28,6 +28,7 @@ public class Msg implements Serializable {
         PLAYER_MOVE,
         PLAYER_SHOOT,
         PLAYER_UPDATE,
-        PLAYER_HEALTH
+        PLAYER_HEALTH,
+        PLAYER_POWERUP
     }
 }

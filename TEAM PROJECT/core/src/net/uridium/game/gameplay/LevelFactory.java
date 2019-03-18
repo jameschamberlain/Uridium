@@ -90,7 +90,10 @@ public class LevelFactory {
                 JsonValue jsonSpawnerMonsterTypes = enemySpawn.get("types");
                 ArrayList<Enemy.Type> types = new ArrayList<>();
                 jsonSpawnerMonsterTypes.forEach(type -> types.add(Enemy.Type.valueOf(type.toString())));
-                enemySpawners.add(new EnemySpawner(x, y, types));
+                int numEnemies = enemySpawn.getInt("numEnemies");
+                long spawnRate = enemySpawn.getLong("spawnRate");
+                System.out.println("spawner added");
+                enemySpawners.add(new EnemySpawner(x, y, types, numEnemies, spawnRate));
             }
         }
 

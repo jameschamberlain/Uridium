@@ -30,6 +30,10 @@ public abstract class Entity implements Serializable {
         body.getPosition(lastPos);
     }
 
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
     public Rectangle getBody() {
         return body;
     }

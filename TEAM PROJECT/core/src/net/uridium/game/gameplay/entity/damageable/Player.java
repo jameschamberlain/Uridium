@@ -17,9 +17,19 @@ public class Player extends DamageableEntity {
     }
 
     public enum POWERUP {
-        NONE,
-        FASTER_SHOOTING,
-        FASTER_MOVING
+        NONE(""),
+        FASTER_SHOOTING("DECREASED RELOAD TIME"),
+        FASTER_MOVING("INCREASED SPEED");
+
+        String text;
+
+        POWERUP(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
     }
 
     private Colour colour;

@@ -137,7 +137,7 @@ public class Server{
                     oos = new ObjectOutputStream(s.getOutputStream());
                     ois = new ObjectInputStream(s.getInputStream());
 
-                    playerID = currentLevel.getNextEntityID();
+                    playerID = currentLevel.getNumPlayers();
                     Vector2 playerSpawn = currentLevel.getEntrance(1);
 
                     Player player = new Player(playerID, playerSpawn, currentLevel.getAvailColour());

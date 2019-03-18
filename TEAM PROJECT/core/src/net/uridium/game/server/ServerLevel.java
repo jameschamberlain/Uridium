@@ -43,7 +43,7 @@ public class ServerLevel {
 
     BlockingQueue<Msg> msgs;
 
-    int nextEntityID;
+    int nextEntityID = 4;
     Random r;
 
     private boolean shouldChangeLevel;
@@ -72,8 +72,18 @@ public class ServerLevel {
         r = new Random();
 
         for(EnemySpawner spawner : spawners) {
-            spawner.setID(getNextEntityID());
+            int spawnerId = getNextEntityID();
+            spawner.setID(spawnerId);
             addEntity(spawner);
+//            System.out.println("added spawner, id => " + spawnerId);
+        }
+
+        printEntities();
+    }
+
+    public void printEntities() {
+        for(Entity e : entities.values()) {
+            System.out.println(e instanceof EnemySpawner);
         }
     }
 
@@ -97,6 +107,7 @@ public class ServerLevel {
     }
 
     public void addEntity(Entity entity) {
+//        if(entities.containsKey(entity.getID())) entity.setID(getNextEntityID());
         entities.put(entity.getID(), entity);
         msgs.add(new Msg(Msg.MsgType.NEW_ENTITY, entity));
 
@@ -169,6 +180,10 @@ public class ServerLevel {
         return new LevelData(grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
     }
 
+    public int getNumPlayers() {
+        return playerIDs.size();
+    }
+
     public int getID() {
         return id;
     }
@@ -233,8 +248,8 @@ public class ServerLevel {
                 Item i = (Item) e;
 
                 if (Intersector.intersectRectangles(playerBody, i.getBody(), overlap)) {
-                    i.onPlayerCollision(player);
-                    msgs.add(new Msg(Msg.MsgType.PLAYER_HEALTH, new PlayerHealthData(player.getID(), player.getHealth(), player.getMaxHealth())));
+                    Msg m = i.onPlayerCollision(player);
+                    if(m != null) msgs.add(m);
                     return;
                 }
             }
@@ -383,6 +398,8 @@ public class ServerLevel {
     }
 
     public void update(float delta) {
+        if(playerIDs.size() == 0) return;
+
         for(Entity e : entities.values()) {
             e.update(delta);
 
