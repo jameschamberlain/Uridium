@@ -83,7 +83,7 @@ public class GameScreen extends UridiumScreen {
 //        healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
         scoreboard = new Scoreboard();
 
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -261,7 +261,6 @@ public class GameScreen extends UridiumScreen {
             ui.render(batch, level.getPlayer());
             if(Gdx.input.isKeyPressed(Input.Keys.TAB)) scoreboard.render(batch);
         }
-
         batch.end();
     }
 

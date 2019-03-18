@@ -36,7 +36,7 @@ public class AudioScreen extends SettingsScreen {
     public AudioScreen() {
         setCursor("cursor.png", 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ice/iceWaterDeepAlt.png"));
+        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -45,7 +45,7 @@ public class AudioScreen extends SettingsScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("skin/freezing-ui.json");
+        mySkin = myAssetManager.manager.get("ice/skin/freezing-ui.json");
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -59,7 +59,6 @@ public class AudioScreen extends SettingsScreen {
         Button plusBtn = new TextButton("  +  ", mySkin);
         plusBtn.setSize(80, 40);
         plusBtn.setPosition((GAME_WIDTH + 100)/2 , (GAME_HEIGHT +50 )/2);
-        ((TextButton) plusBtn).getLabel().setFontScale(1.4f);
        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         plusBtn.addListener(new InputListener() {
             @Override
@@ -80,7 +79,6 @@ public class AudioScreen extends SettingsScreen {
         Button minusBtn = new TextButton("  -  ", mySkin);
         minusBtn.setSize(80, 40);
         minusBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +50 )/2);
-        ((TextButton) minusBtn).getLabel().setFontScale(1.4f);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         minusBtn.addListener(new InputListener() {
             @Override
@@ -100,7 +98,6 @@ public class AudioScreen extends SettingsScreen {
         Button pauseBtn = new TextButton(" ||  ", mySkin);
         pauseBtn.setSize(80, 40);
         pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
-        ((TextButton) pauseBtn).getLabel().setFontScale(1.4f);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         pauseBtn.addListener(new InputListener() {
             @Override
@@ -125,7 +122,6 @@ public class AudioScreen extends SettingsScreen {
         Button backBtn = new TextButton("BACK", mySkin);
         backBtn.setSize(340, 80);
         backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
-        ((TextButton) backBtn).getLabel().setFontScale(1.4f);
         backBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         backBtn.addListener(new InputListener() {
             @Override

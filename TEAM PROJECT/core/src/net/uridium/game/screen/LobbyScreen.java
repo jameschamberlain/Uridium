@@ -38,6 +38,9 @@ public class LobbyScreen extends UridiumScreen {
     Texture bgTexture;
     TextureRegion bg;
 
+    ScrollPane scrollPane;
+    List<String> list;
+
     // ROOM CODE!
     public String code = "";
 
@@ -46,7 +49,7 @@ public class LobbyScreen extends UridiumScreen {
         setCursor("cursor.png", 0, 0);
         myPort = 0;
         // Setup textures and background.
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -55,7 +58,7 @@ public class LobbyScreen extends UridiumScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("skin/glassy-ui.json");
+        mySkin = myAssetManager.manager.get("ice/skin/freezing-ui.json");
 
         // Setup camera.
         camera = new OrthographicCamera();
@@ -69,20 +72,18 @@ public class LobbyScreen extends UridiumScreen {
 
 
         // Setup window.
-        Label gameTitle = new Label("U R I D I U M", mySkin, "big");
+        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
         gameTitle.setSize(1280, 360);
         gameTitle.setPosition(0, 360);
         gameTitle.setFontScale(1.4f);
         gameTitle.setAlignment(Align.center);
 
-        // Setup solo button.
-        Button soloBtn = new TextButton("S O L O", mySkin, "small");
-        soloBtn.setSize(340, 80);
-        soloBtn.setPosition((GAME_WIDTH - 340) / 2.0f, (GAME_HEIGHT - 80) / 2.0f);
-        ((TextButton) soloBtn).getLabel().setFontScale(1.4f);
-//        soloBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        // Setup create button.
+        Button createBtn = new TextButton("C R E A T E", mySkin);
+        createBtn.setSize(255, 80);
+        createBtn.setPosition((GAME_WIDTH - 170) / 5.0f, (GAME_HEIGHT - 10) / 2.0f);
         // Listener for start button.
-        soloBtn.addListener(new InputListener() {
+        createBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -90,24 +91,16 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                try {
-                    new Server();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                getUSMInstance().push(new GameScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        // Setup multiplayer button.
-        Button multiplayerButton = new TextButton("M U L T I P L A Y E R", mySkin, "small");
-        multiplayerButton.setSize(340, 80);
-        multiplayerButton.setPosition((GAME_WIDTH - 340) / 2.0f, (GAME_HEIGHT - 80) / 2.0f - (80 + 20));
-        ((TextButton) multiplayerButton).getLabel().setFontScale(1.4f);
-//        multiplayerButton.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        // Setup refresh button.
+        Button refreshBtn = new TextButton("R E F R E S H", mySkin);
+        refreshBtn.setSize(255, 80);
+        refreshBtn.setPosition((GAME_WIDTH - 170) / 5.0f, (GAME_HEIGHT - 10) / 2.0f - (80 + 20));
         // Listener for multiplayer button.
-        multiplayerButton.addListener(new InputListener() {
+        refreshBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -115,57 +108,65 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
 
-                Label label = new Label("Enter room ID", mySkin);
-                label.setAlignment(Align.center);
-                label.setColor(Color.BLACK);
+        // Setup random button.
+        Button randomBtn = new TextButton("R A N D O M", mySkin);
+        randomBtn.setSize(255, 80);
+        randomBtn.setPosition((GAME_WIDTH - 170) / 5.0f, (GAME_HEIGHT - 10) / 2.0f - (80 + 20) * 2);
+        // Listener for multiplayer button.
+        randomBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
 
-                TextField textField = new TextField("", mySkin);
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
 
-                Button confirmButton = new TextButton("C O N F I R M", mySkin, "small");
+        Button backBtn = new TextButton("B A C K", mySkin);
+        backBtn.setSize(255, 80);
+        backBtn.setPosition((GAME_WIDTH - 170) / 5.0f,(GAME_HEIGHT - 10) / 2.0f - (80 + 20) * 3);
+        backBtn.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
 
-                confirmButton.addListener(new InputListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        return true;
-                    }
-
-                    @Override
-                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                        getUSMInstance().push(new GameScreen(myPort));
-                        super.touchDown(event, x, y, pointer, button);
-                    }
-                });
-
-                Button cancelButton = new TextButton("C A N C E L", mySkin, "small");
-
-
-                // Setup dialog to ask for room code
-                Dialog dialog = new Dialog("Room code", mySkin) {
-                    protected void result(Object object) {
-                        if (object.equals(true) && !(textField.getText().isEmpty())) {
-                            code = textField.getText();
-                            System.out.println(code);
-                            myPort=sendRequest(code);
-                        }
-                    }
-                };
-                dialog.getContentTable().add(label);
-                dialog.getContentTable().add(textField);
-                dialog.key(Input.Keys.ENTER, true).key(Input.Keys.ESCAPE, false);
-                dialog.button(confirmButton, true);
-                dialog.button(cancelButton, false);
-                dialog.setSize(1000, GAME_HEIGHT / 2.0f);
-                dialog.show(stage);
-
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                getUSMInstance().push(new GameSelectionScreen());
                 super.touchUp(event, x, y, pointer, button);
             }
         });
 
 
+        list = new List<String>(mySkin);
+        String[] strings = new String[20];
+        for (int i = 0, k = 0; i < 20; i++) {
+            strings[k++] = "String: " + i;
+        }
+        list.setItems(strings);
+        scrollPane = new ScrollPane(list);
+        scrollPane.setBounds(0, 0, GAME_WIDTH/2.0f - 100, GAME_HEIGHT/2.0f);
+        scrollPane.setSmoothScrolling(false);
+        scrollPane.setPosition((GAME_WIDTH - 170) / 2.0f, (GAME_HEIGHT - 10) / 2.0f - 300);
+        scrollPane.setTransform(true);
+        //scrollPane.setScale(0.5f);
+
+
+
         stage.addActor(gameTitle);
-        stage.addActor(soloBtn);
-        stage.addActor(multiplayerButton);
+        stage.addActor(createBtn);
+        stage.addActor(refreshBtn);
+        stage.addActor(randomBtn);
+        stage.addActor(backBtn);
+        stage.addActor(scrollPane);
     }
 
     public int sendRequest(String roomCode){
