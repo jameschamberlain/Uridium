@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.Uridium;
+import net.uridium.game.util.Audio;
 import net.uridium.game.util.GameConstants;
 import net.uridium.game.util.MyAssetManager;
 
@@ -41,6 +42,8 @@ public class MenuScreen extends UridiumScreen {
 
 
     public MenuScreen(){
+
+        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
@@ -153,6 +156,13 @@ public class MenuScreen extends UridiumScreen {
         stage.act();
         stage.draw();
     }
+
+
+
+
+
+
+
 
     public void dispose() {
         mySkin.dispose();

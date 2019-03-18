@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
 public class Audio {
-    private static Audio instance = new Audio();
+    public static Audio instance = new Audio();
     public static Audio getAudioInstance() { return instance; }
-    private Audio() {}
+    public Audio() {}
 
     public void libPlayLoop(String fileLocation){
         Sound wavSound = Gdx.audio.newSound(Gdx.files.internal(fileLocation));

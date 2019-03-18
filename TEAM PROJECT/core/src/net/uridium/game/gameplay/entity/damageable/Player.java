@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player extends DamageableEntity {
     int score = 0;
+    public boolean isDead = false;
 
     public long lastShot = 0;
     private long reloadTime = 250;

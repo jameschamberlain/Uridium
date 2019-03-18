@@ -14,12 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import net.uridium.game.util.Audio;
 import net.uridium.game.util.MyAssetManager;
 import net.uridium.game.screen.MenuScreen;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
+import net.uridium.game.util.Audio;
 
 public class AudioScreen extends SettingsScreen {
 
@@ -113,6 +115,7 @@ public class AudioScreen extends SettingsScreen {
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Pause");
                 //getUSMInstance().push(new SettingsScreen());
+                Audio.getAudioInstance().muteMasterVolume();
                 super.touchDown(event, x, y, pointer, button);
             }
         });

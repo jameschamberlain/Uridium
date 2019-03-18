@@ -3,6 +3,8 @@ package net.uridium.game.server;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.LevelFactory;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.screen.GameOver;
+import net.uridium.game.screen.SettingsScreen;
 import net.uridium.game.server.msg.*;
 
 import java.io.*;
@@ -13,6 +15,8 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class Server{
     //Here is for network

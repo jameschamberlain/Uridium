@@ -16,7 +16,6 @@ import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.HealthBar;
 import net.uridium.game.ui.InGameUI;
 import net.uridium.game.ui.Scoreboard;
-import net.uridium.game.util.Audio;
 
 import java.io.*;
 import java.net.Socket;
@@ -50,7 +49,6 @@ public class GameScreen extends UridiumScreen {
     @Override
     public void init() {
         setCursor("crossair_white.png", 32, 32);
-        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
             s = new Socket("localhost",9988);
@@ -170,6 +168,7 @@ public class GameScreen extends UridiumScreen {
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 screenY = GAME_HEIGHT - screenY;
                 shoot(screenX, screenY);
+
                 return true;
             }
         });
@@ -196,9 +195,6 @@ public class GameScreen extends UridiumScreen {
                 PlayerScoreData data = (PlayerScoreData) msg.getData();
                 level.updateScore(data);
                 scoreboard.setScore(data.playerID, data.score);
-                break;
-            case PLAYER_HEALTH:
-                level.updateHealth((PlayerHealthData) msg.getData());
                 break;
         }
     }

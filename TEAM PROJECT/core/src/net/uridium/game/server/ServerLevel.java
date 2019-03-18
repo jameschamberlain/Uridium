@@ -13,6 +13,7 @@ import net.uridium.game.gameplay.entity.projectile.Projectile;
 import net.uridium.game.gameplay.tile.BreakableTile;
 import net.uridium.game.gameplay.tile.DoorTile;
 import net.uridium.game.gameplay.tile.Tile;
+import net.uridium.game.screen.GameOver;
 import net.uridium.game.server.msg.*;
 
 import java.lang.reflect.Array;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class ServerLevel {
     int id;
@@ -362,6 +364,8 @@ public class ServerLevel {
         for(Entity e : entities.values()) {
             e.update(delta);
 
+
+
             if(e instanceof Player)
                 checkCollisionsForPlayer((Player) e);
             else if(e instanceof Projectile)
@@ -371,8 +375,9 @@ public class ServerLevel {
             else if(e instanceof EnemySpawner)
                 handleEnemySpawner((EnemySpawner) e);
 
-            if(e.checkChanged())
+            if(e.checkChanged()) {
                 msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
+            }
         }
 
         purgeEntities();
