@@ -31,7 +31,7 @@ public class SettingsScreen extends MenuScreen {
     Texture bgTexture;
     TextureRegion bg;
 
-    public SettingsScreen() {
+    SettingsScreen() {
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
@@ -59,13 +59,11 @@ public class SettingsScreen extends MenuScreen {
         volBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Volume Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Vol");
                 getUSMInstance().push(new AudioScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -79,7 +77,6 @@ public class SettingsScreen extends MenuScreen {
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Back Clicked");
                 return true;
 
             }

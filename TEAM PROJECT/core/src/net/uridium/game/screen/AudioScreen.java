@@ -33,7 +33,7 @@ public class AudioScreen extends SettingsScreen {
     Texture bgTexture;
     TextureRegion bg;
 
-    public AudioScreen() {
+    AudioScreen() {
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
@@ -63,13 +63,11 @@ public class AudioScreen extends SettingsScreen {
         plusBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Plus Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Plus");
                 //getUSMInstance().push(new SettingsScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -83,13 +81,11 @@ public class AudioScreen extends SettingsScreen {
         minusBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Minus Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Minus");
                 //getUSMInstance().push(new SettingsScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -102,7 +98,6 @@ public class AudioScreen extends SettingsScreen {
         pauseBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Pause Clicked");
                 return true;
             }
 

@@ -33,20 +33,13 @@ public class GameSelectionScreen extends UridiumScreen {
 
     private Skin mySkin;
     private Stage stage;
-    private String input;
-    private int myPort;
-    Texture bgTexture;
-    TextureRegion bg;
-
-    // ROOM CODE!
-    public String code = "";
+    private TextureRegion bg;
 
 
-    public GameSelectionScreen() {
+    GameSelectionScreen() {
         setCursor("cursor.png", 0, 0);
-        myPort = 0;
         // Setup textures and background.
-        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
+        Texture bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -140,25 +133,6 @@ public class GameSelectionScreen extends UridiumScreen {
         stage.addActor(soloBtn);
         stage.addActor(multiplayerButton);
         stage.addActor(backBtn);
-    }
-
-    public int sendRequest(String roomCode){
-        int port=0;
-        try {
-            Socket s = new Socket("127.0.0.1",9966);
-            PrintStream ps = new PrintStream(s.getOutputStream());
-            ps.println(roomCode);
-            System.out.println("Sent!!!");
-            BufferedReader bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            port = Integer.valueOf(bfr.readLine());
-            System.out.println("receive"+port);
-            new Server(port);
-            System.out.println("Server Starts");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return port;
-
     }
 
     @Override
