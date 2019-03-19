@@ -22,6 +22,7 @@ import java.net.Socket;
 import java.util.Collection;
 
 import static net.uridium.game.Uridium.*;
+import static net.uridium.game.res.Textures.*;
 
 public class GameScreen extends UridiumScreen {
     Socket s;
@@ -53,7 +54,7 @@ public class GameScreen extends UridiumScreen {
 
 
     public void init(int port) {
-        setCursor("crossair_white.png", 32, 32);
+        setCursor(GAME_CURSOR, 32, 32);
 //        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
@@ -83,7 +84,7 @@ public class GameScreen extends UridiumScreen {
 //        healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
         scoreboard = new Scoreboard();
 
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -261,7 +262,6 @@ public class GameScreen extends UridiumScreen {
             ui.render(batch, level.getPlayer());
             if(Gdx.input.isKeyPressed(Input.Keys.TAB)) scoreboard.render(batch);
         }
-
         batch.end();
     }
 

@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.util.Colors;
 
+import static net.uridium.game.res.Textures.BULLET;
+
 public class Bullet extends Projectile {
     public static final float BULLET_WIDTH = 25.5f;
     public static final float BULLET_HEIGHT = 32.5f;
@@ -22,11 +24,11 @@ public class Bullet extends Projectile {
     float rot;
 
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, int ownerID) {
-        this(ID, spawnPos, shootAngle, 350, "wrench.png", ownerID);
+        this(ID, spawnPos, shootAngle, 350, BULLET, ownerID);
     }
 
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, float velocity, int ownerID) {
-        this(ID, spawnPos, shootAngle, velocity, "wrench.png", ownerID);
+        this(ID, spawnPos, shootAngle, velocity, BULLET, ownerID);
     }
 
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, float velocity, String textureFile, int ownerID) {
@@ -37,7 +39,7 @@ public class Bullet extends Projectile {
     }
 
     public Bullet(int ID, Vector2 spawnPos, Vector2 vel, int ownerID) {
-        super(ID, new Rectangle(spawnPos.x, spawnPos.y, BULLET_WIDTH, BULLET_HEIGHT), vel, "wrench.png", ownerID);
+        super(ID, new Rectangle(spawnPos.x, spawnPos.y, BULLET_WIDTH, BULLET_HEIGHT), vel, BULLET, ownerID);
 
         rot = 0;
     }

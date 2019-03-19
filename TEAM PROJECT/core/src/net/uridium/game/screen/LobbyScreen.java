@@ -23,7 +23,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
-import static net.uridium.game.Uridium.*;
+import static net.uridium.game.Uridium.setCursor;
+import static net.uridium.game.res.Textures.*;
+import static net.uridium.game.res.Dimens.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class LobbyScreen extends UridiumScreen {
@@ -33,20 +35,21 @@ public class LobbyScreen extends UridiumScreen {
 
     private Skin mySkin;
     private Stage stage;
-    private String input;
     private int myPort;
-    Texture bgTexture;
-    TextureRegion bg;
+    private TextureRegion bg;
 
     // ROOM CODE!
-    public String code = "";
+    private String code = "";
 
 
-    public LobbyScreen() {
-        setCursor("cursor.png", 0, 0);
+    /**
+     * Constructor for a new lobby screen.
+     */
+    LobbyScreen() {
+        setCursor(MENU_CURSOR, 0, 0);
         myPort = 0;
         // Setup textures and background.
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        Texture bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -55,7 +58,7 @@ public class LobbyScreen extends UridiumScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("skin/glassy-ui.json");
+        mySkin = myAssetManager.manager.get(SKIN);
 
         // Setup camera.
         camera = new OrthographicCamera();
@@ -68,21 +71,56 @@ public class LobbyScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        // Setup window.
-        Label gameTitle = new Label("U R I D I U M", mySkin, "big");
-        gameTitle.setSize(1280, 360);
-        gameTitle.setPosition(0, 360);
-        gameTitle.setFontScale(1.4f);
+        // Setup game title label.
+        Label gameTitle = setupGameTitle();
+        // Setup create button.
+        Button createBtn = setupCreateButton();
+        // Setup refresh button.
+        Button refreshBtn = setupRefreshButton();
+        // Setup random button.
+        Button randomBtn = setupRandomButton();
+        // Setup back button.
+        Button backBtn = setupBackButton();
+        // Setup room list.
+        ScrollPane roomList = setupRoomList();
+
+        // Add title, buttons and room list to the screen.
+        stage.addActor(gameTitle);
+        stage.addActor(createBtn);
+        stage.addActor(refreshBtn);
+        stage.addActor(randomBtn);
+        stage.addActor(backBtn);
+        stage.addActor(roomList);
+    }
+
+
+    /**
+     * Setup the game title label.
+     *
+     * @return The game title label.
+     */
+    private Label setupGameTitle() {
+        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
+        gameTitle.setSize(TITLE_WIDTH, TITLE_HEIGHT);
+        gameTitle.setPosition(TITLE_X, TITLE_Y);
+        gameTitle.setFontScale(TITLE_FONT_SCALE);
         gameTitle.setAlignment(Align.center);
+        return gameTitle;
+    }
 
-        // Setup solo button.
-        Button soloBtn = new TextButton("S O L O", mySkin, "small");
-        soloBtn.setSize(340, 80);
-        soloBtn.setPosition((GAME_WIDTH - 340) / 2.0f, (GAME_HEIGHT - 80) / 2.0f);
-        ((TextButton) soloBtn).getLabel().setFontScale(1.4f);
-//        soloBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        // Listener for start button.
-        soloBtn.addListener(new InputListener() {
+
+    /**
+     * Setup the create button.
+     * Creates a new room.
+     *
+     * @return The create button.
+     */
+    private Button setupCreateButton() {
+        Button createBtn = new TextButton("C R E A T E", mySkin);
+        createBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        createBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y);
+        // Listener for click events.
+        createBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -90,40 +128,26 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                try {
-                    new Server();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                getUSMInstance().push(new GameScreen());
-                super.touchDown(event, x, y, pointer, button);
-            }
-        });
+                // Label to describe dialog.
+                Label descriptionLabel = new Label("Enter room ID", mySkin);
+                descriptionLabel.setAlignment(Align.center);
+                descriptionLabel.setColor(Color.BLACK);
 
-        // Setup multiplayer button.
-        Button multiplayerButton = new TextButton("M U L T I P L A Y E R", mySkin, "small");
-        multiplayerButton.setSize(340, 80);
-        multiplayerButton.setPosition((GAME_WIDTH - 340) / 2.0f, (GAME_HEIGHT - 80) / 2.0f - (80 + 20));
-        ((TextButton) multiplayerButton).getLabel().setFontScale(1.4f);
-//        multiplayerButton.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        // Listener for multiplayer button.
-        multiplayerButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
-                Label label = new Label("Enter room ID", mySkin);
-                label.setAlignment(Align.center);
-                label.setColor(Color.BLACK);
-
+                // Text field for user input.
                 TextField textField = new TextField("", mySkin);
 
-                Button confirmButton = new TextButton("C O N F I R M", mySkin, "small");
+                // Setup cancel button.
+                Label cancelLabel = new Label("CANCEL", mySkin, "button");
+                cancelLabel.setFontScale(DIALOG_BUTTON_FONT_SCALE);
+                Button cancelButton = new Button(mySkin);
+                cancelButton.add(cancelLabel);
 
+                // Setup confirm button.
+                Label confirmLabel = new Label("CONFIRM", mySkin, "button");
+                confirmLabel.setFontScale(DIALOG_BUTTON_FONT_SCALE);
+                Button confirmButton = new Button(mySkin);
+                confirmButton.add(confirmLabel);
+                // Listener for click events.
                 confirmButton.addListener(new InputListener() {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -137,50 +161,154 @@ public class LobbyScreen extends UridiumScreen {
                     }
                 });
 
-                Button cancelButton = new TextButton("C A N C E L", mySkin, "small");
-
-
                 // Setup dialog to ask for room code
-                Dialog dialog = new Dialog("Room code", mySkin) {
+                Dialog dialog = new Dialog("Room ID", mySkin) {
                     protected void result(Object object) {
                         if (object.equals(true) && !(textField.getText().isEmpty())) {
                             code = textField.getText();
                             System.out.println(code);
-                            myPort=sendRequest(code);
+                            myPort = sendRequest(code);
                         }
                     }
                 };
-                dialog.getContentTable().add(label);
+                dialog.getContentTable().add(descriptionLabel);
                 dialog.getContentTable().add(textField);
+                dialog.getContentTable().pad(DIALOG_PADDING);
+                dialog.getButtonTable().pad(DIALOG_PADDING);
                 dialog.key(Input.Keys.ENTER, true).key(Input.Keys.ESCAPE, false);
                 dialog.button(confirmButton, true);
                 dialog.button(cancelButton, false);
-                dialog.setSize(1000, GAME_HEIGHT / 2.0f);
+                dialog.setSize(DIALOG_WIDTH, DIALOG_HEIGHT);
+                dialog.setMovable(false);
                 dialog.show(stage);
 
                 super.touchUp(event, x, y, pointer, button);
             }
         });
-
-
-        stage.addActor(gameTitle);
-        stage.addActor(soloBtn);
-        stage.addActor(multiplayerButton);
+        return createBtn;
     }
 
-    public int sendRequest(String roomCode){
-        int port=0;
+
+    /**
+     * Setup the refresh button.
+     * Refreshes the list of rooms.
+     *
+     * @return The refresh button.
+     */
+    private Button setupRefreshButton() {
+        Button refreshBtn = new TextButton("R E F R E S H", mySkin);
+        refreshBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        refreshBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP);
+        // Listener for click events.
+        refreshBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        return refreshBtn;
+    }
+
+
+    /**
+     * Setup the random button.
+     * Joins a random room.
+     *
+     * @return The random button.
+     */
+    private Button setupRandomButton() {
+        Button randomBtn = new TextButton("R A N D O M", mySkin);
+        randomBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        randomBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 2);
+        // Listener for click events.
+        randomBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        return randomBtn;
+    }
+
+
+    /**
+     * Setup the back button.
+     * Returns the user to the game selection screen.
+     *
+     * @return The back button.
+     */
+    private Button setupBackButton() {
+        Button backBtn = new TextButton("B A C K", mySkin);
+        backBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        backBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 3);
+        // Listener for click events.
+        backBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                getUSMInstance().push(new GameSelectionScreen());
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        return backBtn;
+    }
+
+
+    /**
+     * Setup the room list scroll pane.
+     * Used for displaying the list of rooms.
+     *
+     * @return The room list scroll pane.
+     */
+    private ScrollPane setupRoomList() {
+        List<String> roomList = new List<>(mySkin);
+        String[] strings = new String[20];
+        for (int i = 0, k = 0; i < 20; i++) {
+            strings[k++] = "String: " + i;
+        }
+        roomList.setItems(strings);
+        ScrollPane scrollPane = new ScrollPane(roomList);
+        scrollPane.setBounds(0, 0, GAME_WIDTH / 2.0f - 100, GAME_HEIGHT / 2.0f);
+        scrollPane.setSmoothScrolling(false);
+        scrollPane.setPosition((GAME_WIDTH - 170) / 2.0f, (GAME_HEIGHT - 10) / 2.0f - 290);
+        scrollPane.setTransform(true);
+        return scrollPane;
+    }
+
+    /**
+     * Sends a request to the server to join a specific room.
+     *
+     * @param roomCode The code of the selected room.
+     * @return The port of the destination room.
+     */
+    private int sendRequest(String roomCode) {
+        int port = 0;
         try {
-            Socket s = new Socket("127.0.0.1",9966);
+            Socket s = new Socket("127.0.0.1", 9966);
             PrintStream ps = new PrintStream(s.getOutputStream());
             ps.println(roomCode);
             System.out.println("Sent!!!");
             BufferedReader bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
             port = Integer.valueOf(bfr.readLine());
-            System.out.println("receive"+port);
+            System.out.println("receive" + port);
             new Server(port);
             System.out.println("Server Starts");
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
         return port;

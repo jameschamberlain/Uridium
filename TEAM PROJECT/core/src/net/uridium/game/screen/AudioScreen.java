@@ -15,10 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.util.MyAssetManager;
-import net.uridium.game.screen.MenuScreen;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
+import static net.uridium.game.res.Textures.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class AudioScreen extends SettingsScreen {
@@ -33,10 +33,10 @@ public class AudioScreen extends SettingsScreen {
     Texture bgTexture;
     TextureRegion bg;
 
-    public AudioScreen() {
-        setCursor("cursor.png", 0, 0);
+    AudioScreen() {
+        setCursor(MENU_CURSOR, 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
+        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -45,7 +45,7 @@ public class AudioScreen extends SettingsScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("skin/glassy-ui.json");
+        mySkin = myAssetManager.manager.get(SKIN);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -56,56 +56,48 @@ public class AudioScreen extends SettingsScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Button plusBtn = new TextButton("  +  ", mySkin, "small");
+        Button plusBtn = new TextButton("  +  ", mySkin);
         plusBtn.setSize(80, 40);
         plusBtn.setPosition((GAME_WIDTH + 100)/2 , (GAME_HEIGHT +50 )/2);
-        ((TextButton) plusBtn).getLabel().setFontScale(1.4f);
        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         plusBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Plus Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Plus");
                 //getUSMInstance().push(new SettingsScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
 
-        Button minusBtn = new TextButton("  -  ", mySkin, "small");
+        Button minusBtn = new TextButton("  -  ", mySkin);
         minusBtn.setSize(80, 40);
         minusBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +50 )/2);
-        ((TextButton) minusBtn).getLabel().setFontScale(1.4f);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         minusBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Minus Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Minus");
                 //getUSMInstance().push(new SettingsScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        Button pauseBtn = new TextButton(" ||  ", mySkin, "small");
+        Button pauseBtn = new TextButton(" ||  ", mySkin);
         pauseBtn.setSize(80, 40);
         pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
-        ((TextButton) pauseBtn).getLabel().setFontScale(1.4f);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         pauseBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Pause Clicked");
                 return true;
             }
 
@@ -122,10 +114,9 @@ public class AudioScreen extends SettingsScreen {
 
 
 
-        Button backBtn = new TextButton("BACK", mySkin, "small");
+        Button backBtn = new TextButton("BACK", mySkin);
         backBtn.setSize(340, 80);
         backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
-        ((TextButton) backBtn).getLabel().setFontScale(1.4f);
         backBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         backBtn.addListener(new InputListener() {
             @Override

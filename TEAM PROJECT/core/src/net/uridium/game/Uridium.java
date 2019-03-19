@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.uridium.game.screen.GameScreen;
 import net.uridium.game.screen.MenuScreen;
+import net.uridium.game.screen.NewSplashScreen;
 import net.uridium.game.util.Audio;
 import net.uridium.game.util.Audio.*;
 
@@ -18,7 +19,7 @@ public class Uridium extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		getUSMInstance().push(new MenuScreen());
+		getUSMInstance().push(new NewSplashScreen());
 	}
 
 	@Override
