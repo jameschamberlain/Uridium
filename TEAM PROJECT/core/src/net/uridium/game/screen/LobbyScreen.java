@@ -38,8 +38,11 @@ public class LobbyScreen extends UridiumScreen {
     private int myPort;
     private TextureRegion bg;
 
+    private List<String> roomList;
+
     // ROOM CODE!
-    private String code = "";
+    private String roomCode = "";
+    private String tempRoomCode = "";
 
 
     /**
@@ -91,6 +94,7 @@ public class LobbyScreen extends UridiumScreen {
         stage.addActor(randomBtn);
         stage.addActor(backBtn);
         stage.addActor(roomList);
+        stage.unfocus(roomList);
     }
 
 
@@ -161,13 +165,13 @@ public class LobbyScreen extends UridiumScreen {
                     }
                 });
 
-                // Setup dialog to ask for room code
+                // Setup dialog to ask for room roomCode
                 Dialog dialog = new Dialog("Room ID", mySkin) {
                     protected void result(Object object) {
                         if (object.equals(true) && !(textField.getText().isEmpty())) {
-                            code = textField.getText();
-                            System.out.println(code);
-                            myPort = sendRequest(code);
+                            roomCode = textField.getText();
+                            System.out.println(roomCode);
+                            myPort = sendRequest(roomCode);
                         }
                     }
                 };
@@ -275,9 +279,10 @@ public class LobbyScreen extends UridiumScreen {
      * @return The room list scroll pane.
      */
     private ScrollPane setupRoomList() {
-        List<String> roomList = new List<>(mySkin);
-        String[] strings = new String[20];
-        for (int i = 0, k = 0; i < 20; i++) {
+        roomList = new List<>(mySkin);
+        String[] strings = new String[5];
+        strings[0] = "Rooms";
+        for (int i = 0, k = 1; i < 4; i++) {
             strings[k++] = "String: " + i;
         }
         roomList.setItems(strings);
@@ -286,13 +291,14 @@ public class LobbyScreen extends UridiumScreen {
         scrollPane.setSmoothScrolling(false);
         scrollPane.setPosition((GAME_WIDTH - 170) / 2.0f, (GAME_HEIGHT - 10) / 2.0f - 290);
         scrollPane.setTransform(true);
+        roomList.getSelected();
         return scrollPane;
     }
 
     /**
      * Sends a request to the server to join a specific room.
      *
-     * @param roomCode The code of the selected room.
+     * @param roomCode The roomCode of the selected room.
      * @return The port of the destination room.
      */
     private int sendRequest(String roomCode) {
@@ -322,7 +328,16 @@ public class LobbyScreen extends UridiumScreen {
 
     @Override
     public void update(float delta) {
+        if (roomList != null) {
+            if (!(roomList.getSelected().equals("Rooms"))) {
+                tempRoomCode = roomList.getSelected();
+                if (!(tempRoomCode.equals(roomCode))) {
+                    roomCode = tempRoomCode;
+                    System.out.println(roomList.getSelected());
+                }
+            }
 
+        }
     }
 
     @Override
