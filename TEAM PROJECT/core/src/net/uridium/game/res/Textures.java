@@ -69,4 +69,8 @@ public final class Textures {
      * Image for when the player is moving down.
      */
     public static final String PLAYER_DOWN = "/down.png";
+    /**
+     * Image for the piranha enemy.
+     */
+    public static final String PIRANHA = "piranha.png";
 }
