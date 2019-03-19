@@ -5,9 +5,11 @@ import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.server.msg.Msg;
 import net.uridium.game.server.msg.PlayerPowerupData;
 
+import static net.uridium.game.res.Textures.SHOOTING_POWERUP;
+
 public class ShootingSteroid extends Item {
     public ShootingSteroid(int ID, Rectangle body) {
-        super(ID, body, "orange_beaker.png");
+        super(ID, body, SHOOTING_POWERUP);
     }
 
     @Override

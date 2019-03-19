@@ -284,7 +284,7 @@ public class LobbyScreen extends UridiumScreen {
         ScrollPane scrollPane = new ScrollPane(roomList);
         scrollPane.setBounds(0, 0, GAME_WIDTH / 2.0f - 100, GAME_HEIGHT / 2.0f);
         scrollPane.setSmoothScrolling(false);
-        scrollPane.setPosition((GAME_WIDTH - 170) / 2.0f, (GAME_HEIGHT - 10) / 2.0f - 300);
+        scrollPane.setPosition((GAME_WIDTH - 170) / 2.0f, (GAME_HEIGHT - 10) / 2.0f - 290);
         scrollPane.setTransform(true);
         return scrollPane;
     }
