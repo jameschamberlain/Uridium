@@ -1,9 +1,14 @@
 package net.uridium.game.gameplay.ai;
 
+import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
+
 import java.awt.*;
 import java.util.*;
 
-class Pathfinder {
+import static net.uridium.game.gameplay.Level.TILE_WIDTH;
+
+public class Pathfinder {
 
 
     /**
@@ -23,27 +28,16 @@ class Pathfinder {
      * The maximum y value in the grid.
      */
     private int maxY;
-
+    private boolean isBrokenRoute = false;
 
     /**
-     *
      * Constructor for a new pathfinding object.
      *
-     * @param grid The grid for the world.
+     * @param obstacles The list of obstacles.
      */
-    Pathfinder(Grid grid) {
-        this.grid = grid;
-        this.map = grid.getGrid();
-        maxX = grid.getX() - 1;
-        maxY = grid.getY() - 1;
-    }
-
-
-    Pathfinder(Tuple gridSize, Point start, Point end, ArrayList<Point> obstacles) {
-        this.grid = new Grid(gridSize.getX(), gridSize.getY());
-        grid.addObject(new Object(ObjectType.START, start));
-        grid.addObject(new Object(ObjectType.END, end));
-        for(Point obstacle : obstacles) {
+    public Pathfinder(ArrayList<Vector2> obstacles, int gridWidth, int gridHeight) {
+        this.grid = new Grid(gridWidth - 2, gridHeight - 2);
+        for (Vector2 obstacle : obstacles) {
             grid.addObject(new Object(ObjectType.OBSTACLE, obstacle));
         }
         this.map = grid.getGrid();
@@ -53,15 +47,19 @@ class Pathfinder {
 
 
     /**
-     *
      * Uses the A* search algorithm to find a path
      * through the world from a start node to an
      * end node.
      *
+     * @param start     The start position.
+     * @param end       The end position.
+     *
      * @return An arraylist of coordinates for the route.
      */
-    ArrayList<Object> findPath() {
-        System.out.println(grid.toString());
+    public ArrayList<Vector2> findPath(Vector2 start, Vector2 end) {
+        // Add the start and end point to the grid.
+        grid.addObject(new Object(ObjectType.START, start));
+        grid.addObject(new Object(ObjectType.END, end));
         // Setup a list of visible paths.
         PriorityQueue<Object> paths = new PriorityQueue<Object>(10, new sortByF());
         Object currentNode = getStartNode();
@@ -79,8 +77,15 @@ class Pathfinder {
          While the goal has not been reached continue to travel
          through the world.
           */
+        //System.out.println(grid.toString());
         while (!hasReachedGoal) {
-            currentNode.setType(ObjectType.VISITED_PATH);
+            try {
+                currentNode.setType(ObjectType.VISITED_PATH);
+            }
+            catch (NullPointerException e) {
+                isBrokenRoute = true;
+                break;
+            }
             /*
             Use a control flow to check the surrounding nodes for available paths
             while also making sure that the algorithm doesn't attempt to process a node
@@ -160,24 +165,49 @@ class Pathfinder {
              */
             currentNode = paths.poll();
             paths.remove(0);
-            currentNode.setSymbol('Z');
-            if (currentNode.getType() == ObjectType.END) {
-                hasReachedGoal = true;
+            try {
+                if (currentNode.getType() == ObjectType.END) {
+                    hasReachedGoal = true;
+                }
+                else {
+                    currentNode.setSymbol('Z');
+                }
+            }
+            catch (NullPointerException e) {
+//                System.out.println("Problem with route");
+//                System.out.println("start: " + start);
+//                System.out.println("end: " + end);
+//                System.out.println(grid.toString());
+                isBrokenRoute = true;
             }
         }
         // Setup and populate a list of the route found.
-        ArrayList<Object> route = new ArrayList<>();
-        while (currentNode.getPrecedPoint() != null) {
-            route.add(currentNode);
-            currentNode = currentNode.getPrecedPoint();
+        ArrayList<Vector2> route = new ArrayList<>();
+        // If route breaks, just don't move
+        if (isBrokenRoute) {
+            route.clear();
+            float tempX =  140.0f + (start.x - 1) * TILE_WIDTH;
+            float tempY =  140.0f + (start.y - 1) * TILE_WIDTH;
+            route.add(new Vector2(tempX, tempY));
         }
-        Collections.reverse(route);
+        else {
+            while (currentNode.getPrecedPoint() != null) {
+                route.add(currentNode.getPosition());
+                currentNode = currentNode.getPrecedPoint();
+            }
+            Collections.reverse(route);
+            for (int n = 0; n < route.size(); n++) {
+                // Convert between grid coordinates and pixels
+                Vector2 convertedCoord = Enemy.gridToPixel(route.get(n));
+                route.get(n).x = convertedCoord.x;
+                route.get(n).y = convertedCoord.y;
+            }
+        }
         return route;
     }
 
 
     /**
-     *
      * Get the start node form the grid.
      *
      * @return The start node.
@@ -219,16 +249,14 @@ class Pathfinder {
 
 
     /**
-     *
      * Helper for calculating the heuristic.
      * Calculates pythagoras for two grid points.
      *
      * @param point1 A node from the grid.
      * @param point2 A node from the grid.
-     *
      * @return The result of the pythagoras calculation.
      */
-    private float calcPythag(Point point1, Point point2) {
+    private float calcPythag(Vector2 point1, Vector2 point2) {
         float xSquare = (point2.x - point1.x) * (point2.x - point1.x);
         float ySquare = (point2.y - point1.y) * (point2.y - point1.y);
         float addition = xSquare + ySquare;
@@ -237,12 +265,11 @@ class Pathfinder {
 
 
     /**
-     *
      * Adds nodes the the path priority queue.
      *
-     * @param point The location of the point to be added.
+     * @param point       The location of the point to be added.
      * @param currentNode The current node.
-     * @param paths The paths priority queue
+     * @param paths       The paths priority queue
      */
     private void addNodeToPath(Point point, Object currentNode, PriorityQueue<Object> paths) {
         int xVal = point.x;
@@ -259,6 +286,11 @@ class Pathfinder {
                 }
             }
         }
+    }
+
+
+    public void resetPaths() {
+        grid.resetGrid();
     }
 
 }
