@@ -1,12 +1,10 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.util.MyAssetManager;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
+import static net.uridium.game.res.Textures.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class SettingsScreen extends MenuScreen {
@@ -32,9 +30,9 @@ public class SettingsScreen extends MenuScreen {
     TextureRegion bg;
 
     SettingsScreen() {
-        setCursor("cursor.png", 0, 0);
+        setCursor(MENU_CURSOR, 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
+        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -42,7 +40,7 @@ public class SettingsScreen extends MenuScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("ice/skin/freezing-ui.json");
+        mySkin = myAssetManager.manager.get(SKIN);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);

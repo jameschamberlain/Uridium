@@ -15,10 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.util.MyAssetManager;
-import net.uridium.game.screen.MenuScreen;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
+import static net.uridium.game.res.Textures.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class AudioScreen extends SettingsScreen {
@@ -34,9 +34,9 @@ public class AudioScreen extends SettingsScreen {
     TextureRegion bg;
 
     AudioScreen() {
-        setCursor("cursor.png", 0, 0);
+        setCursor(MENU_CURSOR, 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
+        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -45,7 +45,7 @@ public class AudioScreen extends SettingsScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("ice/skin/freezing-ui.json");
+        mySkin = myAssetManager.manager.get(SKIN);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);

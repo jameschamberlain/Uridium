@@ -23,7 +23,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
-import static net.uridium.game.Uridium.*;
+import static net.uridium.game.Uridium.setCursor;
+import static net.uridium.game.res.Textures.*;
+import static net.uridium.game.res.Dimens.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class LobbyScreen extends UridiumScreen {
@@ -35,15 +37,6 @@ public class LobbyScreen extends UridiumScreen {
     private Stage stage;
     private int myPort;
     private TextureRegion bg;
-    private final float BUTTON_WIDTH = 255;
-    private final float BUTTON_HEIGHT = 80;
-    private final float BUTTON_X = (GAME_WIDTH - 170) / 5.0f;
-    private final float BUTTON_Y = (GAME_HEIGHT - 10) / 2.0f;
-    private final float BUTTON_GAP = 100;
-    private final float DIALOG_WIDTH = GAME_WIDTH / 1.2f;
-    private final float DIALOG_HEIGHT = GAME_HEIGHT / 2.0f;
-    private final float DIALOG_FONT_SCALE = 0.8f;
-    private final float DIALOG_PADDING = 20;
 
     // ROOM CODE!
     private String code = "";
@@ -53,10 +46,10 @@ public class LobbyScreen extends UridiumScreen {
      * Constructor for a new lobby screen.
      */
     LobbyScreen() {
-        setCursor("cursor.png", 0, 0);
+        setCursor(MENU_CURSOR, 0, 0);
         myPort = 0;
         // Setup textures and background.
-        Texture bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
+        Texture bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -65,7 +58,7 @@ public class LobbyScreen extends UridiumScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("ice/skin/freezing-ui.json");
+        mySkin = myAssetManager.manager.get(SKIN);
 
         // Setup camera.
         camera = new OrthographicCamera();
@@ -78,13 +71,8 @@ public class LobbyScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        // Setup window.
-        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
-        gameTitle.setSize(1280, 360);
-        gameTitle.setPosition(0, 360);
-        gameTitle.setFontScale(1.4f);
-        gameTitle.setAlignment(Align.center);
-
+        // Setup game title label.
+        Label gameTitle = setupGameTitle();
         // Setup create button.
         Button createBtn = setupCreateButton();
         // Setup refresh button.
@@ -107,6 +95,21 @@ public class LobbyScreen extends UridiumScreen {
 
 
     /**
+     * Setup the game title label.
+     *
+     * @return The game title label.
+     */
+    private Label setupGameTitle() {
+        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
+        gameTitle.setSize(TITLE_WIDTH, TITLE_HEIGHT);
+        gameTitle.setPosition(TITLE_X, TITLE_Y);
+        gameTitle.setFontScale(TITLE_FONT_SCALE);
+        gameTitle.setAlignment(Align.center);
+        return gameTitle;
+    }
+
+
+    /**
      * Setup the create button.
      * Creates a new room.
      *
@@ -114,9 +117,9 @@ public class LobbyScreen extends UridiumScreen {
      */
     private Button setupCreateButton() {
         Button createBtn = new TextButton("C R E A T E", mySkin);
-        createBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        createBtn.setPosition(BUTTON_X, BUTTON_Y);
-        // Listener for create button.
+        createBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        createBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y);
+        // Listener for click events.
         createBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -135,15 +138,16 @@ public class LobbyScreen extends UridiumScreen {
 
                 // Setup cancel button.
                 Label cancelLabel = new Label("CANCEL", mySkin, "button");
-                cancelLabel.setFontScale(DIALOG_FONT_SCALE);
+                cancelLabel.setFontScale(DIALOG_BUTTON_FONT_SCALE);
                 Button cancelButton = new Button(mySkin);
                 cancelButton.add(cancelLabel);
 
                 // Setup confirm button.
                 Label confirmLabel = new Label("CONFIRM", mySkin, "button");
-                confirmLabel.setFontScale(DIALOG_FONT_SCALE);
+                confirmLabel.setFontScale(DIALOG_BUTTON_FONT_SCALE);
                 Button confirmButton = new Button(mySkin);
                 confirmButton.add(confirmLabel);
+                // Listener for click events.
                 confirmButton.addListener(new InputListener() {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -156,7 +160,6 @@ public class LobbyScreen extends UridiumScreen {
                         super.touchDown(event, x, y, pointer, button);
                     }
                 });
-
 
                 // Setup dialog to ask for room code
                 Dialog dialog = new Dialog("Room ID", mySkin) {
@@ -194,9 +197,9 @@ public class LobbyScreen extends UridiumScreen {
      */
     private Button setupRefreshButton() {
         Button refreshBtn = new TextButton("R E F R E S H", mySkin);
-        refreshBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        refreshBtn.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP);
-        // Listener for multiplayer button.
+        refreshBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        refreshBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP);
+        // Listener for click events.
         refreshBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -220,9 +223,9 @@ public class LobbyScreen extends UridiumScreen {
      */
     private Button setupRandomButton() {
         Button randomBtn = new TextButton("R A N D O M", mySkin);
-        randomBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        randomBtn.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP * 2);
-        // Listener for multiplayer button.
+        randomBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        randomBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 2);
+        // Listener for click events.
         randomBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -246,8 +249,9 @@ public class LobbyScreen extends UridiumScreen {
      */
     private Button setupBackButton() {
         Button backBtn = new TextButton("B A C K", mySkin);
-        backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        backBtn.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP * 3);
+        backBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        backBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 3);
+        // Listener for click events.
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

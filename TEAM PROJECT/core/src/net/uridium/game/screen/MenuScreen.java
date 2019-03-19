@@ -1,16 +1,11 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,12 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import net.uridium.game.Uridium;
-import net.uridium.game.util.GameConstants;
 import net.uridium.game.util.MyAssetManager;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-import static net.uridium.game.Uridium.*;
+import static net.uridium.game.Uridium.setCursor;
+import static net.uridium.game.res.Textures.*;
+import static net.uridium.game.res.Dimens.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class MenuScreen extends UridiumScreen {
@@ -40,10 +34,10 @@ public class MenuScreen extends UridiumScreen {
     TextureRegion bg;
 
 
-    public MenuScreen(){
-        setCursor("cursor.png", 0, 0);
+    public MenuScreen() {
+        setCursor(MENU_CURSOR, 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal("ice/textures/iceWaterDeepAlt.png"));
+        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -51,7 +45,7 @@ public class MenuScreen extends UridiumScreen {
         MyAssetManager myAssetManager = new MyAssetManager();
         myAssetManager.queueAddSkin();
         myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get("ice/skin/freezing-ui.json");
+        mySkin = myAssetManager.manager.get(SKIN);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
@@ -62,17 +56,48 @@ public class MenuScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Label gameTitle = new Label("U R I D I U M",mySkin, "title");
-        gameTitle.setSize(1280, 360);
-        gameTitle.setPosition(0, 360);
-        gameTitle.setFontScale(1.4f);
-        gameTitle.setAlignment(Align.center);
+        // Setup game title label.
+        Label gameTitle = setupGameTitle();
+        // Setup play button.
+        Button playBtn = setupPlayButton();
+        // Setup the settings button.
+        Button settingsBtn = setupSettingsButton();
+        // Setup the exit button.
+        Button exitBtn = setupExitButton();
 
-        Button startBtn = new TextButton("P L A Y",mySkin);
-        startBtn.setSize(340,80);
-        startBtn.setPosition((GAME_WIDTH - 340) / 2.0f,(GAME_HEIGHT - 80) / 2.0f);
-//        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        startBtn.addListener(new InputListener(){
+        // Add title and buttons to the screen.
+        stage.addActor(gameTitle);
+        stage.addActor(playBtn);
+        stage.addActor(settingsBtn);
+        stage.addActor(exitBtn);
+    }
+
+    /**
+     * Setup the game title label.
+     *
+     * @return The game title label.
+     */
+    private Label setupGameTitle() {
+        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
+        gameTitle.setSize(TITLE_WIDTH, TITLE_HEIGHT);
+        gameTitle.setPosition(TITLE_X, TITLE_Y);
+        gameTitle.setFontScale(TITLE_FONT_SCALE);
+        gameTitle.setAlignment(Align.center);
+        return gameTitle;
+    }
+
+    /**
+     * Setup the play button.
+     * Enters into the game selection screen.
+     *
+     * @return The play button.
+     */
+    private Button setupPlayButton() {
+        Button playBtn = new TextButton("P L A Y", mySkin);
+        playBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        playBtn.setPosition(BUTTON_X, BUTTON_Y);
+        // Listener for click events.
+        playBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -84,12 +109,22 @@ public class MenuScreen extends UridiumScreen {
                 super.touchDown(event, x, y, pointer, button);
             }
         });
+        return playBtn;
+    }
 
-        Button settingsBtn = new TextButton("S E T T I N G S",mySkin);
-        settingsBtn.setSize(340, 80);
-        settingsBtn.setPosition((GAME_WIDTH - 340) / 2.0f,(GAME_HEIGHT - 80) / 2.0f - (80 + 20));
-//        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        settingsBtn.addListener(new InputListener(){
+
+    /**
+     * Setup the settings button.
+     * Enters into the settings screen.
+     *
+     * @return The settings button.
+     */
+    private Button setupSettingsButton() {
+        Button settingsBtn = new TextButton("S E T T I N G S", mySkin);
+        settingsBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        settingsBtn.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP);
+        // Listener for click events.
+        settingsBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -101,12 +136,22 @@ public class MenuScreen extends UridiumScreen {
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+        return settingsBtn;
+    }
 
+
+    /**
+     * Setup the exits button.
+     * Exits the game.
+     *
+     * @return The exit button.
+     */
+    private Button setupExitButton() {
         Button exitBtn = new TextButton("E X I T", mySkin);
-        exitBtn.setSize(340, 80);
-        exitBtn.setPosition((GAME_WIDTH - 340) / 2.0f,(GAME_HEIGHT - 80) / 2.0f - (80 + 20) * 2);
-//        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        exitBtn.addListener(new InputListener(){
+        exitBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        exitBtn.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP * 2);
+        // Listener for click events.
+        exitBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -118,11 +163,7 @@ public class MenuScreen extends UridiumScreen {
                 super.touchUp(event, x, y, pointer, button);
             }
         });
-
-        stage.addActor(gameTitle);
-        stage.addActor(startBtn);
-        stage.addActor(settingsBtn);
-        stage.addActor(exitBtn);
+        return exitBtn;
     }
 
     @Override
@@ -137,7 +178,7 @@ public class MenuScreen extends UridiumScreen {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(1,0,0,0);
+        Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
