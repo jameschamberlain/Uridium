@@ -1,11 +1,9 @@
 {
   "grid": {
     "width": 15,
-    "height": 10,
+    "height": 8,
     "rows": [
       "WWWWWWWWWWWWWWW",
-      "W             W",
-      "W   OOO       W",
       "W   OOO   OO  W",
       "W   OOO   O   W",
       "W   OOO       W",
@@ -15,32 +13,38 @@
       "WWWWWWWDWWWWWWW"
     ]
   },
-  "playerSpawns": [
+  "entrances": [
     {
-      "x": 2,
-      "y": 4
-    },
-    {
-      "x": 3,
-      "y": 4
-    },
-    {
-      "x": 4,
-      "y": 4
+      "x": 7,
+      "y": 1
     }
   ],
-  "enemies": [
+  "spawners": [
     {
-      "type": "chicken",
-      "x": 8,
-      "y": 4
+      "types": [
+        "PINK_FISH"
+      ],
+      "x": 11,
+      "y": 6,
+      "numEnemies": 5,
+      "spawnRate": 1200
+    },
+    {
+      "types": [
+        "SPIDER"
+      ],
+      "x": 4,
+      "y": 5,
+      "numEnemies": 12,
+      "spawnRate": 400
     }
   ],
   "doors": [
     {
       "x": 7,
       "y": 0,
-      "dest": 1
+      "dest": 1,
+      "entrance": 2
     }
   ],
   "name": "The Start",

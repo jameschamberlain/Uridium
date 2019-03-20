@@ -6,8 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.ai.Pathfinder;
 import net.uridium.game.gameplay.entity.EnemySpawner;
 import net.uridium.game.gameplay.entity.Entity;
-import net.uridium.game.gameplay.entity.damageable.Enemy;
+import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.gameplay.entity.item.Heal;
+import net.uridium.game.gameplay.entity.item.Item;
+import net.uridium.game.gameplay.entity.item.MovementSteroid;
+import net.uridium.game.gameplay.entity.item.ShootingSteroid;
 import net.uridium.game.gameplay.entity.projectile.Bullet;
 import net.uridium.game.gameplay.entity.projectile.Projectile;
 import net.uridium.game.gameplay.tile.BreakableTile;
@@ -15,15 +19,12 @@ import net.uridium.game.gameplay.tile.DoorTile;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
@@ -38,26 +39,29 @@ public class ServerLevel {
     ArrayList<Integer> entityIDsToRemove;
     ArrayList<Integer> playerIDs;
 
-    ArrayList<Vector2> playerSpawnLocations;
+    ArrayList<Vector2> entrances;
 
     BlockingQueue<Msg> msgs;
 
-    int nextEntityID;
+    int nextEntityID = 4;
     Random r;
 
     private boolean shouldChangeLevel;
     private int newLevelId;
+    private int nextLevelEntrance;
 
-    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations) {
-        this(id, grid, gridWidth, gridHeight, playerSpawnLocations, new ArrayList<>());
+    private long enteredTime = 0;
+
+    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> entrances) {
+        this(id, grid, gridWidth, gridHeight, entrances, new ArrayList<>());
     }
 
-    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> playerSpawnLocations, ArrayList<EnemySpawner> spawners) {
+    public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> entrances, ArrayList<EnemySpawner> spawners) {
         this.id = id;
         this.grid = grid;
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
-        this.playerSpawnLocations = playerSpawnLocations;
+        this.entrances = entrances;
 
         entityIDsToRemove = new ArrayList<>();
         playerIDs = new ArrayList<>();
@@ -68,14 +72,29 @@ public class ServerLevel {
         r = new Random();
 
         for(EnemySpawner spawner : spawners) {
-            spawner.setID(getNextEntityID());
+            int spawnerId = getNextEntityID();
+            spawner.setID(spawnerId);
             addEntity(spawner);
+//            System.out.println("added spawner, id => " + spawnerId);
+        }
+
+        printEntities();
+    }
+
+    public void printEntities() {
+        for(Entity e : entities.values()) {
+            System.out.println(e instanceof EnemySpawner);
         }
     }
 
+    public void setEnteredTime(long enteredTime) {
+        this.enteredTime = enteredTime;
+    }
 
-    public Vector2 getNewPlayerSpawn() {
-        return playerSpawnLocations.get(playerIDs.size());
+    public Vector2 getEntrance(int entrance) {
+        Vector2 pos = entrances.get(entrance - 1);
+
+        return entrances.get(entrance - 1);
     }
 
     public int getNextEntityID() {
@@ -88,6 +107,7 @@ public class ServerLevel {
     }
 
     public void addEntity(Entity entity) {
+//        if(entities.containsKey(entity.getID())) entity.setID(getNextEntityID());
         entities.put(entity.getID(), entity);
         msgs.add(new Msg(Msg.MsgType.NEW_ENTITY, entity));
 
@@ -96,7 +116,7 @@ public class ServerLevel {
 
             for(Integer i : playerIDs) {
                 Player p = (Player) entities.get(i);
-                msgs.add(new Msg(Msg.MsgType.PLAYER_SCORE, new PlayerScoreData(p.getID(), p.getScore())));
+                msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(p.getID(), p.getScore(), p.getLevel(), p.getXp(), p.getXpToLevelUp(), false)));
             }
 
             retargetEnemies();
@@ -160,6 +180,10 @@ public class ServerLevel {
         return new LevelData(grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
     }
 
+    public int getNumPlayers() {
+        return playerIDs.size();
+    }
+
     public int getID() {
         return id;
     }
@@ -169,7 +193,7 @@ public class ServerLevel {
         addEntity(bullet);
     }
 
-    public boolean checkCollisionsForPlayer(Player player) {
+    public void checkCollisionsForPlayer(Player player) {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
 
@@ -191,17 +215,20 @@ public class ServerLevel {
                             player.setPosition(player.getLastPos());
                         }
 
-                        return true;
+                        return;
                     }
                 } else if (tile instanceof DoorTile) {
-                    obstacle = tile.getBody();
-                    int dest = ((DoorTile) tile).getDest();
+                    DoorTile door = (DoorTile) tile;
+                    obstacle = door.getBody();
+                    int dest = door.getDest();
+                    int entrance = door.getEntrance();
 
-                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel()) {
                         newLevelId = dest;
                         shouldChangeLevel = true;
+                        nextLevelEntrance = entrance;
 
-                        return true;
+                        return;
                     }
                 }
             }
@@ -215,15 +242,26 @@ public class ServerLevel {
                     entityIDsToRemove.add(enemy.getID());
                     player.damage(10 + 10 * new Random().nextInt(4));
                     msgs.add(new Msg(Msg.MsgType.PLAYER_HEALTH, new PlayerHealthData(player.getID(), player.getHealth(), player.getMaxHealth())));
-                    return true;
+                    return;
+                }
+            } else if(e instanceof Item) {
+                Item i = (Item) e;
+
+                if (Intersector.intersectRectangles(playerBody, i.getBody(), overlap)) {
+                    Msg m = i.onPlayerCollision(player);
+                    if(m != null) msgs.add(m);
+                    return;
                 }
             }
         }
 
-        return false;
+        if(playerBody.y + playerBody.height > gridHeight * TILE_HEIGHT || playerBody.y < 0)
+            player.setY(player.getLastPos().y);
+        else if(playerBody.x + playerBody.width > gridWidth * TILE_WIDTH || playerBody.x < 0)
+            player.setX(player.getLastPos().x);
     }
 
-    public boolean checkCollisionsForEnemy(Enemy enemy) {
+    public void checkCollisionsForEnemy(Enemy enemy) {
         Rectangle enemyBody = enemy.getBody();
         Rectangle overlap = new Rectangle();
 
@@ -245,16 +283,14 @@ public class ServerLevel {
                             enemy.setPosition(enemy.getLastPos());
                         }
 
-                        return true;
+                        return;
                     }
                 }
             }
         }
-
-        return false;
     }
 
-    public boolean checkCollisionsForProjectile(Projectile p) {
+    public void checkCollisionsForProjectile(Projectile p) {
         Rectangle projectileBody = p.getBody();
         Rectangle overlap = new Rectangle();
 
@@ -280,7 +316,7 @@ public class ServerLevel {
                             }
                         }
 
-                        return true;
+                        return;
                     }
                 }
             }
@@ -296,27 +332,30 @@ public class ServerLevel {
 
                     Player killer = getPlayer(p.getOwnerID());
                     killer.addScore(100);
-                    msgs.add(new Msg(Msg.MsgType.PLAYER_SCORE, new PlayerScoreData(killer.getID(), killer.getScore())));
+                    killer.addXp(2.5f);
+                    msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(killer.getID(), killer.getScore(), killer.getLevel(), killer.getXp(), killer.getXpToLevelUp(), killer.isLevelledUp())));
+                    killer.setLevelledUpFalse();
+
+                    //spawn item
+                    switch(r.nextInt(5)) {
+                        case 0:
+                            Heal h = new Heal(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
+                            addEntity(h);
+                            break;
+                        case 1:
+                            ShootingSteroid ss = new ShootingSteroid(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
+                            addEntity(ss);
+                            break;
+                        case 2:
+                            MovementSteroid ms = new MovementSteroid(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
+                            addEntity(ms);
+                            break;
+                    }
                 }
 
-                return true;
+                return;
             }
         }
-
-//        Rectangle playerBody = player.getBody();
-//        if(Intersector.intersectRectangles(bulletBody, playerBody, overlap)) {
-//            if (bullet.getEnemyBullet() == true){
-//                bulletsToRemove.add(bullet);
-//                player.setHealth(player.getHealth() - 1);
-//                if (player.getHealth() <= 0){
-//                    player.setIsDead(true);
-//                }
-//
-//            }
-//            return true;
-//        }
-
-        return false;
     }
 
     public ArrayList<Vector2> getObstacleGridPositionList() {
@@ -359,6 +398,8 @@ public class ServerLevel {
     }
 
     public void update(float delta) {
+        if(playerIDs.size() == 0) return;
+
         for(Entity e : entities.values()) {
             e.update(delta);
 
@@ -370,9 +411,16 @@ public class ServerLevel {
                 checkCollisionsForEnemy((Enemy) e);
             else if(e instanceof EnemySpawner)
                 handleEnemySpawner((EnemySpawner) e);
+            else if(e instanceof Item)
+                if(((Item) e).isUsed()) entityIDsToRemove.add(e.getID());
 
-            if(e.checkChanged())
-                msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
+            if(e.checkChanged()) {
+                if(e instanceof Enemy) {
+                    msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()), ((Enemy) e).getAngle())));
+                } else {
+                    msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
+                }
+            }
         }
 
         purgeEntities();
@@ -404,7 +452,19 @@ public class ServerLevel {
         return shouldChangeLevel ? newLevelId : -1;
     }
 
+    public int getNextLevelEntrance() {
+        return nextLevelEntrance;
+    }
+
     public void changedLevel() {
         shouldChangeLevel = false;
+    }
+
+    public boolean canChangeLevel() {
+        return System.currentTimeMillis() - enteredTime > 3000;
+    }
+
+    public Player.Colour getAvailColour() {
+        return Player.Colour.values()[playerIDs.size()];
     }
 }

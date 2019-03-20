@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public class PlayerHealthData implements Serializable {
     public int playerID;
-    public int health;
-    public int maxHealth;
+    public float health;
+    public float maxHealth;
 
-    public PlayerHealthData(int playerID, int health, int maxHealth) {
+    public PlayerHealthData(int playerID, float health, float maxHealth) {
         this.playerID = playerID;
         this.health = health;
         this.maxHealth = maxHealth;

@@ -3,6 +3,7 @@ package net.uridium.game.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import net.uridium.game.Uridium;
+import net.uridium.game.server.LobbyServer;
 import net.uridium.game.server.Server;
 
 import java.io.IOException;
@@ -20,9 +21,9 @@ public class DesktopLauncher {
 		config.title = "Uridium";
 
 		try {
-			Server s = new Server();
+			LobbyServer l = new LobbyServer();
 		} catch (IOException e) {
-			System.out.println("Server already exists. Connecting.");
+			System.out.println("Lobby server already exists.");
 		}
 
 		new LwjglApplication(new Uridium(), config);
