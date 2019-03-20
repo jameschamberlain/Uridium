@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
+import net.uridium.game.server.constant;
 import net.uridium.game.util.MyAssetManager;
 
 import java.io.BufferedReader;
@@ -90,11 +91,7 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                try {
-                    new Server();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
                 getUSMInstance().push(new GameScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -171,7 +168,7 @@ public class LobbyScreen extends UridiumScreen {
     public int sendRequest(String roomCode){
         int port=0;
         try {
-            Socket s = new Socket("127.0.0.1",9966);
+            Socket s = new Socket(constant.SERVER_IP,9966);
             PrintStream ps = new PrintStream(s.getOutputStream());
             ps.println(roomCode);
             System.out.println("Sent!!!");

@@ -20,7 +20,7 @@ public class LobbyLevel {
     private HashMap<String,int[]> rooms;
 
     public LobbyLevel() throws IOException {
-        ss = new ServerSocket(9966);
+        ss = new ServerSocket(constant.LOBBY_SERVER_PORT);
         rooms = new HashMap<String, int[]>();
         rooms.put("emp1",new int[]{9977, 0});
         rooms.put("emp2",new int[]{9933, 0});
