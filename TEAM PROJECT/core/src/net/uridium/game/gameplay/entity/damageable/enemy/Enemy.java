@@ -165,9 +165,11 @@ public abstract class Enemy extends DamageableEntity {
         double ceilY = Math.ceil(body.y);
         double floorY = Math.floor(body.y);
 
-        if (ceilX == nextPoint.x || floorX == nextPoint.x)
-            if (ceilY == nextPoint.y || floorY == nextPoint.y)
-                return true;
+        try {
+            if (ceilX == nextPoint.x || floorX == nextPoint.x)
+                if (ceilY == nextPoint.y || floorY == nextPoint.y)
+                    return true;
+        } catch (Exception e) {}
 
         return false;
     }

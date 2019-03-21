@@ -16,6 +16,7 @@ import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.InGameUI;
 import net.uridium.game.ui.Scoreboard;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 
 import java.io.*;
 import java.net.Socket;
@@ -55,7 +56,7 @@ public class GameScreen extends UridiumScreen {
 
     public void init(int port) {
         setCursor(GAME_CURSOR, 32, 32);
-//        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
             s = new Socket("localhost", port);
