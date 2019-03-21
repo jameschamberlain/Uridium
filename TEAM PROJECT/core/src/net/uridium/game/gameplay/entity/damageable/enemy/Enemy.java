@@ -75,7 +75,7 @@ public abstract class Enemy extends DamageableEntity {
     @Override
     public void update(float delta) {
         super.update(delta);
-        if (t == null) updatePathfinding(delta);
+        if (t == null && target != null && target.getHealth() > 0) updatePathfinding(delta);
         stateTime += delta;
     }
 
@@ -118,11 +118,13 @@ public abstract class Enemy extends DamageableEntity {
 
             // Check to see if the desired route is valid e.g. the start doesn't equal the end.
             if (!(pathfindingStart.equals(pathfindingEnd))) {
-                routeToPlayer = pathfinder.findPath(pathfindingStart, pathfindingEnd);
-                nextPoint = routeToPlayer.get(0);
-                routeToPlayer.remove(0);
+                try {
+                    routeToPlayer = pathfinder.findPath(pathfindingStart, pathfindingEnd);
+                    nextPoint = routeToPlayer.get(0);
+                    routeToPlayer.remove(0);
 
-                setVelocityFromAngle(calculateAngleToNextPoint());
+                    setVelocityFromAngle(calculateAngleToNextPoint());
+                } catch (Exception e) {}
             }
         }
 

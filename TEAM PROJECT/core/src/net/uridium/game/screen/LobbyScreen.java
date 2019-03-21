@@ -15,7 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
-import net.uridium.game.util.MyAssetManager;
+import net.uridium.game.ui.Background;
+import net.uridium.game.util.Assets;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,9 +25,9 @@ import java.io.PrintStream;
 import java.net.Socket;
 
 import static net.uridium.game.Uridium.setCursor;
-import static net.uridium.game.res.Textures.*;
-import static net.uridium.game.res.Dimens.*;
+import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
+import static net.uridium.game.util.Assets.*;
 
 public class LobbyScreen extends UridiumScreen {
 
@@ -38,27 +39,26 @@ public class LobbyScreen extends UridiumScreen {
     private int myPort;
     private TextureRegion bg;
 
+    private Background background;
+
     // ROOM CODE!
     private String code = "";
-
 
     /**
      * Constructor for a new lobby screen.
      */
-    LobbyScreen() {
+    public LobbyScreen(Background background) {
         setCursor(MENU_CURSOR, 0, 0);
         myPort = 0;
         // Setup textures and background.
-        Texture bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
+        Texture bgTexture = Assets.getTex((BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
 
-        // Setup asset manager.
-        MyAssetManager myAssetManager = new MyAssetManager();
-        myAssetManager.queueAddSkin();
-        myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get(SKIN);
+        mySkin = Assets.getAssets().getManager().get(SKIN);
+
+        this.background = background;
 
         // Setup camera.
         camera = new OrthographicCamera();
@@ -260,7 +260,7 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new GameSelectionScreen());
+                getUSMInstance().push(new GameSelectionScreen(background));
                 super.touchUp(event, x, y, pointer, button);
             }
         });

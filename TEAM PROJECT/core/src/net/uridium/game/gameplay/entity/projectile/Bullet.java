@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.util.Assets;
 import net.uridium.game.util.Colors;
 
 import static net.uridium.game.res.Textures.BULLET;
@@ -47,7 +48,7 @@ public class Bullet extends Projectile {
     @Override
     public void loadTexture() {
         Gdx.app.postRunnable(() -> {
-            t = new TextureRegion(new Texture(Gdx.files.internal(textureFile)));
+            t = new TextureRegion(Assets.getTex((textureFile)));
         });
     }
 

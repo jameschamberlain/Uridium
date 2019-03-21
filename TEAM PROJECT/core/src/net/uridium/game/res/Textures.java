@@ -1,50 +1,31 @@
 package net.uridium.game.res;
 
 public final class Textures {
-    /**
-     * Default skin in the game.
-     */
-    public static final String SKIN = "ice/skin/freezing-ui.json";
-    /**
-     * Image used on the splash screen.
-     */
-    public static final String SPLASH_SCREEN = "ice/splash_screen.png";
-    /**
-     * Background tile used in the menus and in-game.
-     */
-    public static final String BACKGROUND = "ice/textures/iceWaterDeepAlt.png";
-    /**
-     * Cursor used in menus.
-     */
-    public static final String MENU_CURSOR = "cursor.png";
-    /**
-     * Cursor used in-game.
-     */
-    public static final String GAME_CURSOR = "crosshair_white.png";
+
     /**
      * Image for the healing powerup.
      */
-    public static final String HEAL_POWERUP = "heal.png";
+    public static final String HEAL_POWERUP = "graphics/entity/item/heal.png";
     /**
      * Image for the movement powerup.
      */
-    public static final String MOVEMENT_POWERUP = "coffee.png";
+    public static final String MOVEMENT_POWERUP = "graphics/entity/item/coffee.png";
     /**
      * Image for the shooting powerup.
      */
-    public static final String SHOOTING_POWERUP = "orange_beaker.png";
+    public static final String SHOOTING_POWERUP = "graphics/entity/item/orange_beaker.png";
     /**
      * Image for the bullet.
      */
-    public static final String BULLET = "wrench.png";
+    public static final String BULLET = "graphics/entity/projectile/wrench.png";
     /**
      * Image for the spawn tile.
      */
-    public static final String SPAWN_TILE = "crate_01.png";
+    public static final String SPAWN_TILE = "graphics/entity/crate_01.png";
     /**
      * Path to folder with player animations.
      */
-    public static final String PLAYER_PATH = "player/";
+    public static final String PLAYER_PATH = "graphics/entity/player/";
     /**
      * Image for when the player is standing still.
      */
@@ -72,5 +53,5 @@ public final class Textures {
     /**
      * Image for the piranha enemy.
      */
-    public static final String PIRANHA = "piranha.png";
+    public static final String PIRANHA = "graphics/entity/enemy/piranha.png";
 }

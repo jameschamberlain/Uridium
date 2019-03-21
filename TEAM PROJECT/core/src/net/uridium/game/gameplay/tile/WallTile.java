@@ -6,6 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 public class WallTile extends Tile {
 
     public WallTile(int gridX, int gridY) {
-        super(gridX, gridY, "ice/textures/igloo.png", true);
+        super(gridX, gridY, "graphics/tile/igloo.png", true);
     }
 }

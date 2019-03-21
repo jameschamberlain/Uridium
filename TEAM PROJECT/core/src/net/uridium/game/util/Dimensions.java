@@ -1,6 +1,6 @@
-package net.uridium.game.res;
+package net.uridium.game.util;
 
-public final class Dimens {
+public final class Dimensions {
     // Game dimensions.
     public static final int GAME_WIDTH = 1280;
     public static final int GAME_HEIGHT = 720;

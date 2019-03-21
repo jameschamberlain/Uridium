@@ -28,6 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class ServerLevel {
     int id;
@@ -71,7 +72,7 @@ public class ServerLevel {
 
         r = new Random();
 
-        for(EnemySpawner spawner : spawners) {
+        for (EnemySpawner spawner : spawners) {
             int spawnerId = getNextEntityID();
             spawner.setID(spawnerId);
             addEntity(spawner);
@@ -82,7 +83,7 @@ public class ServerLevel {
     }
 
     public void printEntities() {
-        for(Entity e : entities.values()) {
+        for (Entity e : entities.values()) {
             System.out.println(e instanceof EnemySpawner);
         }
     }
@@ -100,7 +101,7 @@ public class ServerLevel {
     public int getNextEntityID() {
         int x = nextEntityID++;
 
-        if(entities.containsKey(x))
+        if (entities.containsKey(x))
             return getNextEntityID();
 
         return x;
@@ -111,37 +112,37 @@ public class ServerLevel {
         entities.put(entity.getID(), entity);
         msgs.add(new Msg(Msg.MsgType.NEW_ENTITY, entity));
 
-        if(entity instanceof Player) {
+        if (entity instanceof Player) {
             playerIDs.add(entity.getID());
 
-            for(Integer i : playerIDs) {
+            for (Integer i : playerIDs) {
                 Player p = (Player) entities.get(i);
                 msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(p.getID(), p.getScore(), p.getLevel(), p.getXp(), p.getXpToLevelUp(), false)));
             }
 
             retargetEnemies();
-        } else if(entity instanceof Enemy) {
+        } else if (entity instanceof Enemy) {
             Enemy enemy = (Enemy) entity;
             enemy.setPathfinder(new Pathfinder(getObstacleGridPositionList(), gridWidth, gridHeight));
 
-            Player player;
-            if((player = getClosestPlayerToEnemy(enemy)) != null)
-                enemy.setTarget(player);
+            enemy.setTarget(getClosestPlayerToEnemy(enemy));
         }
     }
 
     public void retargetEnemies() {
-        for(Entity e : entities.values()) {
-            if(e instanceof Enemy) {
+        for (Entity e : entities.values()) {
+            if (e instanceof Enemy) {
                 Enemy enemy = (Enemy) e;
 
-                enemy.setTarget(getClosestPlayerToEnemy(enemy));
+                Player player;
+                if ((player = getClosestPlayerToEnemy(enemy)) != null)
+                    enemy.setTarget(player);
             }
         }
     }
 
     public void addEntities(ArrayList<? extends Entity> entities) {
-        for(Entity entity : entities)
+        for (Entity entity : entities)
             addEntity(entity);
     }
 
@@ -153,7 +154,7 @@ public class ServerLevel {
     public ArrayList<Player> removePlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
-        for(int id : playerIDs) {
+        for (int id : playerIDs) {
             players.add((Player) entities.get(id));
             entities.remove(id);
         }
@@ -164,7 +165,7 @@ public class ServerLevel {
     }
 
     public void purgeEntities() {
-        for(Integer i : entityIDsToRemove) {
+        for (Integer i : entityIDsToRemove) {
             entities.remove(i);
             msgs.add(new Msg(Msg.MsgType.REMOVE_ENTITY, new RemoveEntityData(i)));
         }
@@ -199,17 +200,17 @@ public class ServerLevel {
 
         Tile tile;
         Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 tile = grid[i][j];
 
-                if(tile.isObstacle()) {
+                if (tile.isObstacle()) {
                     obstacle = tile.getBody();
 
-                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
-                        if(overlap.width > overlap.height)
+                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                        if (overlap.width > overlap.height)
                             player.setY(player.getLastPos().y);
-                        else if(overlap.width < overlap.height)
+                        else if (overlap.width < overlap.height)
                             player.setX(player.getLastPos().x);
                         else {
                             player.setPosition(player.getLastPos());
@@ -223,7 +224,7 @@ public class ServerLevel {
                     int dest = door.getDest();
                     int entrance = door.getEntrance();
 
-                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel()) {
+                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel()) {
                         newLevelId = dest;
                         shouldChangeLevel = true;
                         nextLevelEntrance = entrance;
@@ -235,29 +236,40 @@ public class ServerLevel {
         }
 
         for (Entity e : entities.values()) {
-            if(e instanceof Enemy) {
+            if (e instanceof Enemy) {
                 Enemy enemy = (Enemy) e;
 
                 if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
                     entityIDsToRemove.add(enemy.getID());
                     player.damage(10 + 10 * new Random().nextInt(4));
                     msgs.add(new Msg(Msg.MsgType.PLAYER_HEALTH, new PlayerHealthData(player.getID(), player.getHealth(), player.getMaxHealth())));
+
+                    if (player.getHealth() == 0) {
+                        player.setPosition(new Vector2(-1000, -1000));
+                        player.setVelocity(0, 0);
+                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), getNumPlayers() - getNumPlayersDead() + 1)));
+                        if(getNumPlayers() - getNumPlayersDead() == 0) {
+                            msgs.add(new Msg(Msg.MsgType.GAME_OVER, -1));
+                        }
+                        retargetEnemies();
+                    }
+
                     return;
                 }
-            } else if(e instanceof Item) {
+            } else if (e instanceof Item) {
                 Item i = (Item) e;
 
                 if (Intersector.intersectRectangles(playerBody, i.getBody(), overlap)) {
                     Msg m = i.onPlayerCollision(player);
-                    if(m != null) msgs.add(m);
+                    if (m != null) msgs.add(m);
                     return;
                 }
             }
         }
 
-        if(playerBody.y + playerBody.height > gridHeight * TILE_HEIGHT || playerBody.y < 0)
+        if (playerBody.y + playerBody.height > gridHeight * TILE_HEIGHT || playerBody.y < 0)
             player.setY(player.getLastPos().y);
-        else if(playerBody.x + playerBody.width > gridWidth * TILE_WIDTH || playerBody.x < 0)
+        else if (playerBody.x + playerBody.width > gridWidth * TILE_WIDTH || playerBody.x < 0)
             player.setX(player.getLastPos().x);
     }
 
@@ -267,17 +279,17 @@ public class ServerLevel {
 
         Tile tile;
         Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 tile = grid[i][j];
 
-                if(tile.isObstacle() || tile instanceof DoorTile) {
+                if (tile.isObstacle() || tile instanceof DoorTile) {
                     obstacle = tile.getBody();
 
-                    if(Intersector.intersectRectangles(enemyBody, obstacle, overlap)) {
-                        if(overlap.width > overlap.height)
+                    if (Intersector.intersectRectangles(enemyBody, obstacle, overlap)) {
+                        if (overlap.width > overlap.height)
                             enemy.setY(enemy.getLastPos().y);
-                        else if(overlap.width < overlap.height)
+                        else if (overlap.width < overlap.height)
                             enemy.setX(enemy.getLastPos().x);
                         else {
                             enemy.setPosition(enemy.getLastPos());
@@ -296,21 +308,21 @@ public class ServerLevel {
 
         Tile tile;
         Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 tile = grid[i][j];
 
-                if(tile.isObstacle()) {
+                if (tile.isObstacle()) {
                     obstacle = tile.getBody();
 
-                    if(Intersector.intersectRectangles(projectileBody, obstacle, overlap)) {
+                    if (Intersector.intersectRectangles(projectileBody, obstacle, overlap)) {
                         entityIDsToRemove.add(p.getID());
 
-                        if(tile instanceof BreakableTile) {
+                        if (tile instanceof BreakableTile) {
                             BreakableTile bt = (BreakableTile) tile;
                             bt.health--;
 
-                            if(bt.health == 0) {
+                            if (bt.health == 0) {
                                 grid[i][j] = bt.getReplacementTile();
                                 msgs.add(new Msg(Msg.MsgType.REPLACE_TILE, new ReplaceTileData(i, j, grid[i][j])));
                             }
@@ -322,11 +334,11 @@ public class ServerLevel {
             }
         }
 
-        for(Entity e : entities.values()) {
+        for (Entity e : entities.values()) {
             Rectangle entityBody = e.getBody();
 
-            if(Intersector.intersectRectangles(projectileBody, entityBody, overlap)) {
-                if(e instanceof Enemy) {
+            if (Intersector.intersectRectangles(projectileBody, entityBody, overlap)) {
+                if (e instanceof Enemy) {
                     entityIDsToRemove.add(p.getID());
                     entityIDsToRemove.add(e.getID());
 
@@ -337,7 +349,7 @@ public class ServerLevel {
                     killer.setLevelledUpFalse();
 
                     //spawn item
-                    switch(r.nextInt(5)) {
+                    switch (r.nextInt(5)) {
                         case 0:
                             Heal h = new Heal(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
                             addEntity(h);
@@ -361,11 +373,11 @@ public class ServerLevel {
     public ArrayList<Vector2> getObstacleGridPositionList() {
         ArrayList<Vector2> positions = new ArrayList<>();
 
-        for(int i = 1; i < gridWidth-1; i++) {
-            for (int j = 1; j < gridHeight-1; j++) {
+        for (int i = 1; i < gridWidth - 1; i++) {
+            for (int j = 1; j < gridHeight - 1; j++) {
                 Tile tile = grid[i][j];
 
-                if(tile.isObstacle())
+                if (tile.isObstacle())
                     positions.add(new Vector2(tile.getGridX() - 1, tile.getGridY() - 1));
             }
         }
@@ -380,15 +392,16 @@ public class ServerLevel {
         Vector2 enemyPos = new Vector2();
         enemy.getPosition(enemyPos);
         Vector2 playerPos = new Vector2();
-        for(Integer playerID : playerIDs) {
+        for (Integer playerID : playerIDs) {
             Player player = (Player) entities.get(playerID);
+            if (player.getHealth() == 0) continue;
             player.getPosition(playerPos);
 
             float xDif = playerPos.x - enemyPos.x;
             float yDif = playerPos.y - enemyPos.y;
             float distance = (float) Math.sqrt(Math.pow(xDif, 2) + Math.pow(yDif, 2));
 
-            if(distance < shortestDistance) {
+            if (distance < shortestDistance) {
                 shortestDistance = distance;
                 closestPlayer = player;
             }
@@ -398,24 +411,24 @@ public class ServerLevel {
     }
 
     public void update(float delta) {
-        if(playerIDs.size() == 0) return;
+        if (playerIDs.size() == 0) return;
 
-        for(Entity e : entities.values()) {
+        for (Entity e : entities.values()) {
             e.update(delta);
 
-            if(e instanceof Player)
+            if (e instanceof Player)
                 checkCollisionsForPlayer((Player) e);
-            else if(e instanceof Projectile)
+            else if (e instanceof Projectile)
                 checkCollisionsForProjectile((Projectile) e);
-            else if(e instanceof Enemy)
+            else if (e instanceof Enemy)
                 checkCollisionsForEnemy((Enemy) e);
-            else if(e instanceof EnemySpawner)
+            else if (e instanceof EnemySpawner)
                 handleEnemySpawner((EnemySpawner) e);
-            else if(e instanceof Item)
-                if(((Item) e).isUsed()) entityIDsToRemove.add(e.getID());
+            else if (e instanceof Item)
+                if (((Item) e).isUsed()) entityIDsToRemove.add(e.getID());
 
-            if(e.checkChanged()) {
-                if(e instanceof Enemy) {
+            if (e.checkChanged()) {
+                if (e instanceof Enemy) {
                     msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()), ((Enemy) e).getAngle())));
                 } else {
                     msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
@@ -427,17 +440,17 @@ public class ServerLevel {
     }
 
     public void handleEnemySpawner(EnemySpawner spawner) {
-        if(!spawner.canSpawn()) return;
+        if (!spawner.canSpawn()) return;
 
         int x = spawner.getGridX();
         int y = spawner.getGridY();
         ArrayList<Vector2> availableTiles = new ArrayList<>();
 
-        for(int i = x - 1; i <= x + 1; i++) {
-            for(int j = y - 1; j <= y + 1; j++) {
-                if(i != x || j != y) {
+        for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+                if (i != x || j != y) {
                     Tile t = grid[i][j];
-                    if(!t.isObstacle()) availableTiles.add(new Vector2(t.getBody().getX(), t.getBody().getY()));
+                    if (!t.isObstacle()) availableTiles.add(new Vector2(t.getBody().getX(), t.getBody().getY()));
                 }
             }
         }
@@ -466,5 +479,23 @@ public class ServerLevel {
 
     public Player.Colour getAvailColour() {
         return Player.Colour.values()[playerIDs.size()];
+    }
+
+    public int getNumPlayersDead() {
+        int dead = 0;
+
+        for(Player p : getPlayers())
+            if(p.getHealth() == 0) dead++;
+
+        return dead;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        ArrayList<Player> players = new ArrayList<>();
+
+        for(Entity e : entities.values())
+            if(e instanceof Player) players.add((Player) e);
+
+        return players;
     }
 }

@@ -1,6 +1,7 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,45 +13,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import net.uridium.game.util.MyAssetManager;
+import net.uridium.game.ui.Background;
+import net.uridium.game.util.Assets;
+import net.uridium.game.util.Dimensions;
 
 import static net.uridium.game.Uridium.*;
 import static net.uridium.game.res.Textures.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
+import static net.uridium.game.util.Assets.*;
+import static net.uridium.game.util.Dimensions.BUTTON_HEIGHT;
+import static net.uridium.game.util.Dimensions.BUTTON_WIDTH;
 
-public class SettingsScreen extends MenuScreen {
+public class SettingsScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
-    private Skin mySkin;
+    private Skin skin;
     private Stage stage;
 
-    Texture bgTexture;
-    TextureRegion bg;
+    Background background;
 
-    SettingsScreen() {
+    public SettingsScreen(Background background) {
         setCursor(MENU_CURSOR, 0, 0);
-
-        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
-        bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        bg = new TextureRegion(bgTexture);
-        bg.setRegion(0, 0, 640, 640);
-
-        MyAssetManager myAssetManager = new MyAssetManager();
-        myAssetManager.queueAddSkin();
-        myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get(SKIN);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 
         batch = new SpriteBatch();
+        this.background = background;
+
+        skin = Assets.getAssets().getManager().get(SKIN);
 
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-        Button volBtn = new TextButton("VOLUME", mySkin);
+        Button volBtn = new TextButton("volume", skin);
         volBtn.setSize(340, 80);
         volBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
         //volBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -62,15 +60,15 @@ public class SettingsScreen extends MenuScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new AudioScreen());
+                getUSMInstance().push(new AudioScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
 
-        Button backBtn = new TextButton("BACK", mySkin);
-        backBtn.setSize(340, 80);
-        backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2 - (80 + 20));
+        Button backBtn = new TextButton("back", skin);
+        backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         //backBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         backBtn.addListener(new InputListener() {
             @Override
@@ -81,7 +79,7 @@ public class SettingsScreen extends MenuScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new MenuScreen());
+                getUSMInstance().push(new MenuScreen(background));
                 super.touchUp(event, x, y, pointer, button);
             }
         });
@@ -98,17 +96,19 @@ public class SettingsScreen extends MenuScreen {
 
     @Override
     public void update(float delta) {
-
+        background.update(delta);
     }
 
     @Override
     public void render() {
-        //Gdx.gl.glClearColor(1,0,0,0);
-        //Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClearColor(1,0,0,0);
+        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+
+        background.render(batch);
+
         batch.end();
 
         stage.act();
@@ -116,7 +116,7 @@ public class SettingsScreen extends MenuScreen {
     }
 
     public void dispose() {
-        mySkin.dispose();
+        skin.dispose();
         stage.dispose();
     }
 }

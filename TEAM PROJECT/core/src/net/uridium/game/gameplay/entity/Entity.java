@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.util.Assets;
 
 import java.io.Serializable;
 
@@ -80,7 +81,7 @@ public abstract class Entity implements Serializable {
     }
 
     public void loadTexture() {
-        Gdx.app.postRunnable(() -> t = new TextureRegion(new Texture(Gdx.files.internal(textureFile))));
+        Gdx.app.postRunnable(() -> t = new TextureRegion(Assets.getTex((textureFile))));
     }
 
     public boolean checkChanged() {
