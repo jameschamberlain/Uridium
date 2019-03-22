@@ -18,7 +18,9 @@ import net.uridium.game.ui.InGameUI;
 import net.uridium.game.ui.Scoreboard;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Collection;
 
 import static net.uridium.game.Uridium.*;
@@ -55,6 +57,12 @@ public class GameScreen extends UridiumScreen {
     public void init(int port) {
         setCursor("crossair_white.png", 32, 32);
 //        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+
+        try {
+            System.out.println(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
         try {
             s = new Socket("localhost",port);

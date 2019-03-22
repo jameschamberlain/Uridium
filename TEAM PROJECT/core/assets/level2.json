@@ -3,7 +3,7 @@
     "width": 15,
     "height": 8,
     "rows": [
-      "WWWWWWWWWWWWWWW",
+      "WWWWWWWWDWWWWWW",
       "W   OOO   OO  W",
       "W   OOO   O   W",
       "W   OOO       W",
@@ -44,7 +44,12 @@
       "x": 7,
       "y": 0,
       "dest": 1,
-      "entrance": 2
+      "entrance": 1
+    },{
+      "x": 8,
+      "y": 7,
+      "dest": 7,
+      "entrance": 1
     }
   ],
   "name": "The Start",

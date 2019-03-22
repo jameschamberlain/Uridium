@@ -64,7 +64,7 @@ public class Player extends DamageableEntity {
     }
 
     public Player(int ID, Vector2 spawn, int maxHealth, int health, Colour colour) {
-        super(ID, new Rectangle(spawn.x, spawn.y, 40, 55), new Vector2(), "yellow", maxHealth, health);
+        super(ID, new Rectangle(spawn.x, spawn.y, 30, 40), new Vector2(), "yellow", maxHealth, health);
 
         this.colour = colour;
     }
