@@ -3,24 +3,24 @@
     "width": 15,
     "height": 8,
     "rows": [
-      "WWWWWWWWDWWWWWW",
+      "WWWWWWWWWWWWWWW",
       "W   OOO   OO  W",
       "W   OOO   O   W",
       "W   OOO       W",
       "W        OO   D",
-      "D         O   W",
+      "W         O   W",
       "W         O   W",
       "WWWWWWWDWWWWWWW"
     ]
   },
   "entrances": [
     {
-      "x": 7,
+      "x": 8,
       "y": 1
     },
     {
-      "x": 2,
-      "y": 1
+      "x": 13,
+      "y": 3
     }
   ],
   "spawners": [
@@ -30,7 +30,7 @@
       ],
       "x": 11,
       "y": 6,
-      "numEnemies": 3,
+      "numEnemies": 0,
       "spawnRate": 1200
     },
     {
@@ -39,21 +39,21 @@
       ],
       "x": 4,
       "y": 5,
-      "numEnemies": 4,
+      "numEnemies": 0,
       "spawnRate": 400
     }
   ],
   "doors": [
     {
-      "x": 8,
-      "y": 7,
-      "dest": 3,
-      "entrance": 1
+      "x": 7,
+      "y": 0,
+      "dest": 1,
+      "entrance": 2
     },
     {
       "x": 14,
       "y": 3,
-      "dest": 3,
+      "dest": 4,
       "entrance": 1
     }
   ],

@@ -8,7 +8,7 @@
       "W        OOO       W",
       "W        OOO   OO  W",
       "W              O   W",
-      "W                  D",
+      "D                  D",
       "W             OO   W",
       "W              O   W",
       "W              O   W",
@@ -17,12 +17,16 @@
   },
   "entrances": [
     {
-      "x": 2,
-      "y": 4
+      "x": 1,
+      "y": 5
     },
     {
       "x": 7,
       "y": 8
+    },
+    {
+      "x": 18,
+      "y": 4
     }
   ],
   "spawners": [
@@ -32,7 +36,7 @@
       ],
       "x": 11,
       "y": 6,
-      "numEnemies": 5,
+      "numEnemies": 0,
       "spawnRate": 500
     }
   ],
@@ -46,7 +50,13 @@
     {
       "x": 19,
       "y": 4,
-      "dest": 2,
+      "dest": 3,
+      "entrance": 1
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "dest": 5,
       "entrance": 2
     }
   ],

@@ -12,17 +12,21 @@
       "W                  D",
       "W  O  O  O  O  O   W",
       "W                  W",
-      "WWWWWWWWWDWWWWWWWWWW"
+      "WWWWWWWWWWWWWWWWWWWW"
     ]
   },
   "entrances": [
     {
-      "x": 9,
-      "y": 1
+      "x": 1,
+      "y": 4
     },
     {
-      "x": 1,
-      "y": 5
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 18,
+      "y": 3
     }
   ],
   "spawners": [
@@ -32,13 +36,19 @@
       ],
       "x": 9,
       "y": 8,
-      "numEnemies": 7,
+      "numEnemies": 0,
       "spawnRate": 500
     }
   ],
   "doors": [
     {
-      "x": 7,
+      "x": 4,
+      "y": 0,
+      "dest": 1,
+      "entrance": 3
+    },
+    {
+      "x": 8,
       "y": 9,
       "dest": 4,
       "entrance": 1
@@ -46,8 +56,8 @@
     {
       "x": 19,
       "y": 3,
-      "dest": 4,
-      "entrance": 2
+      "dest": 7,
+      "entrance": 1
     }
   ],
   "name": "The Start",
