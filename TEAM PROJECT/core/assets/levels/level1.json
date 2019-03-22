@@ -42,6 +42,12 @@
   ],
   "doors": [
     {
+      "x": 0,
+      "y": 4,
+      "dest": 5,
+      "entrance": 1
+    },
+    {
       "x": 7,
       "y": 9,
       "dest": 2,
@@ -52,12 +58,6 @@
       "y": 4,
       "dest": 3,
       "entrance": 1
-    },
-    {
-      "x": 0,
-      "y": 4,
-      "dest": 5,
-      "entrance": 2
     }
   ],
   "name": "The Start",
