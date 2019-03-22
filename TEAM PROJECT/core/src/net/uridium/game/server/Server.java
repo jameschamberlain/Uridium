@@ -36,7 +36,7 @@ public class Server{
 
         levels = new ConcurrentHashMap<>();
 
-        File f = new File("level1.json");
+        File f = new File("levels/level1.json");
         ServerLevel l = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
         currentLevel = l;
         levels.put(l.getID(), l);
@@ -77,7 +77,7 @@ public class Server{
                 currentLevel.changedLevel();
 
                 if(levels.get(id) == null) {
-                    File f = new File("level" + id + ".json");
+                    File f = new File("levels/level" + id + ".json");
                     try {
                         ServerLevel newLevel = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
 
@@ -97,7 +97,7 @@ public class Server{
                     ServerLevel newLevel = levels.get(id);
 
                     for(Player p : currentLevel.removePlayers()) {
-                        p.setPosition(newLevel.getEntrance(currentLevel.getNextLevelEntrance()));
+                        if(p.getHealth() != 0) p.setPosition(newLevel.getEntrance(currentLevel.getNextLevelEntrance()));
                         p.setVelocity(0, 0);
                         newLevel.addEntity(p);
                     }
@@ -191,6 +191,10 @@ public class Server{
                     switch(msg.getType()) {
                         case PLAYER_MOVE:
                             PlayerMoveData moveData = (PlayerMoveData) msg.getData();
+
+                            if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
+                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
+
                             switch(moveData.dir) {
                                 case STOP:
                                     currentLevel.getPlayer(playerID).setVelocity(new Vector2(0, 0));
@@ -211,6 +215,10 @@ public class Server{
                             break;
                         case PLAYER_SHOOT:
                             PlayerShootData shootData = (PlayerShootData) msg.getData();
+
+                            if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
+                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
+
                             if(currentLevel.getPlayer(playerID).canShoot()){
                                 currentLevel.createBullet(playerID, shootData.angle);
                                 currentLevel.getPlayer(playerID).shoot();

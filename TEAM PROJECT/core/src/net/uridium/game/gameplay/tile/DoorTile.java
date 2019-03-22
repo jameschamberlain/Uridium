@@ -9,7 +9,7 @@ public class DoorTile extends Tile {
     private int entrance;
 
     public DoorTile(int gridX, int gridY) {
-        super(gridX, gridY, "ground_03.png", false);
+        super(gridX, gridY, "graphics/tile/DOORBOI.png", false);
     }
 
     public void setDest(int d) {

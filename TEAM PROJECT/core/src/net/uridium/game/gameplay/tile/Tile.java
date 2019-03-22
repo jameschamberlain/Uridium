@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import net.uridium.game.util.Assets;
 
 import java.io.Serializable;
 
@@ -40,7 +41,7 @@ public abstract class Tile implements Serializable {
     }
 
     public void loadTexture() {
-        Gdx.app.postRunnable(() -> t = new Texture(Gdx.files.internal(textureFile)));
+        Gdx.app.postRunnable(() -> t = Assets.getTex((textureFile)));
     }
 
     public boolean isObstacle() {
