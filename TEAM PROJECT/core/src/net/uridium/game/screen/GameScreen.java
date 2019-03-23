@@ -248,6 +248,7 @@ public class GameScreen extends UridiumScreen {
 
         double x = Math.atan2(diffY, diffX);
         x *= 180 / Math.PI;
+        Audio.getAudioInstance().libPlay("audio\\shoot.wav");
         sendShootMsg(x);
     }
 
