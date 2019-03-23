@@ -1,18 +1,14 @@
 package net.uridium.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import net.uridium.game.screen.GameScreen;
 import net.uridium.game.screen.MenuScreen;
 //import net.uridium.game.screen.SplashScreen;
 //import net.uridium.game.screen;
-import net.uridium.game.util.Audio;
-import net.uridium.game.util.Audio.*;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
@@ -21,10 +17,16 @@ public class Uridium extends Game {
 	public static final int GAME_WIDTH = 1280;
 	public static final int GAME_HEIGHT = 720;
 
+	public static Sound sound;
+
+	public static Music music;
 
 	@Override
 	public void create () {
-		//
+
+		music = Gdx.audio.newMusic(Gdx.files.internal("audio\\background.wav"));
+		music.play();
+
 		getUSMInstance().push(new MenuScreen());
 		//getUSMInstance().push(new SplashScreen());
 		//this.setScreen(new SplashScreen(this));

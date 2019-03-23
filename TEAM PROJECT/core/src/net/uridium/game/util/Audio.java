@@ -21,8 +21,16 @@ public class Audio {
 
     public static float masterVolume = 0.1f;
 
-    public void setMasterVolume(float newVolume){masterVolume = newVolume;}
+    public void setMasterVolume(float newVolume, String fileLocation){
+       // Sound wavSound = Gdx.audio.newSound(Gdx.files.internal(fileLocation));
+        masterVolume = newVolume;
+        //wavSound.pause();
+    }
 
-    public void muteMasterVolume(){setMasterVolume(0f);}
+    public void muteMasterVolume(float mute, String fileLocation){
+        Sound wavSound = Gdx.audio.newSound(Gdx.files.internal(fileLocation));
+        setMasterVolume(0f, fileLocation);
+        wavSound.pause();
+    }
 
 }

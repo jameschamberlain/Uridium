@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
@@ -25,15 +26,15 @@ public class Server{
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
-    ArrayList<Sender> users;
+    CopyOnWriteArrayList<Sender> users;
 
     ConcurrentHashMap<Integer, ServerLevel> levels;
     ServerLevel currentLevel;
     long lastUpdate;
 
-    public Server() throws IOException {
+    public Server(int port) throws IOException {
         System.out.println("Server Starting ...");
-        ss = new ServerSocket(9988);
+        ss = new ServerSocket(port);
 
         System.out.println("Creating Level ...");
 
@@ -46,10 +47,14 @@ public class Server{
 
         lastUpdate = System.currentTimeMillis();
 
-        users = new ArrayList<>();
+        users = new CopyOnWriteArrayList<>();
 
         new Thread(new Acceptor(ss)).start();
         new Thread(this::levelUpdate).start();
+    }
+
+    public Server() throws IOException {
+        this(6666);
     }
 
     private void levelUpdate() {
@@ -81,11 +86,13 @@ public class Server{
                         ServerLevel newLevel = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
 
                         for(Player p : currentLevel.removePlayers()) {
-                            p.setPosition(newLevel.getNewPlayerSpawn());
+                            p.setPosition(newLevel.getEntrance(currentLevel.getNextLevelEntrance()));
+                            p.setVelocity(0, 0);
                             newLevel.addEntity(p);
                         }
 
                         currentLevel = newLevel;
+                        currentLevel.setEnteredTime(System.currentTimeMillis());
                         levels.put(newLevel.getID(), currentLevel);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -94,10 +101,13 @@ public class Server{
                     ServerLevel newLevel = levels.get(id);
 
                     for(Player p : currentLevel.removePlayers()) {
-                        p.setPosition(newLevel.getNewPlayerSpawn());
+                        p.setPosition(newLevel.getEntrance(currentLevel.getNextLevelEntrance()));
+                        p.setVelocity(0, 0);
                         newLevel.addEntity(p);
                     }
+
                     currentLevel = newLevel;
+                    currentLevel.setEnteredTime(System.currentTimeMillis());
                 }
 
                 for(Sender s : users) {
@@ -135,10 +145,10 @@ public class Server{
                     oos = new ObjectOutputStream(s.getOutputStream());
                     ois = new ObjectInputStream(s.getInputStream());
 
-                    playerID = currentLevel.getNextEntityID();
-                    Vector2 playerSpawn = currentLevel.getNewPlayerSpawn();
+                    playerID = currentLevel.getNumPlayers();
+                    Vector2 playerSpawn = currentLevel.getEntrance(1);
 
-                    Player player = new Player(playerID, playerSpawn);
+                    Player player = new Player(playerID, playerSpawn, currentLevel.getAvailColour());
                     currentLevel.addEntity(player);
 
                     LevelData levelData = currentLevel.getLevelData();
@@ -190,16 +200,16 @@ public class Server{
                                     currentLevel.getPlayer(playerID).setVelocity(new Vector2(0, 0));
                                     break;
                                 case UP:
-                                    currentLevel.getPlayer(playerID).setVelocity(0, 200);
+                                    currentLevel.getPlayer(playerID).setMovementDir(0, 1);
                                     break;
                                 case DOWN:
-                                    currentLevel.getPlayer(playerID).setVelocity(0, -200);
+                                    currentLevel.getPlayer(playerID).setMovementDir(0, -1);
                                     break;
                                 case LEFT:
-                                    currentLevel.getPlayer(playerID).setVelocity(-200, 0);
+                                    currentLevel.getPlayer(playerID).setMovementDir(-1, 0);
                                     break;
                                 case RIGHT:
-                                    currentLevel.getPlayer(playerID).setVelocity(200, 0);
+                                    currentLevel.getPlayer(playerID).setMovementDir(1, 0);
                                     break;
                             }
                             break;

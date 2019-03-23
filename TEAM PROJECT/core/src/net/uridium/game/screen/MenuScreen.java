@@ -1,5 +1,6 @@
 package net.uridium.game.screen;
 
+import net.uridium.game.Uridium;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -39,11 +40,18 @@ public class MenuScreen extends UridiumScreen {
 
     Texture bgTexture;
     TextureRegion bg;
+    public static Music music;
 
+    //public Sound sound;
 
-    public MenuScreen(){
+    public MenuScreen() {
 
-        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+        //SettingsScreen settingScreen = new SettingsScreen();
+
+        //Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+        //music = Gdx.audio.newMusic(Gdx.files.internal("audio\\background.wav"));
+        //music.play();
+
         setCursor("cursor.png", 0, 0);
 
         bgTexture = new Texture(Gdx.files.internal("ground_01.png"));
@@ -72,7 +80,7 @@ public class MenuScreen extends UridiumScreen {
         gameTitle.setAlignment(Align.center);
 
         Button startBtn = new TextButton("P L A Y",mySkin,"small");
-        startBtn.setSize(340,80);
+        startBtn.setSize(250,80);
         startBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2);
         ((TextButton) startBtn).getLabel().setFontScale(1.4f);
 //        startBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -85,32 +93,35 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("hello");
-                getUSMInstance().push(new GameScreen());
+                getUSMInstance().push(new LobbyScreen());
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
         Button settingsBtn = new TextButton("S E T T I N G S",mySkin,"small");
-        settingsBtn.setSize(340, 80);
+        settingsBtn.setSize(250, 80);
         settingsBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20));
         ((TextButton) settingsBtn).getLabel().setFontScale(1.4f);
 //        settingsBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         settingsBtn.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                //music.pause();
+                //sound.pause();
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 getUSMInstance().push(new SettingsScreen());
+                //getUSMInstance().set(settingScreen);
+                //getUSMInstance().set(new SettingsScreen());
                 super.touchUp(event, x, y, pointer, button);
             }
         });
 
         Button exitBtn = new TextButton("E X I T", mySkin, "small");
-        exitBtn.setSize(340, 80);
+        exitBtn.setSize(250, 80);
         exitBtn.setPosition((GAME_WIDTH - 340) / 2,(GAME_HEIGHT - 80) / 2 - (80 + 20) * 2);
         ((TextButton) exitBtn).getLabel().setFontScale(1.4f);
 //        exitBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -156,8 +167,6 @@ public class MenuScreen extends UridiumScreen {
         stage.act();
         stage.draw();
     }
-
-
 
 
 

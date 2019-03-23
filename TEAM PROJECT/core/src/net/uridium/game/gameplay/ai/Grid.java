@@ -62,7 +62,6 @@ public class Grid {
         grid[yCoord][xCoord] = object;
     }
 
-
     private void setupGrid() {
         for (int i = 0; i < y; i++) {
             for (int j = 0; j < x; j++) {

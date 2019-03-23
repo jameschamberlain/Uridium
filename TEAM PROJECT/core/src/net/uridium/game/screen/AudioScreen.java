@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.sun.jndi.toolkit.url.Uri;
+import net.uridium.game.Uridium;
 import net.uridium.game.util.Audio;
 import net.uridium.game.util.MyAssetManager;
 import net.uridium.game.screen.MenuScreen;
@@ -94,12 +96,12 @@ public class AudioScreen extends SettingsScreen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Minus");
-                //getUSMInstance().push(new SettingsScreen());
+                //Uridium.music.setVolume(1.0f);
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        Button pauseBtn = new TextButton(" ||  ", mySkin, "small");
+        Button pauseBtn = new TextButton(" | | ", mySkin, "small");
         pauseBtn.setSize(80, 40);
         pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
         ((TextButton) pauseBtn).getLabel().setFontScale(1.4f);
@@ -114,8 +116,29 @@ public class AudioScreen extends SettingsScreen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Pause");
-                //getUSMInstance().push(new SettingsScreen());
-                Audio.getAudioInstance().muteMasterVolume();
+                Uridium.music.stop();
+                super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+
+
+        Button playBtn = new TextButton(" |> ", mySkin, "small");
+        playBtn.setSize(80, 40);
+        playBtn.setPosition((GAME_WIDTH - 300)/2 , (GAME_HEIGHT +200 )/2);
+        ((TextButton) playBtn).getLabel().setFontScale(1.4f);
+        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        playBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Pause Clicked");
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Play");
+                Uridium.music.play();
                 super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -123,10 +146,8 @@ public class AudioScreen extends SettingsScreen {
 
 
 
-
-
         Button backBtn = new TextButton("BACK", mySkin, "small");
-        backBtn.setSize(340, 80);
+        backBtn.setSize(250, 80);
         backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
         ((TextButton) backBtn).getLabel().setFontScale(1.4f);
         backBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -148,6 +169,7 @@ public class AudioScreen extends SettingsScreen {
         stage.addActor(plusBtn);
         stage.addActor(minusBtn);
         stage.addActor(pauseBtn);
+        stage.addActor(playBtn);
     }
     @Override
     public void init() {
