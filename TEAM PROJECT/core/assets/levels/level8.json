@@ -17,16 +17,16 @@
   },
   "entrances": [
     {
-      "x": 8,
-      "y": 9
+      "x": 7,
+      "y": 8
     },
     {
-      "x": 19,
-      "y": 4
+      "x": 18,
+      "y": 3
     },
     {
-      "x": 8,
-      "y": 2
+      "x": 7,
+      "y": 1
     }
   ],
   "spawners": [
@@ -36,7 +36,7 @@
       ],
       "x": 9,
       "y": 7,
-      "numEnemies": 3,
+      "numEnemies": 0,
       "spawnRate": 500
     },
     {
@@ -45,26 +45,26 @@
       ],
       "x": 10,
       "y": 7,
-      "numEnemies": 3,
+      "numEnemies": 0,
       "spawnRate": 500
     }
   ],
   "doors": [
     {
-      "x": 8,
+      "x": 7,
       "y": 9,
       "dest": 7,
       "entrance": 1
     },
     {
       "x": 19,
-      "y": 4,
+      "y": 3,
       "dest": 9,
       "entrance": 1
     },
     {
-      "x": 8,
-      "y": 2,
+      "x": 7,
+      "y": 0,
       "dest": 10,
       "entrance": 1
     }

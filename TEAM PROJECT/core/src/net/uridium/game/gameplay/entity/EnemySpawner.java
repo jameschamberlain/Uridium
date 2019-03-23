@@ -9,6 +9,7 @@ import java.util.Random;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
+import static net.uridium.game.res.Textures.SPAWN_TILE;
 
 public class EnemySpawner extends Entity {
     private int gridX;
@@ -21,7 +22,7 @@ public class EnemySpawner extends Entity {
     long spawnRate;
 
     public EnemySpawner(int gridX, int gridY, ArrayList<Enemy.Type> types, int numEnemies, long spawnRate) {
-        super(-1, new Rectangle(gridX * TILE_WIDTH, gridY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT), new Vector2(0, 0), "crate_01.png");
+        super(-1, new Rectangle(gridX * TILE_WIDTH, gridY * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT), new Vector2(0, 0), SPAWN_TILE);
 
         this.gridX = gridX;
         this.gridY = gridY;

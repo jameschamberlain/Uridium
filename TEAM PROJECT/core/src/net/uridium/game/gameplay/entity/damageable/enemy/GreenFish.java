@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.util.Assets;
 
 public class GreenFish extends Enemy {
     public GreenFish(int ID, Vector2 pos) {
@@ -15,8 +16,8 @@ public class GreenFish extends Enemy {
     @Override
     public void loadAnim() {
         TextureRegion[] frames = new TextureRegion[2];
-        frames[0] = new TextureRegion(new Texture(Gdx.files.internal("fishGreen.png")));
-        frames[1] = new TextureRegion(new Texture(Gdx.files.internal("fishGreen_swim.png")));
+        frames[0] = new TextureRegion(Assets.getTex(("graphics/entity/enemy/fishGreen.png")));
+        frames[1] = new TextureRegion(Assets.getTex(("graphics/entity/enemy/fishGreen_swim.png")));
 
         anim = new Animation<TextureRegion>(0.2f, frames);
     }

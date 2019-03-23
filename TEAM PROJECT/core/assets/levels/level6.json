@@ -1,0 +1,53 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 9,
+    "rows": [
+      "WWWWWWWDWWWWWWWWWWWW",
+      "W                  W",
+      "W   OOO     OOO    W",
+      "W   OOO     OOO    W",
+      "W                  W",
+      "W   OOO     OOO    W",
+      "W   OOO     OOO    W",
+      "W                  W",
+      "WWWWWWWWWWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 7,
+      "y": 7
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 6,
+      "y": 6,
+      "numEnemies": 0,
+      "spawnRate": 500
+    },
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 12,
+      "y": 6,
+      "numEnemies": 0,
+      "spawnRate": 500
+    }
+  ],
+  "doors": [
+    {
+      "x": 7,
+      "y": 8,
+      "dest": 5,
+      "entrance": 2
+    }
+  ],
+  "name": "The Start",
+  "id": 6
+}
