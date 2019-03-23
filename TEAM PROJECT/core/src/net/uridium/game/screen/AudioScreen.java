@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 import net.uridium.game.util.Dimensions;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
@@ -54,59 +55,28 @@ public class AudioScreen extends UridiumScreen {
         Button plusBtn = new TextButton("  +  ", skin);
         plusBtn.setSize(80, 40);
         plusBtn.setPosition((GAME_WIDTH + 100)/2 , (GAME_HEIGHT +50 )/2);
-        plusBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //getUSMInstance().push(new SettingsScreen());
-                super.touchDown(event, x, y, pointer, button);
-            }
-        });
+        plusBtn.addListener(new InputListener() {public void clicked (InputEvent event, float x, float y) {
+                Audio.getAudioInstance().increaseMasterVolume();
+            }});
 
 
         Button minusBtn = new TextButton("  -  ", skin);
         minusBtn.setSize(80, 40);
         minusBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +50 )/2);
-        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         minusBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //getUSMInstance().push(new SettingsScreen());
-                super.touchDown(event, x, y, pointer, button);
+            public void clicked (InputEvent event, float x, float y) {
+                Audio.getAudioInstance().lowerMasterVolume();
             }
         });
 
         Button pauseBtn = new TextButton(" ||  ", skin);
         pauseBtn.setSize(80, 40);
         pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
-        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         pauseBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Pause");
-                //getUSMInstance().push(new SettingsScreen());
-                super.touchDown(event, x, y, pointer, button);
+            public void clicked (InputEvent event, float x, float y) {
+                Audio.getAudioInstance().muteMasterVolume();
             }
         });
-
-
-
-
-
 
         Button backBtn = new TextButton("back", skin);
         backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -125,6 +95,7 @@ public class AudioScreen extends UridiumScreen {
                 super.touchDown(event, x, y, pointer, button);
             }
         });
+
         stage.addActor(backBtn);
         stage.addActor(plusBtn);
         stage.addActor(minusBtn);

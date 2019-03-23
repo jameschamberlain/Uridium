@@ -20,7 +20,24 @@ public class Audio {
 
     public static float masterVolume = 0.1f;
 
-    public void setMasterVolume(float newVolume){masterVolume = newVolume;}
+    public float getMasterVolume(){return masterVolume;}
+
+    public void setMasterVolume(float newVolume){
+        if (!(newVolume<0f || newVolume>1.0f)){
+            masterVolume = newVolume;
+
+        }
+    }
+
+    public void lowerMasterVolume(){
+        float newVolume = getMasterVolume() -0.1f;
+        setMasterVolume(newVolume);
+    }
+
+    public void increaseMasterVolume(){
+        float newVolume = getMasterVolume() +0.1f;
+        setMasterVolume(newVolume);
+    }
 
     public void muteMasterVolume(){setMasterVolume(0f);}
 
