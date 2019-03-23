@@ -6,9 +6,9 @@
       "WWWWWWWWWDWWWWWWWWWW",
       "W                  W",
       "W                  W",
-      "W       OOOO       W",
       "W                  W",
-      "W   OOOOO  OOOOO   W",
+      "W                  W",
+      "W                  W",
       "W                  W",
       "W                  W",
       "W                  W",
@@ -22,15 +22,6 @@
     }
   ],
   "spawners": [
-    {
-      "types": [
-        "SPIDER"
-      ],
-      "x": 9,
-      "y": 6,
-      "numEnemies": 15,
-      "spawnRate": 500
-    }
   ],
   "doors": [
     {
