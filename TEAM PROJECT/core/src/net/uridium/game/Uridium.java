@@ -14,8 +14,8 @@ import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 
 public class Uridium extends Game {
-	public static final int GAME_WIDTH = 1280;
-	public static final int GAME_HEIGHT = 720;
+	public static int GAME_WIDTH = 1280;
+	public static int GAME_HEIGHT = 720;
 
 	public static Sound sound;
 
