@@ -242,13 +242,23 @@ public class GameScreen extends UridiumScreen {
     }
 
     private void shoot(float screenX, float screenY) {
+        screenY -= 180;
         Player player = level.getPlayer();
         Vector2 playerCenter = player.getCenter(new Vector2());
-        float diffX = screenX - playerCenter.x - level.xOffset;
-        float diffY = screenY - playerCenter.y - level.yOffset;
+        float diffX = screenX - playerCenter.x - 80;
+        float diffY = screenY - playerCenter.y;
 
-        double x = Math.atan2(diffY, diffX);
-        x *= 180 / Math.PI;
+        double x = Math.atan((diffY/diffX));
+        //x *= 180 / Math.PI;
+
+        x = Math.toDegrees(x);
+
+        if ((diffY <= 0) && (diffX <= 0)){
+            x = -180 + x;
+        }
+        else if ((diffY > 0) && (diffX < 0)){
+            x = -180 + x;
+        }
         sendShootMsg(x);
     }
 

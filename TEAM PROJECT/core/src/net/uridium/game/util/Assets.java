@@ -139,5 +139,6 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/ui/scoreboard_bg.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/powerup.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/border.png", Texture.class);
+
     }
 }

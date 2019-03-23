@@ -85,7 +85,7 @@ public class Player extends DamageableEntity {
             return 100;
 
         return reloadTime;
-    }
+}
 
     public float getSpeed() {
         if(powerup == POWERUP.FASTER_MOVING)
