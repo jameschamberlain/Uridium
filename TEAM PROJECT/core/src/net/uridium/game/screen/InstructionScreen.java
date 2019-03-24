@@ -49,9 +49,7 @@ public class InstructionScreen extends UridiumScreen {
         this.background = background;
         titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
         gl = new GlyphLayout(titleFont, "URIDIUM");
-
         skin = Assets.getAssets().getManager().get(SKIN);
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 
@@ -84,7 +82,6 @@ public class InstructionScreen extends UridiumScreen {
         rule3.setPosition(-50, 100);
         rule3.setFontScale(1.4f);
         rule3.setAlignment(Align.center);
-
 
         Button backBtn = new TextButton("BACK",skin);
         backBtn.setSize(200, 80);

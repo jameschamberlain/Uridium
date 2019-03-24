@@ -48,11 +48,29 @@ public class SettingsScreen extends UridiumScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-        Button volBtn = new TextButton("volume", skin);
-        volBtn.setSize(340, 80);
-        volBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
+        Button insBtn = new TextButton("INSTRUCTIONS", skin);
+        insBtn.setSize(340, 80);
+        insBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2 + 100);
+        insBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                getUSMInstance().push(new InstructionScreen(background));
+                super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+
+
+        Button audioBtn = new TextButton("AUDIO", skin);
+        audioBtn.setSize(340, 80);
+        audioBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
         //volBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        volBtn.addListener(new InputListener() {
+        audioBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -66,10 +84,11 @@ public class SettingsScreen extends UridiumScreen {
         });
 
 
-        Button backBtn = new TextButton("back", skin);
+
+
+        Button backBtn = new TextButton("BACK", skin);
         backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
-        //backBtn.addAction(sequence(alpha(0), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -85,7 +104,8 @@ public class SettingsScreen extends UridiumScreen {
         });
 
         stage.addActor(backBtn);
-        stage.addActor(volBtn);
+        stage.addActor(audioBtn);
+        stage.addActor(insBtn);
 
     }
 

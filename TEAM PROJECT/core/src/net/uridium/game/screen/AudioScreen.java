@@ -64,14 +64,12 @@ public class AudioScreen extends UridiumScreen {
         slider.setWidth(250);
         slider.setValue(1f);
 
-        slider.setPosition((GAME_WIDTH - 340) / 2, ((GAME_HEIGHT - 80) / 2) + 100);
+        slider.setPosition((GAME_WIDTH - 340) / 2, ((GAME_HEIGHT - 80) / 2) +50);
 
 
         slider.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
-                //slider.getValue();
 
                 Uridium.music.setVolume(slider.getValue());
 
@@ -80,7 +78,6 @@ public class AudioScreen extends UridiumScreen {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Minus Clicked");
                 return true;
             }
         });
@@ -91,11 +88,10 @@ public class AudioScreen extends UridiumScreen {
 
 
 
-        Button pauseBtn = new TextButton(" | | ", skin);
-        pauseBtn.setSize(80, 40);
-        pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
+        Button pauseBtn = new TextButton(" PAUSE", skin);
+        pauseBtn.setSize(250, 80);
+        pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2 - 50);
         ((TextButton) pauseBtn).getLabel().setFontScale(1.4f);
-        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         pauseBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -113,21 +109,19 @@ public class AudioScreen extends UridiumScreen {
 
 
 
-        Button playBtn = new TextButton(" |> ", skin);
-        playBtn.setSize(80, 40);
-        playBtn.setPosition((GAME_WIDTH - 300)/2 , (GAME_HEIGHT +200 )/2);
+        Button playBtn = new TextButton(" PLAY ", skin);
+        playBtn.setSize(250, 80);
+        playBtn.setPosition((GAME_WIDTH - 300)/2 - 100 , (GAME_HEIGHT +200 )/2 - 50);
         ((TextButton) playBtn).getLabel().setFontScale(1.4f);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         playBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Pause Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Play");
                 Uridium.music.play();
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -138,19 +132,17 @@ public class AudioScreen extends UridiumScreen {
 
 
 
-        Button backBtn = new TextButton("back", skin);
+        Button backBtn = new TextButton("BACK", skin);
         backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Back Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Back");
                 getUSMInstance().push(new SettingsScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }

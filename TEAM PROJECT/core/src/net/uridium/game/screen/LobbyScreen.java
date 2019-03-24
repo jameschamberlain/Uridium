@@ -248,7 +248,7 @@ public class LobbyScreen extends UridiumScreen {
      * @return The back button.
      */
     private Button setupBackButton() {
-        Button backBtn = new TextButton("B A C K", mySkin);
+        Button backBtn = new TextButton(" B A C K ", mySkin);
         backBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
         backBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 3);
         // Listener for click events.
@@ -312,24 +312,16 @@ public class LobbyScreen extends UridiumScreen {
             e.printStackTrace();
         }
         return port;
-
     }
+    @Override
+    public void init() { }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
-    public void update(float delta) {
-
-    }
+    public void update(float delta) { }
 
     @Override
     public void render() {
-        //Gdx.gl.glClearColor(1,0,0,0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
@@ -338,12 +330,6 @@ public class LobbyScreen extends UridiumScreen {
         stage.act();
         stage.draw();
     }
-
-
-
-
-
-
 
     public void dispose() {
         mySkin.dispose();
