@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.server.msg.PlayerPowerupData;
+import net.uridium.game.util.Assets;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
@@ -29,6 +30,7 @@ public class InGameUI {
     float maxTextDuration = 0;
     String text = "INCREASED SPEED";
     boolean showingText = false;
+    boolean infiniteText = false;
 
     float defaultXOffset = 160;
     float xOffset;
@@ -39,13 +41,13 @@ public class InGameUI {
     float powerupRemaining;
 
     public InGameUI(float gridYOffset) {
-        bg = new Texture(Gdx.files.internal("scoreboard_bg.png"));
-        border = new Texture(Gdx.files.internal("border.png"));
+        bg = Assets.getTex("graphics/ui/scoreboard_bg.png");
+        border = Assets.getTex("graphics/ui/border.png");
 
-        hpBg = new Texture(Gdx.files.internal("hpBg.png"));
-        hp = new Texture(Gdx.files.internal("hp.png"));
-        xp = new Texture(Gdx.files.internal("xp.png"));
-        powerup = new Texture(Gdx.files.internal("powerup.png"));
+        hpBg = Assets.getTex("graphics/ui/hpBg.png");
+        hp = Assets.getTex("graphics/ui/hp.png");
+        xp = Assets.getTex("graphics/ui/xp.png");
+        powerup = Assets.getTex("graphics/ui/powerup.png");
 
         this.gridYOffset = gridYOffset;
 
@@ -61,11 +63,13 @@ public class InGameUI {
     public void update(float delta) {
         if(powerupRemaining > 0) powerupRemaining -= delta;
         if(showingText) {
-            textDuration -= delta;
-            float scale = (maxTextDuration - textDuration) * 5;
-            largeFont.getData().setScale(scale > 1 ? 1 : scale);
-
-            if(textDuration < 0) showingText = false;
+            if(textDuration > 0) {
+                textDuration -= delta;
+                float scale = (maxTextDuration - textDuration) * 5;
+                largeFont.getData().setScale(scale > 1 ? 1 : scale);
+            } else if(textDuration < 0 && !infiniteText) {
+                showingText = false;
+            }
         }
     }
 
@@ -73,7 +77,7 @@ public class InGameUI {
         this.powerupDuration = playerPowerupData.duration;
         this.powerupRemaining = playerPowerupData.duration;
 
-        showExpandingText(playerPowerupData.powerup.getText(), 0.8f);
+        showExpandingText(playerPowerupData.powerup.getText(), 0.8f, false);
     }
 
     public void render(SpriteBatch batch, Player player) {
@@ -95,11 +99,12 @@ public class InGameUI {
         if(showingText) drawExpandingText(batch);
     }
 
-    public void showExpandingText(String text, float textDuration) {
+    public void showExpandingText(String text, float textDuration, boolean infiniteText) {
         showingText = true;
         this.text = text;
         this.textDuration = textDuration;
         this.maxTextDuration = textDuration;
+        this.infiniteText = infiniteText;
     }
 
     public void drawHealthBar(SpriteBatch batch, float percentage, float xOffset) {

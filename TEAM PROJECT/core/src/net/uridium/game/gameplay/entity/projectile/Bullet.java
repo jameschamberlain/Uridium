@@ -11,7 +11,10 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.util.Assets;
 import net.uridium.game.util.Colors;
+
+import static net.uridium.game.res.Textures.BULLET;
 
 public class Bullet extends Projectile {
     public static final float BULLET_WIDTH = 25.5f;
@@ -22,11 +25,11 @@ public class Bullet extends Projectile {
     float rot;
 
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, int ownerID) {
-        this(ID, spawnPos, shootAngle, 350, "wrench.png", ownerID);
+        this(ID, spawnPos, shootAngle, 350, BULLET, ownerID);
     }
 
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, float velocity, int ownerID) {
-        this(ID, spawnPos, shootAngle, velocity, "wrench.png", ownerID);
+        this(ID, spawnPos, shootAngle, velocity, BULLET, ownerID);
     }
 
     public Bullet(int ID, Vector2 spawnPos, float shootAngle, float velocity, String textureFile, int ownerID) {
@@ -37,7 +40,7 @@ public class Bullet extends Projectile {
     }
 
     public Bullet(int ID, Vector2 spawnPos, Vector2 vel, int ownerID) {
-        super(ID, new Rectangle(spawnPos.x, spawnPos.y, BULLET_WIDTH, BULLET_HEIGHT), vel, "wrench.png", ownerID);
+        super(ID, new Rectangle(spawnPos.x, spawnPos.y, BULLET_WIDTH, BULLET_HEIGHT), vel, BULLET, ownerID);
 
         rot = 0;
     }
@@ -45,7 +48,7 @@ public class Bullet extends Projectile {
     @Override
     public void loadTexture() {
         Gdx.app.postRunnable(() -> {
-            t = new TextureRegion(new Texture(Gdx.files.internal(textureFile)));
+            t = new TextureRegion(Assets.getTex((textureFile)));
         });
     }
 

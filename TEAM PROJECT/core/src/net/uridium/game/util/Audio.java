@@ -18,7 +18,6 @@ public class Audio {
         wavSound.play(masterVolume);
     }
 
-
     public static float masterVolume = 0.1f;
 
     public void setMasterVolume(float newVolume, String fileLocation){

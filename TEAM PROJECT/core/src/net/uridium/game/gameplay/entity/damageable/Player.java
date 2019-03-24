@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import net.uridium.game.util.Assets;
+
+import static net.uridium.game.res.Textures.*;
 
 public class Player extends DamageableEntity {
     public enum Colour {
@@ -157,22 +160,22 @@ public class Player extends DamageableEntity {
     @Override
     public void loadTexture() {
         Gdx.app.postRunnable(() -> {
-            t = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/stand.png")));
+            t = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_STANDING)));
             frames = new TextureRegion[4][2];
 
-            frames[0][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk1.png")));
+            frames[0][0] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_WALKING_1)));
             frames[0][0].flip(true, false);
-            frames[0][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk2.png")));
+            frames[0][1] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_WALKING_2)));
             frames[0][1].flip(true, false);
 
-            frames[1][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk1.png")));
-            frames[1][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/walk2.png")));
+            frames[1][0] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_WALKING_1)));
+            frames[1][1] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_WALKING_2)));
 
-            frames[2][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/up1.png")));
-            frames[2][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/up2.png")));
+            frames[2][0] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_UP_1)));
+            frames[2][1] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_UP_2)));
 
-            frames[3][0] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/down.png")));
-            frames[3][1] = new TextureRegion(new Texture(Gdx.files.internal("player/" + colour.toString() + "/stand.png")));
+            frames[3][0] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_DOWN)));
+            frames[3][1] = new TextureRegion(Assets.getTex((PLAYER_PATH + colour.toString() + PLAYER_STANDING)));
             frames[3][1].flip(true, false);
 
             animLeft = new Animation<TextureRegion>(0.1f, frames[0]);
