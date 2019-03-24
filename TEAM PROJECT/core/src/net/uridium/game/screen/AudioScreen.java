@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sun.jndi.toolkit.url.Uri;
@@ -60,46 +61,34 @@ public class AudioScreen extends SettingsScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Button plusBtn = new TextButton("  +  ", mySkin, "small");
-        plusBtn.setSize(80, 40);
-        plusBtn.setPosition((GAME_WIDTH + 100)/2 , (GAME_HEIGHT +50 )/2);
-        ((TextButton) plusBtn).getLabel().setFontScale(1.4f);
-       // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        plusBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Plus Clicked");
-                return true;
-            }
+        Slider slider = new Slider(0f, 1f, 0.01f, false, mySkin);
 
+        slider.setWidth(250);
+        slider.setValue(1f);
+
+        slider.setPosition((GAME_WIDTH - 340) / 2, ((GAME_HEIGHT - 80) / 2) + 75);
+
+
+        slider.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Plus");
-                //getUSMInstance().push(new SettingsScreen());
+
+                //slider.getValue();
+
+                Uridium.music.setVolume(slider.getValue());
+
                 super.touchDown(event, x, y, pointer, button);
             }
-        });
 
-
-        Button minusBtn = new TextButton("  -  ", mySkin, "small");
-        minusBtn.setSize(80, 40);
-        minusBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +50 )/2);
-        ((TextButton) minusBtn).getLabel().setFontScale(1.4f);
-        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        minusBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Minus Clicked");
                 return true;
             }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Minus");
-                //Uridium.music.setVolume(1.0f);
-                super.touchDown(event, x, y, pointer, button);
-            }
         });
+
+
+
 
         Button pauseBtn = new TextButton(" | | ", mySkin, "small");
         pauseBtn.setSize(80, 40);
@@ -166,10 +155,9 @@ public class AudioScreen extends SettingsScreen {
             }
         });
         stage.addActor(backBtn);
-        stage.addActor(plusBtn);
-        stage.addActor(minusBtn);
         stage.addActor(pauseBtn);
         stage.addActor(playBtn);
+        stage.addActor(slider);
     }
     @Override
     public void init() {

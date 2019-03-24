@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/uridium.iml" filepath="$PROJECT_DIR$/.idea/uridium.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TEAM PROJECT/core/core.iml" filepath="$PROJECT_DIR$/TEAM PROJECT/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TEAM PROJECT/desktop/desktop.iml" filepath="$PROJECT_DIR$/TEAM PROJECT/desktop/desktop.iml" />
     </modules>
   </component>
 </project>

@@ -7,8 +7,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.uridium.game.screen.MenuScreen;
-//import net.uridium.game.screen.SplashScreen;
-//import net.uridium.game.screen;
+
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
