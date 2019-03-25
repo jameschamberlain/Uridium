@@ -175,7 +175,8 @@ public class LobbyServer {
             case "create":
                 createRoom(instruction_tuple[1]);
                 break;
-            case "random":
+            case "join":
+                createRoom(instruction_tuple[1]);
                 // code block
                 break;
             default:

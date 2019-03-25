@@ -271,6 +271,9 @@ public class LobbyScreen extends UridiumScreen {
                 for(String s : roomData.keySet()){
                     System.out.println(s);
                 }
+                String sendToken = "join "+choice;
+                System.out.println(roomCode);
+                ps.println(sendToken);
                 System.out.println(roomData.get(choice)[0]);
 
                 //System.out.println(roomData.get(choice)[0]);
@@ -365,7 +368,7 @@ public class LobbyScreen extends UridiumScreen {
 
                 int k=1;
                 for(String name:roomData.keySet()){
-                    strings[k]= "Room "+name;
+                    strings[k]= "Room "+name+"   ("+roomData.get(name)[1]+"/4)";
                     k++;
                     //System.out.println(name);
                 }
