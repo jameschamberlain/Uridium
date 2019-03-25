@@ -11,10 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.ui.Background;
@@ -33,6 +30,7 @@ public class InstructionScreen extends UridiumScreen {
     private SpriteBatch batch1;
     private SpriteBatch batch2;
     private BitmapFont font1;
+    private List list;
 
     private Skin skin;
     private Stage stage;
@@ -110,7 +108,7 @@ public class InstructionScreen extends UridiumScreen {
 
     @Override
     public void update(float delta) {
-
+        background.update(delta);
     }
 
     @Override
