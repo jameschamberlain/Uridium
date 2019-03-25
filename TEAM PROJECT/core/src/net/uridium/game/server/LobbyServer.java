@@ -41,7 +41,7 @@ public class LobbyServer {
      * @return portNumber (To return a unique number for creating a server)
      */
 
-    public int createRoom(String roomName){
+    public int changeRoom(String roomName){
 
         boolean exist = false;
         int portNum = 0;
@@ -173,10 +173,10 @@ public class LobbyServer {
 
         switch (instruction_tuple[0]){
             case "create":
-                createRoom(instruction_tuple[1]);
+                changeRoom(instruction_tuple[1]);
                 break;
             case "join":
-                createRoom(instruction_tuple[1]);
+                changeRoom(instruction_tuple[1]);
                 // code block
                 break;
             default:
