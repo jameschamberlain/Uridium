@@ -144,7 +144,7 @@ public class GameSelectionScreen extends UridiumScreen {
      * @return The back button.
      */
     private Button setupBackButton() {
-        Button backBtn = new TextButton("back", skin);
+        Button backBtn = new TextButton("BACK", skin);
         backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         backBtn.addListener(new InputListener() {

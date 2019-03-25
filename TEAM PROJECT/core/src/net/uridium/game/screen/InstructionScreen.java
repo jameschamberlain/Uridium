@@ -40,8 +40,6 @@ public class InstructionScreen extends UridiumScreen {
     BitmapFont titleFont;
     GlyphLayout gl;
 
-    Texture bgTexture;
-    TextureRegion bg;
 
     public InstructionScreen(Background background){
         setCursor(MENU_CURSOR, 0, 0);
@@ -59,11 +57,7 @@ public class InstructionScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
 
-        Label gameTitle = new Label("I N S T R U C T I O N S",skin);
-        gameTitle.setSize(1280, 360);
-        gameTitle.setPosition(0, 400);
-        gameTitle.setFontScale(1.4f);
-        gameTitle.setAlignment(Align.center);
+
 
         Label rule1 = new Label(" 'W' - To move up.",skin);
         rule1.setSize(1280, 360);
@@ -103,7 +97,7 @@ public class InstructionScreen extends UridiumScreen {
             }
         });
 
-        stage.addActor(gameTitle);
+
         stage.addActor(backBtn);
         stage.addActor(rule1);
         stage.addActor(rule2);

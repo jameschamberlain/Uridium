@@ -65,9 +65,35 @@ public class MenuScreen extends UridiumScreen {
         // Setup the settings button.
         Button settingsBtn = setupSettingsButton();
 
+        //Setup the exit button.
+        Button exitBtn = setupExitButton();
+
         // Add title and buttons to the screen.
         stage.addActor(playBtn);
         stage.addActor(settingsBtn);
+        stage.addActor(exitBtn);
+    }
+
+    private Button setupExitButton() {
+        Button exitBtn = new TextButton("EXIT", skin);
+        exitBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        float a = (GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT + 80;
+        exitBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, a - 80);
+        ((TextButton.TextButtonStyle) exitBtn.getStyle()).fontColor = Color.WHITE;
+        // Listener for click events.
+        exitBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.exit();
+                super.touchDown(event, x, y, pointer, button);
+            }
+        });
+        return exitBtn;
     }
 
     /**
@@ -79,7 +105,7 @@ public class MenuScreen extends UridiumScreen {
     private Button setupPlayButton() {
         Button playBtn = new TextButton("PLAY", skin);
         playBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        playBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT) / 2);
+        playBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT)  / 2 + 80);
         ((TextButton.TextButtonStyle) playBtn.getStyle()).fontColor = Color.WHITE;
         // Listener for click events.
         playBtn.addListener(new InputListener() {
@@ -106,7 +132,7 @@ public class MenuScreen extends UridiumScreen {
     private Button setupSettingsButton() {
         Button settingsBtn = new TextButton("SETTINGS", skin);
         settingsBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        settingsBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
+        settingsBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT + 85 );
         // Listener for click events.
         settingsBtn.addListener(new InputListener() {
             @Override
