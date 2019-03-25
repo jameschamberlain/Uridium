@@ -28,9 +28,24 @@ public class Server{
     ServerLevel currentLevel;
     long lastUpdate;
 
+    /**
+     * Constructor of Server
+     * Build up a server according to input.
+     * Server contains two Threads.
+     * One would keep listening client.
+     * and the other one would keep sending data to clients that connected to this server
+     * @param port
+     * @throws IOException
+     */
     public Server(int port) throws IOException {
         System.out.println("Server Starting ...");
-        ss = new ServerSocket(port);
+        try{
+            ss = new ServerSocket(port);
+        }
+        catch (Exception e){
+            System.out.println("Server exists already");
+        }
+
 
         System.out.println("Creating Level ...");
 
@@ -49,6 +64,11 @@ public class Server{
         new Thread(this::levelUpdate).start();
     }
 
+    /**
+     * Overload the Constructor of Server
+     * If there is no input. Assign server a default value
+     * @throws IOException
+     */
     public Server() throws IOException {
         this(6666);
     }
@@ -121,6 +141,13 @@ public class Server{
         }
     }
 
+    /**
+     * Keep waiting a new client to connect.
+     * Once the connection built up.
+     * The server to keep listening request from clients,
+     * updating level data.
+     * sending data to clients who connected to this server
+     */
     public class Acceptor implements Runnable {
         private ServerSocket ss;
 
@@ -165,6 +192,9 @@ public class Server{
         }
     }
 
+    /**
+     * Keep receiving data from clients
+     */
     public class Receiver implements Runnable {
         private ObjectInputStream ois;
         Socket s;
@@ -227,6 +257,9 @@ public class Server{
         }
     }
 
+    /**
+     * Keep sending data to clients which connected to this server.
+     */
     public class Sender implements Runnable {
         private ObjectOutputStream oos;
         private Socket s;

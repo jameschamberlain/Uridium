@@ -15,13 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
+import net.uridium.game.server.constant;
 import net.uridium.game.util.MyAssetManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import static net.uridium.game.Uridium.setCursor;
 import static net.uridium.game.res.Textures.*;
@@ -39,18 +40,58 @@ public class LobbyScreen extends UridiumScreen {
     private TextureRegion bg;
 
     private List<String> roomList;
+    private HashMap<String,int[]> roomData;
 
     // ROOM CODE!
     private String roomCode = "";
     private String tempRoomCode = "";
+
+    private PrintStream ps;
+    private Socket s;
+    private ObjectInputStream oi;
+
+    private String choice;
 
 
     /**
      * Constructor for a new lobby screen.
      */
     LobbyScreen() {
+        roomData = new HashMap<>();
+
+        try {
+            s = new Socket(constant.SERVER_IP, constant.LOBBY_SERVER_PORT);
+            ps = new PrintStream(s.getOutputStream());
+            oi = new ObjectInputStream(s.getInputStream());
+            roomData = (HashMap<String, int[]>) oi.readObject();
+            System.out.println("You have got the package:"+roomData.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        new Thread(()->{
+            while(true){
+                try {
+                    ObjectInputStream myoi =oi;
+                    System.out.println("Starts to accept");
+                    roomData = (HashMap<String,int[]>)myoi.readObject();
+                    System.out.println("You have entered the thread");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
+
+
         setCursor(MENU_CURSOR, 0, 0);
         myPort = 0;
+
         // Setup textures and background.
         Texture bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -95,6 +136,8 @@ public class LobbyScreen extends UridiumScreen {
         stage.addActor(backBtn);
         stage.addActor(roomList);
         stage.unfocus(roomList);
+
+
     }
 
 
@@ -160,7 +203,8 @@ public class LobbyScreen extends UridiumScreen {
 
                     @Override
                     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                        getUSMInstance().push(new GameScreen(myPort));
+                        //getUSMInstance().push(new GameScreen(myPort));
+                        //setupRoomList();
                         super.touchDown(event, x, y, pointer, button);
                     }
                 });
@@ -170,8 +214,18 @@ public class LobbyScreen extends UridiumScreen {
                     protected void result(Object object) {
                         if (object.equals(true) && !(textField.getText().isEmpty())) {
                             roomCode = textField.getText();
+                            roomCode = "create "+roomCode;
                             System.out.println(roomCode);
-                            myPort = sendRequest(roomCode);
+                            ps.println(roomCode);
+                            System.out.println("Room code "+roomCode+" has been sent");
+//                            try {
+//                                roomData = (HashMap<String,int[]>)oi.readObject();
+//                                System.out.println("Data size is "+roomData.size());
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            } catch (ClassNotFoundException e) {
+//                                e.printStackTrace();
+//                            }
                         }
                     }
                 };
@@ -200,7 +254,7 @@ public class LobbyScreen extends UridiumScreen {
      * @return The refresh button.
      */
     private Button setupRefreshButton() {
-        Button refreshBtn = new TextButton("R E F R E S H", mySkin);
+        Button refreshBtn = new TextButton("J O I N", mySkin);
         refreshBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
         refreshBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP);
         // Listener for click events.
@@ -212,12 +266,32 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("You have Choosed "+choice);
+                choice = choice.split(" ")[1];
+                for(String s : roomData.keySet()){
+                    System.out.println(s);
+                }
+                System.out.println(roomData.get(choice)[0]);
+
+                //System.out.println(roomData.get(choice)[0]);
+                int portNum = roomData.get(choice)[0];
+                try {
+                    new Server(portNum);
+                    Thread.sleep(998);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+                getUSMInstance().push(new GameScreen(portNum));
+
                 super.touchUp(event, x, y, pointer, button);
             }
         });
         return refreshBtn;
     }
 
+//    public int getPort(String name){
+//        return roomData.get(name)[0];
+//    }
 
     /**
      * Setup the random button.
@@ -238,11 +312,13 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
                 super.touchUp(event, x, y, pointer, button);
             }
         });
         return randomBtn;
     }
+
 
 
     /**
@@ -280,12 +356,38 @@ public class LobbyScreen extends UridiumScreen {
      */
     private ScrollPane setupRoomList() {
         roomList = new List<>(mySkin);
-        String[] strings = new String[5];
-        strings[0] = "Rooms";
-        for (int i = 0, k = 1; i < 4; i++) {
-            strings[k++] = "String: " + i;
+
+        new Thread(()->{
+
+            while(true){
+                String[] strings = new String[roomData.size()+1];
+                strings[0] = "Rooms";
+
+                int k=1;
+                for(String name:roomData.keySet()){
+                    strings[k]= "Room "+name;
+                    k++;
+                    //System.out.println(name);
+                }
+
+//                for (int i = 0, k = 1; i < 4; i++) {
+//                    strings[k++] = "String: " +  Math.random();
+//                }
+
+                roomList.setItems(strings);
+
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        roomList.setItems(strings);
         ScrollPane scrollPane = new ScrollPane(roomList);
         scrollPane.setBounds(0, 0, GAME_WIDTH / 2.0f - 100, GAME_HEIGHT / 2.0f);
         scrollPane.setSmoothScrolling(false);
@@ -298,28 +400,28 @@ public class LobbyScreen extends UridiumScreen {
     /**
      * Sends a request to the server to join a specific room.
      *
-     * @param roomCode The roomCode of the selected room.
      * @return The port of the destination room.
      */
-    private int sendRequest(String roomCode) {
-        int port = 0;
-        try {
-            Socket s = new Socket("127.0.0.1", 9966);
-            PrintStream ps = new PrintStream(s.getOutputStream());
-            ps.println(roomCode);
-            System.out.println("Sent!!!");
-            BufferedReader bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            port = Integer.valueOf(bfr.readLine());
-            System.out.println("receive" + port);
-            new Server(port);
-            System.out.println("Server Starts");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return port;
-
-    }
+//    private void sendRequest(String roomCode) {
+//        int port = 0;
+//
+//        try {
+//            Socket s = new Socket(constant.SERVER_IP, constant.LOBBY_SERVER_PORT);
+//            PrintStream ps = new PrintStream(s.getOutputStream());
+//            ObjectInputStream oi = new ObjectInputStream(s.getInputStream());
+//            ps.println(roomCode);
+//            System.out.println("Sent!!!");
+//            roomData = (HashMap<String,int[]>)oi.readObject();
+//            System.out.println("Get the list");
+//
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     @Override
     public void init() {
@@ -328,11 +430,18 @@ public class LobbyScreen extends UridiumScreen {
 
     @Override
     public void update(float delta) {
+        try {
+            Thread.sleep(30);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (roomList != null) {
-            if (!(roomList.getSelected().equals("Rooms"))) {
+            if (!(roomList.getSelected().equals(" "))) {
                 tempRoomCode = roomList.getSelected();
                 if (!(tempRoomCode.equals(roomCode))) {
                     roomCode = tempRoomCode;
+                    //Print room
+                    choice = roomList.getSelected();
                     System.out.println(roomList.getSelected());
                 }
             }
