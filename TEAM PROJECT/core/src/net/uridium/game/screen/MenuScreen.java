@@ -74,6 +74,12 @@ public class MenuScreen extends UridiumScreen {
         stage.addActor(exitBtn);
     }
 
+    /**
+     * Setup the settings button.
+     * Enters into the settings screen.
+     *
+     * @return The settings button.
+     */
     private Button setupExitButton() {
         Button exitBtn = new TextButton("EXIT", skin);
         exitBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
