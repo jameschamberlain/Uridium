@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -128,6 +129,8 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
+
                 // Label to describe dialog.
                 Label descriptionLabel = new Label("Enter room ID", mySkin);
                 descriptionLabel.setAlignment(Align.center);
@@ -208,6 +211,7 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 super.touchUp(event, x, y, pointer, button);
             }
         });
@@ -234,6 +238,7 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 super.touchUp(event, x, y, pointer, button);
             }
         });
@@ -260,8 +265,8 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new GameSelectionScreen(background));
-                super.touchUp(event, x, y, pointer, button);
             }
         });
         return backBtn;

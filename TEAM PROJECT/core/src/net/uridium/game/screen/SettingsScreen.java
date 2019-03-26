@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 import net.uridium.game.util.Dimensions;
 
 import static net.uridium.game.Uridium.*;
@@ -68,6 +69,7 @@ public class SettingsScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new AudioScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -84,8 +86,8 @@ public class SettingsScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
 //                getUSMInstance().push(new InstructionScreen(background));
-                super.touchDown(event, x, y, pointer, button);
             }
         });
 
@@ -102,8 +104,8 @@ public class SettingsScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new MenuScreen(background));
-                super.touchUp(event, x, y, pointer, button);
             }
         });
 

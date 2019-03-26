@@ -8,7 +8,7 @@ import java.util.HashMap;
 import static net.uridium.game.util.Audio.SOUND.*;
 
 public class Audio {
-    enum SOUND {
+    public enum SOUND {
         BUTTON_CLICK,
         PLAYER_SHOOT,
         PLAYER_DAMAGE,
@@ -33,6 +33,7 @@ public class Audio {
     public void init() {
         theme = Assets.get("audio/background.wav", Music.class);
         theme.setLooping(true);
+        theme.setVolume(volume);
 
         sounds = new HashMap<>();
 //        sounds.put(BUTTON_CLICK, Assets.get("audio/BUTTON_CLICK.wav", Sound.class));
@@ -68,6 +69,7 @@ public class Audio {
 
     public void setVolume(float volume) {
         this.volume = volume;
+        theme.setVolume(volume);
     }
 
     public void toggleMute() {

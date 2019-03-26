@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.Uridium;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 
 import static net.uridium.game.Uridium.setCursor;
 import static net.uridium.game.util.Dimensions.*;
@@ -44,6 +45,7 @@ public class MenuScreen extends UridiumScreen {
 
     public MenuScreen(Background backgroud) {
         setCursor(MENU_CURSOR, 0, 0);
+        Audio.getAudio().playTheme();
 
         this.background = backgroud;
         titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
@@ -90,6 +92,7 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new GameSelectionScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -116,6 +119,7 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new SettingsScreen(background));
                 super.touchUp(event, x, y, pointer, button);
             }

@@ -78,7 +78,6 @@ public class ServerLevel {
             int spawnerId = getNextEntityID();
             spawner.setID(spawnerId);
             addEntity(spawner);
-//            System.out.println("added spawner, id => " + spawnerId);
         }
 
         printEntities();

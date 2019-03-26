@@ -27,6 +27,7 @@ import static net.uridium.game.Uridium.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.BACKGROUND;
 import static net.uridium.game.util.Assets.GAME_CURSOR;
+import static net.uridium.game.util.Audio.SOUND.ENEMY_DEAD;
 
 public class GameScreen extends UridiumScreen {
     Socket s;
@@ -189,6 +190,7 @@ public class GameScreen extends UridiumScreen {
         switch(msg.getType()) {
             case NEW_LEVEL:
                 changeLevel((LevelData) msg.getData());
+                Audio.getAudio().playSound(Audio.SOUND.CHANGE_ROOM);
                 break;
             case NEW_ENTITY:
                 level.addEntity((Entity) msg.getData());
@@ -213,6 +215,7 @@ public class GameScreen extends UridiumScreen {
                 break;
             case PLAYER_DEATH:
                 PlayerDeathData pdd = (PlayerDeathData) msg.getData();
+                Audio.getAudio().playSound(Audio.SOUND.PLAYER_DEAD);
                 level.killPlayer(pdd);
                 if(level.getPlayerID() == pdd.ID) ui.showExpandingText("You came " + positionToString(pdd.position) + "!", 0.8f, true);
                 break;
@@ -221,6 +224,7 @@ public class GameScreen extends UridiumScreen {
                 if(ppd.playerID == level.getPlayerID()) ui.updatePowerup(ppd);
                 break;
             case GAME_OVER:
+                Audio.getAudio().playSound(Audio.SOUND.GAME_OVER);
                 Gdx.app.postRunnable(() -> getUSMInstance().clearAndSet(new GameOverScreen((GameOverData) msg.getData())));
                 break;
         }

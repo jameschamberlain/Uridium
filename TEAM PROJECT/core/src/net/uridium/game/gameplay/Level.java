@@ -12,14 +12,17 @@ import com.badlogic.gdx.utils.Array;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.gameplay.entity.projectile.Bullet;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
+import net.uridium.game.util.Audio;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
+import static net.uridium.game.util.Audio.SOUND.ENEMY_DEAD;
 
 public class Level {
     Tile[][] grid;
@@ -93,6 +96,9 @@ public class Level {
     public void addEntity(Entity e) {
         entities.put(e.getID(), e);
         e.loadTexture();
+
+        if(e instanceof Bullet)
+            Audio.getAudio().playSound(Audio.SOUND.PLAYER_SHOOT);
     }
 
     public void updateEntity(EntityUpdateData entityUpdateData) {
@@ -105,6 +111,9 @@ public class Level {
     }
 
     public void removeEntity(RemoveEntityData removeEntityData) {
+        if(entities.get(removeEntityData.entityID) instanceof Enemy)
+            Audio.getAudio().playSound(ENEMY_DEAD);
+
         entities.remove(removeEntityData.entityID);
     }
 
@@ -139,6 +148,7 @@ public class Level {
 
         if(damageEffectPool != null) {
             if (playerHealthData.health < player.getHealth()) {
+                Audio.getAudio().playSound(Audio.SOUND.PLAYER_DAMAGE);
                 Vector2 playerPos = player.getPosition(new Vector2());
                 ParticleEffectPool.PooledEffect effect = damageEffectPool.obtain();
                 effect.setPosition(playerPos.x + player.getBody().width / 2, playerPos.y + player.getBody().height / 2);
