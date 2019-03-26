@@ -6,6 +6,7 @@ import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.server.msg.*;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -38,10 +39,9 @@ public class Server{
     }
 
     public Server(int port) throws IOException {
-        System.out.println("Server Starting ...");
-        ss = new ServerSocket(port);
-
-        System.out.println("Creating Level ...");
+        try {
+            ss = new ServerSocket(port);
+        } catch (BindException e) {}
 
         init();
     }
