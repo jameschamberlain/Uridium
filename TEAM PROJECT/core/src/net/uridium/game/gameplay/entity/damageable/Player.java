@@ -237,10 +237,8 @@ public class Player extends DamageableEntity {
         if (powerup != POWERUP.NONE) {
             powerupDuration -= delta;
 
-            if (powerupDuration <= 0) {
+            if (powerupDuration <= 0)
                 powerup = POWERUP.NONE;
-                System.out.println("powerup over");
-            }
         }
     }
 

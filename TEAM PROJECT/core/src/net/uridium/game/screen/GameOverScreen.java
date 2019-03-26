@@ -109,11 +109,7 @@ public class GameOverScreen extends UridiumScreen {
             y -= (gl.height + 25);
         }
 
-        smallFont.getData().setScale(0.815f);
-        gl = new GlyphLayout(smallFont, "Click anywhere to go to menu");
-        smallFont.draw(batch, "Click anywhere to go to menu", (GAME_WIDTH - gl.width) / 2, 25 + gl.height);
-
-        smallFont.getData().setScale(0.8f);
+        smallFont.getData().setScale(0.85f);
         smallFont.setColor(Color.WHITE);
         gl = new GlyphLayout(smallFont, "Click anywhere to go to menu");
         smallFont.draw(batch, "Click anywhere to go to menu", (GAME_WIDTH - gl.width) / 2, 25 + gl.height);

@@ -79,14 +79,6 @@ public class ServerLevel {
             spawner.setID(spawnerId);
             addEntity(spawner);
         }
-
-        printEntities();
-    }
-
-    public void printEntities() {
-        for (Entity e : entities.values()) {
-            System.out.println(e instanceof EnemySpawner);
-        }
     }
 
     public void setEnteredTime(long enteredTime) {

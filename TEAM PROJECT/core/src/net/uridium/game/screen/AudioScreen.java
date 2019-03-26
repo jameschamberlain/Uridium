@@ -99,13 +99,11 @@ public class AudioScreen extends UridiumScreen {
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Back Clicked");
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Back");
                 getUSMInstance().push(new SettingsScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }

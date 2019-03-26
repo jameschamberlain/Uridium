@@ -13,7 +13,7 @@ import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 
 
 public abstract class Tile implements Serializable {
-    private Rectangle body;
+    Rectangle body;
     private int gridX;
     private int gridY;
 
@@ -22,7 +22,7 @@ public abstract class Tile implements Serializable {
     public int health;
 
     private String textureFile;
-    private transient Texture t;
+    transient Texture t;
 
     public Tile(int gridX, int gridY, String textureFile, boolean isObstacle) {
         this(gridX, gridY, textureFile, isObstacle, false, 0);

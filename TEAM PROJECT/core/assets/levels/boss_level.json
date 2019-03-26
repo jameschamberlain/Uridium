@@ -1,0 +1,37 @@
+{
+  "grid": {
+    "width": 12,
+    "height": 12,
+    "rows": [
+      "WWWWWWWWWWWW",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "W          W",
+      "WWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 6,
+      "y": 1
+    }
+  ],
+  "spawners": [],
+  "doors": [
+    {
+      "x": 6,
+      "y": 0,
+      "dest": 1,
+      "entrance": 1
+    }
+  ],
+  "name": "The End",
+  "id": -1
+}

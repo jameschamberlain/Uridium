@@ -215,7 +215,6 @@ public class Server{
                             PlayerMoveData moveData = (PlayerMoveData) msg.getData();
 
                             if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
-                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
 
                             switch(moveData.dir) {
                                 case STOP:
@@ -239,7 +238,6 @@ public class Server{
                             PlayerShootData shootData = (PlayerShootData) msg.getData();
 
                             if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
-                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
 
                             if(currentLevel.getPlayer(playerID).canShoot()){
                                 currentLevel.createBullet(playerID, shootData.angle);

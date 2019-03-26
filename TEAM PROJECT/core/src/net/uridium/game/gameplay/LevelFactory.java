@@ -69,6 +69,10 @@ public class LevelFactory {
             DoorTile door = (DoorTile) grid[x][y];
             door.setDest(dest);
             door.setEntrance(entrance);
+
+            if(x == 0) door.setRot(90);
+            else if(y == 0) door.setRot(180);
+            else if(x == gridWidth - 1) door.setRot(270);
         }
 
         // GET THE PLAYER SPAWN
@@ -92,7 +96,6 @@ public class LevelFactory {
                 jsonSpawnerMonsterTypes.forEach(type -> types.add(Enemy.Type.valueOf(type.toString())));
                 int numEnemies = enemySpawn.getInt("numEnemies");
                 long spawnRate = enemySpawn.getLong("spawnRate");
-                System.out.println("spawner added");
                 enemySpawners.add(new EnemySpawner(x, y, types, numEnemies, spawnRate));
             }
         }

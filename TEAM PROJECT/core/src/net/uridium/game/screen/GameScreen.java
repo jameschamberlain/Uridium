@@ -140,8 +140,6 @@ public class GameScreen extends UridiumScreen {
             public boolean keyUp(int keycode) {
                 if(level.getPlayer().getHealth() == 0) return super.keyUp(keycode);
 
-                System.out.println(level.getPlayer().getHealth() == 0);
-
                 switch(keycode){
                     case Input.Keys.W:
                         if(lastDir == Dir.UP) sendDirMsg(getNewDir());
