@@ -4,14 +4,14 @@
     "height": 10,
     "rows": [
       "WWWWWWWWWWWWWWWWWWWW",
-      "W                  W",
-      "W                  W",
-      "W     OO  OO       W",
-      "W     OOOOOO       W",
-      "W     OOOOOO       W",
+      "W              OO OW",
+      "W             OO   W",
+      "W          OOO     W",
+      "W       OOO        W",
+      "WOOOOOOO           W",
       "D                  W",
-      "W                  W",
-      "W                  W",
+      "W            OO    W",
+      "WOOOOOOO OOOO  OO OW",
       "WWWWWWWWDWWWWWWWWWWW"
     ]
   },
@@ -30,19 +30,19 @@
       "types": [
         "BLUE_FISH"
       ],
-      "x": 8,
-      "y": 6,
-      "numEnemies": 0,
-      "spawnRate": 500
+      "x": 18,
+      "y": 8,
+      "numEnemies": 3,
+      "spawnRate": 1200
     },
     {
       "types": [
-        "BLUE_FISH"
+        "PINK_FISH"
       ],
-      "x": 9,
-      "y": 6,
-      "numEnemies": 0,
-      "spawnRate": 500
+      "x": 18,
+      "y": 1,
+      "numEnemies": 3,
+      "spawnRate": 1200
     }
   ],
   "doors": [
@@ -59,6 +59,6 @@
       "entrance": 2
     }
   ],
-  "name": "The Start",
+  "name": "Level 4",
   "id": 4
 }

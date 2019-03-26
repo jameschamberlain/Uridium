@@ -4,13 +4,13 @@
     "height": 8,
     "rows": [
       "WWWWWWWWWWWWWWWWWWWW",
-      "WOOOOO   OOOOOOOOOOW",
-      "WOOOOO   OOOOOO OOOW",
-      "WOOOOO   OOOOOO OOOW",
-      "W                  D",
-      "WOOOOOO   OOOOOOOOOW",
-      "WOOOOOO   OOOOOOOOOW",
-      "WWWWWWWWDWWWWWWWWWWW"
+      "W      OO  OO      W",
+      "W   OO        OO   W",
+      "W                  W",
+      "D                  D",
+      "W   OO        OO   W",
+      "W      OO  OO      W",
+      "WWWWWWWWWDWWWWWWWWWW"
     ]
   },
   "entrances": [
@@ -19,8 +19,12 @@
       "y": 3
     },
     {
-      "x": 8,
+      "x": 9,
       "y": 1
+    },
+    {
+      "x": 1,
+      "y": 3
     }
   ],
   "spawners": [
@@ -28,10 +32,10 @@
       "types": [
         "BLUE_FISH"
       ],
-      "x": 15,
+      "x": 8,
       "y": 6,
       "numEnemies": 0,
-      "spawnRate": 500
+      "spawnRate": 1200
     }
   ],
   "doors": [
@@ -42,12 +46,18 @@
       "entrance": 1
     },
     {
-      "x": 8,
+      "x": 9,
       "y": 0,
       "dest": 6,
       "entrance": 1
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "dest": 11,
+      "entrance": 1
     }
   ],
-  "name": "The Start",
+  "name": "Level 5",
   "id": 5
 }

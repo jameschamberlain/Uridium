@@ -18,6 +18,7 @@ public abstract class Entity implements Serializable {
     public Vector2 vel;
     public String textureFile;
     public transient TextureRegion t;
+    public boolean enemyTile= false;
 
     boolean changed;
 
@@ -51,6 +52,8 @@ public abstract class Entity implements Serializable {
         body.setPosition(pos);
         changed = true;
     }
+
+    public void setEnemyTile(boolean enemyTile){this.enemyTile = enemyTile;}
 
     public Vector2 getPosition(Vector2 pos) {
         return body.getPosition(pos);

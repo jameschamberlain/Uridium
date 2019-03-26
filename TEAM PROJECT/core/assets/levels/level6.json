@@ -7,17 +7,25 @@
       "W                  W",
       "W   OOO     OOO    W",
       "W   OOO     OOO    W",
-      "W                  W",
+      "D                  W",
       "W   OOO     OOO    W",
       "W   OOO     OOO    W",
-      "W                  W",
-      "WWWWWWWWWWWWWWWWWWWW"
+      "W                 OW",
+      "WWWWWWWWWDWWWWWWWWWW"
     ]
   },
   "entrances": [
     {
       "x": 7,
       "y": 7
+    },
+    {
+      "x": 9,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 4
     }
   ],
   "spawners": [
@@ -25,19 +33,19 @@
       "types": [
         "BLUE_FISH"
       ],
-      "x": 6,
+      "x": 12,
       "y": 6,
-      "numEnemies": 0,
-      "spawnRate": 500
+      "numEnemies": 5,
+      "spawnRate": 1200
     },
     {
       "types": [
         "BLUE_FISH"
       ],
-      "x": 12,
-      "y": 6,
-      "numEnemies": 0,
-      "spawnRate": 500
+      "x": 18,
+      "y": 1,
+      "numEnemies": 5,
+      "spawnRate": 1200
     }
   ],
   "doors": [
@@ -46,8 +54,20 @@
       "y": 8,
       "dest": 5,
       "entrance": 2
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "dest": 14,
+      "entrance": 1
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "dest": 13,
+      "entrance": 1
     }
   ],
-  "name": "The Start",
+  "name": "Level 6",
   "id": 6
 }

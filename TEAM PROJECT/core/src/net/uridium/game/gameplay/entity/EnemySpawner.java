@@ -31,6 +31,8 @@ public class EnemySpawner extends Entity {
         this.numEnemies = numEnemies;
         this.spawnRate = spawnRate;
         r = new Random();
+        setEnemyTile(true);
+
     }
 
     public void setID(int ID) {
@@ -68,5 +70,9 @@ public class EnemySpawner extends Entity {
 
     public int getGridY() {
         return gridY;
+    }
+
+    public int getNumEnemies() {
+        return numEnemies;
     }
 }

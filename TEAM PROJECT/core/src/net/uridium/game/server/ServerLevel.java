@@ -29,6 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
+import net.uridium.game.res.Textures;
 
 public class ServerLevel {
     int id;
@@ -475,6 +476,16 @@ public class ServerLevel {
 
     public boolean canChangeLevel() {
         return System.currentTimeMillis() - enteredTime > 3000;
+    }
+
+    public boolean enemiesLeft(ArrayList<EnemySpawner> spawners){
+        boolean b = false;
+        for (EnemySpawner s : spawners){
+            if (s.getNumEnemies() != 0) {
+                b = true;
+            }
+        }
+        return b;
     }
 
     public Player.Colour getAvailColour() {

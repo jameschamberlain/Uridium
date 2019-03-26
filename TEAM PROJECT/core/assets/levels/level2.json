@@ -30,7 +30,7 @@
       ],
       "x": 11,
       "y": 6,
-      "numEnemies": 0,
+      "numEnemies": 6,
       "spawnRate": 1200
     },
     {
@@ -57,6 +57,6 @@
       "entrance": 1
     }
   ],
-  "name": "The Start",
+  "name": "Level 2",
   "id": 2
 }

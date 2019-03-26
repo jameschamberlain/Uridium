@@ -37,7 +37,7 @@
       "x": 11,
       "y": 6,
       "numEnemies": 0,
-      "spawnRate": 500
+      "spawnRate": 2000
     }
   ],
   "doors": [

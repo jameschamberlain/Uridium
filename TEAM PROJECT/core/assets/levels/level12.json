@@ -1,0 +1,45 @@
+{
+  "grid": {
+    "width": 14,
+    "height": 10,
+    "rows": [
+      "WWWWWWWWWWWWWW",
+      "W     O      W",
+      "W            W",
+      "W            W",
+      "W            W",
+      "WO          OW",
+      "WOO        OOW",
+      "WOOO      OOOW",
+      "WOOOO    OOOOW",
+      "WWWWWWDWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 6,
+      "y": 1
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 6,
+      "y": 8,
+      "numEnemies": 8,
+      "spawnRate": 2000
+    }
+  ],
+  "doors": [
+    {
+      "x": 6,
+      "y": 0,
+      "dest": 11,
+      "entrance": 3
+    }
+  ],
+  "name": "Level 12",
+  "id": 12
+}

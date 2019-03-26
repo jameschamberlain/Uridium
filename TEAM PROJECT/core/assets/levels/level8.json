@@ -36,8 +36,8 @@
       ],
       "x": 9,
       "y": 7,
-      "numEnemies": 0,
-      "spawnRate": 500
+      "numEnemies": 8,
+      "spawnRate": 1200
     },
     {
       "types": [
@@ -45,8 +45,8 @@
       ],
       "x": 10,
       "y": 7,
-      "numEnemies": 0,
-      "spawnRate": 500
+      "numEnemies": 4,
+      "spawnRate": 1500
     }
   ],
   "doors": [
