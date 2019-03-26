@@ -4,6 +4,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,6 +15,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 import net.uridium.game.gameplay.entity.damageable.Player;
+
+import static net.uridium.game.util.Audio.SOUND.*;
+import static net.uridium.game.util.Audio.SOUND.VICTORY;
 
 public class Assets {
     /**
@@ -139,5 +144,16 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/ui/scoreboard_bg.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/powerup.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/border.png", Texture.class);
+
+        // AUDIO
+        Assets.getAssets().getManager().load("audio/background.wav", Music.class);
+//        Assets.getAssets().getManager().load("audio/BUTTON_CLICK.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/PLAYER_SHOOT.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/PLAYER_DAMAGE.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/PLAYER_DEAD.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/ENEMY_DEAD.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/CHANGE_ROOM.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/GAME_OVER.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/VICTORY.wav", Sound.class);
     }
 }

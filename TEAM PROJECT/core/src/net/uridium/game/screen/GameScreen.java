@@ -57,7 +57,7 @@ public class GameScreen extends UridiumScreen {
 
     public void init(int port) {
         setCursor(GAME_CURSOR, 32, 32);
-//        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+//        Audio.getAudio().libPlayLoop("audio\\background.wav");
 
         try {
             s = new Socket("localhost", port);
