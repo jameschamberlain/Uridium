@@ -1,5 +1,6 @@
 package net.uridium.game.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -23,6 +24,7 @@ import java.net.Socket;
 import java.util.Collection;
 
 import static net.uridium.game.Uridium.*;
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.BACKGROUND;
 import static net.uridium.game.util.Assets.GAME_CURSOR;
 
@@ -53,10 +55,9 @@ public class GameScreen extends UridiumScreen {
     @Override
     public void init(){init(6666);}
 
-
     public void init(int port) {
         setCursor(GAME_CURSOR, 32, 32);
-        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+//        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
             s = new Socket("localhost", port);
@@ -129,18 +130,6 @@ public class GameScreen extends UridiumScreen {
                         sendDirMsg(Dir.RIGHT);
                         lastDir = Dir.RIGHT;
                         return true;
-//                    case Input.Keys.UP:
-//                        sendShootMsg(Dir.UP);
-//                        return true;
-//                    case Input.Keys.LEFT:
-//                        sendShootMsg(Dir.LEFT);
-//                        return true;
-//                    case Input.Keys.DOWN:
-//                        sendShootMsg(Dir.DOWN);
-//                        return true;
-//                    case Input.Keys.RIGHT:
-//                        sendShootMsg(Dir.RIGHT);
-//                        return true;
                 }
 
                 return super.keyDown(keycode);
@@ -154,16 +143,16 @@ public class GameScreen extends UridiumScreen {
 
                 switch(keycode){
                     case Input.Keys.W:
-                        if(lastDir == Dir.UP) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.UP) sendDirMsg(getNewDir());
                         return true;
                     case Input.Keys.A:
-                        if(lastDir == Dir.LEFT) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.LEFT) sendDirMsg(getNewDir());
                         return true;
                     case Input.Keys.S:
-                        if(lastDir == Dir.DOWN) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.DOWN) sendDirMsg(getNewDir());
                         return true;
                     case Input.Keys.D:
-                        if(lastDir == Dir.RIGHT) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.RIGHT) sendDirMsg(getNewDir());
                         return true;
                 }
 
@@ -185,6 +174,15 @@ public class GameScreen extends UridiumScreen {
                 return true;
             }
         });
+    }
+
+    private Dir getNewDir() {
+        if(Gdx.input.isKeyPressed(Input.Keys.W)) return Dir.UP;
+        else if(Gdx.input.isKeyPressed(Input.Keys.A)) return Dir.LEFT;
+        else if(Gdx.input.isKeyPressed(Input.Keys.S)) return Dir.DOWN;
+        else if(Gdx.input.isKeyPressed(Input.Keys.D)) return Dir.RIGHT;
+
+        return Dir.STOP;
     }
 
     private void processMsg(Msg msg) {
@@ -221,6 +219,9 @@ public class GameScreen extends UridiumScreen {
             case PLAYER_POWERUP:
                 PlayerPowerupData ppd = (PlayerPowerupData) msg.getData();
                 if(ppd.playerID == level.getPlayerID()) ui.updatePowerup(ppd);
+                break;
+            case GAME_OVER:
+                Gdx.app.postRunnable(() -> getUSMInstance().clearAndSet(new GameOverScreen((GameOverData) msg.getData())));
                 break;
         }
     }
@@ -284,7 +285,7 @@ public class GameScreen extends UridiumScreen {
         changingLevel = false;
     }
 
-    public String positionToString(int position) {
+    public static String positionToString(int position) {
         StringBuilder builder = new StringBuilder();
         builder.append(position);
 

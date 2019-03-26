@@ -28,12 +28,25 @@ public class Server{
     ServerLevel currentLevel;
     long lastUpdate;
 
+    boolean gameEnded;
+
+    Thread acceptor;
+    Thread levelUpdate;
+
+    public Server() throws IOException {
+        this(6666);
+    }
+
     public Server(int port) throws IOException {
         System.out.println("Server Starting ...");
         ss = new ServerSocket(port);
 
         System.out.println("Creating Level ...");
 
+        init();
+    }
+
+    private void init() throws FileNotFoundException {
         levels = new ConcurrentHashMap<>();
 
         File f = new File("levels/level1.json");
@@ -45,16 +58,16 @@ public class Server{
 
         users = new CopyOnWriteArrayList<>();
 
-        new Thread(new Acceptor(ss)).start();
-        new Thread(this::levelUpdate).start();
-    }
+        acceptor = new Thread(new Acceptor(ss));
+        acceptor.start();
+        levelUpdate = new Thread(this::levelUpdate);
+        levelUpdate.start();
 
-    public Server() throws IOException {
-        this(6666);
+        gameEnded = false;
     }
 
     private void levelUpdate() {
-        while (true) {
+        while (!gameEnded) {
             float delta = System.currentTimeMillis() - lastUpdate;
             delta /= 1000;
             currentLevel.update(delta);
@@ -62,11 +75,6 @@ public class Server{
 
             ArrayList<Msg> newMsgs = new ArrayList<>();
             currentLevel.getMsgs().drainTo(newMsgs);
-//            if(newMsgs.size() > 0) {
-//                System.out.println("Msgs: " + newMsgs.size());
-//                for(Msg msg : newMsgs)
-//                    System.out.println("\t" + msg.getType().name());
-//            }
 
             for(Sender s : users)
                 for (Msg msg : newMsgs)
@@ -118,6 +126,14 @@ public class Server{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            gameEnded = currentLevel.isGameEnded();
+        }
+
+        try {
+            init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -132,7 +148,7 @@ public class Server{
         public void run() {
             System.out.println("Waiting for users ...");
 
-            while (true) {
+            while (!gameEnded) {
                 int playerID = 0;
                 try {
                     s = ss.accept();
@@ -161,6 +177,12 @@ public class Server{
 
                 new Thread(sender).start();
                 new Thread(receiver).start();
+            }
+
+            try {
+                ss.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

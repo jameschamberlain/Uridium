@@ -1,7 +1,6 @@
 package net.uridium.game.gameplay.entity.damageable;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -44,6 +43,8 @@ public class Player extends DamageableEntity {
     private float speed = 200;
 
     private boolean scoreChanged = false;
+
+    private int rank = -1;
 
     private transient Animation<TextureRegion> animUp;
     private transient Animation<TextureRegion> animDown;
@@ -217,6 +218,14 @@ public class Player extends DamageableEntity {
     public void setPowerup(POWERUP powerup, float powerupDuration) {
         this.powerup = powerup;
         this.powerupDuration = powerupDuration;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
     @Override

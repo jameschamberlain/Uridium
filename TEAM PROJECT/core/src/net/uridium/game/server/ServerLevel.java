@@ -53,6 +53,8 @@ public class ServerLevel {
 
     private long enteredTime = 0;
 
+    private boolean gameEnded = false;
+
     public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> entrances) {
         this(id, grid, gridWidth, gridHeight, entrances, new ArrayList<>());
     }
@@ -247,9 +249,12 @@ public class ServerLevel {
                     if (player.getHealth() == 0) {
                         player.setPosition(new Vector2(-1000, -1000));
                         player.setVelocity(0, 0);
-                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), getNumPlayers() - getNumPlayersDead() + 1)));
+                        int rank = getNumPlayers() - getNumPlayersDead() + 1;
+                        player.setRank(rank);
+                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), rank)));
                         if(getNumPlayers() - getNumPlayersDead() == 0) {
-                            msgs.add(new Msg(Msg.MsgType.GAME_OVER, -1));
+                            msgs.add(new Msg(Msg.MsgType.GAME_OVER, new GameOverData(getPlayers())));
+                            gameEnded = true;
                         }
                         retargetEnemies();
                     }
@@ -497,5 +502,9 @@ public class ServerLevel {
             if(e instanceof Player) players.add((Player) e);
 
         return players;
+    }
+
+    public boolean isGameEnded() {
+        return gameEnded;
     }
 }
