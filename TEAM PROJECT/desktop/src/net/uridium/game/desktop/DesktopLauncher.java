@@ -15,8 +15,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-		config.width = GAME_WIDTH;
-		config.height = GAME_HEIGHT;
+		config.width = 960;
+		config.height = 540;
 		config.resizable = false;
 		config.title = "Uridium";
 

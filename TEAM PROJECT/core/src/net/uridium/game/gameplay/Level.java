@@ -71,15 +71,15 @@ public class Level {
 
         Gdx.app.postRunnable(() -> {
             ParticleEffect levelUpEffect = new ParticleEffect();
-            levelUpEffect.load(Gdx.files.internal("particle/levelUp.p"), Gdx.files.internal("particle"));
+            levelUpEffect.load(Gdx.files.internal("graphics/particle/levelUp.p"), Gdx.files.internal("graphics/particle"));
             levelUpEffectPool = new ParticleEffectPool(levelUpEffect, 0, 4);
 
             ParticleEffect damageEffect = new ParticleEffect();
-            damageEffect.load(Gdx.files.internal("particle/damage.p"), Gdx.files.internal("particle"));
+            damageEffect.load(Gdx.files.internal("graphics/particle/damage.p"), Gdx.files.internal("graphics/particle"));
             damageEffectPool = new ParticleEffectPool(damageEffect, 0, 12);
 
             ParticleEffect healEffect = new ParticleEffect();
-            healEffect.load(Gdx.files.internal("particle/heal.p"), Gdx.files.internal("particle"));
+            healEffect.load(Gdx.files.internal("graphics/particle/heal.p"), Gdx.files.internal("graphics/particle"));
             healEffectPool = new ParticleEffectPool(healEffect, 0, 12);
         });
     }
@@ -129,21 +129,28 @@ public class Level {
         }
     }
 
+    public void killPlayer(PlayerDeathData playerDeathData) {
+        Vector2 pos = new Vector2();
+        entities.get(playerDeathData.ID).getPosition(pos);
+    }
+
     public void updateHealth(PlayerHealthData playerHealthData) {
         Player player = (Player) entities.get(playerHealthData.playerID);
 
-        if(playerHealthData.health < player.getHealth()) {
-            Vector2 playerPos = player.getPosition(new Vector2());
-            ParticleEffectPool.PooledEffect effect = damageEffectPool.obtain();
-            effect.setPosition(playerPos.x + player.getBody().width / 2, playerPos.y + player.getBody().height / 2);
-            effect.start();
-            particleEffects.add(effect);
-        } else if (playerHealthData.health > player.getHealth()) {
-            Vector2 playerPos = player.getPosition(new Vector2());
-            ParticleEffectPool.PooledEffect effect = healEffectPool.obtain();
-            effect.setPosition(playerPos.x + player.getBody().width / 2, playerPos.y + player.getBody().height / 2);
-            effect.start();
-            particleEffects.add(effect);
+        if(damageEffectPool != null) {
+            if (playerHealthData.health < player.getHealth()) {
+                Vector2 playerPos = player.getPosition(new Vector2());
+                ParticleEffectPool.PooledEffect effect = damageEffectPool.obtain();
+                effect.setPosition(playerPos.x + player.getBody().width / 2, playerPos.y + player.getBody().height / 2);
+                effect.start();
+                particleEffects.add(effect);
+            } else if (playerHealthData.health > player.getHealth()) {
+                Vector2 playerPos = player.getPosition(new Vector2());
+                ParticleEffectPool.PooledEffect effect = healEffectPool.obtain();
+                effect.setPosition(playerPos.x + player.getBody().width / 2, playerPos.y + player.getBody().height / 2);
+                effect.start();
+                particleEffects.add(effect);
+            }
         }
 
         player.setHealth(playerHealthData.health);

@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,40 +18,44 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
-import net.uridium.game.util.MyAssetManager;
+import net.uridium.game.ui.Background;
+import net.uridium.game.util.Assets;
+import net.uridium.game.util.Dimensions;
 
 import java.io.IOException;
 
+import static net.uridium.game.Uridium.GAME_HEIGHT;
+import static net.uridium.game.Uridium.GAME_WIDTH;
 import static net.uridium.game.Uridium.setCursor;
-import static net.uridium.game.res.Textures.*;
-import static net.uridium.game.res.Dimens.*;
+import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
+import static net.uridium.game.util.Assets.*;
 
 public class GameSelectionScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
-    private Skin mySkin;
+    private Skin skin;
     private Stage stage;
-    private TextureRegion bg;
+
+    Background background;
+    BitmapFont titleFont;
+    GlyphLayout gl;
 
 
-    GameSelectionScreen() {
-        setCursor(MENU_CURSOR, 0, 0);
-        // Setup textures and background.
-        Texture bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
+
+
+    public GameSelectionScreen(Background background) {
+        Texture bgTexture = Assets.getTex((BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        bg = new TextureRegion(bgTexture);
-        bg.setRegion(0, 0, 640, 640);
 
-        // Setup asset manager.
-        MyAssetManager myAssetManager = new MyAssetManager();
-        myAssetManager.queueAddSkin();
-        myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get(SKIN);
+        skin = Assets.getAssets().getManager().get(SKIN);
 
-        // Setup camera.
+        this.background = background;
+        titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
+        gl = new GlyphLayout(titleFont, "URIDIUM");
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 
@@ -59,35 +65,18 @@ public class GameSelectionScreen extends UridiumScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-
-        // Setup game title label.
-        Label gameTitle = setupGameTitle();
         // Setup solo button.
         Button soloBtn = setupSoloButton();
+
         // Setup multiplayer button.
         Button multiplayerButton = setupMultiplayerButton();
+
         // Setup back button.
         Button backBtn = setupBackButton();
 
-        // Add title and buttons to the screen.
-        stage.addActor(gameTitle);
         stage.addActor(soloBtn);
         stage.addActor(multiplayerButton);
         stage.addActor(backBtn);
-    }
-
-    /**
-     * Setup the game title label.
-     *
-     * @return The game title label.
-     */
-    private Label setupGameTitle() {
-        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
-        gameTitle.setSize(TITLE_WIDTH, TITLE_HEIGHT);
-        gameTitle.setPosition(TITLE_X, TITLE_Y);
-        gameTitle.setFontScale(TITLE_FONT_SCALE);
-        gameTitle.setAlignment(Align.center);
-        return gameTitle;
     }
 
     /**
@@ -97,9 +86,9 @@ public class GameSelectionScreen extends UridiumScreen {
      * @return The solo button.
      */
     private Button setupSoloButton() {
-        Button soloBtn = new TextButton("S O L O", mySkin);
+        Button soloBtn = new TextButton("SOLO", skin);
         soloBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        soloBtn.setPosition(BUTTON_X, BUTTON_Y);
+        soloBtn.setPosition(Dimensions.GAME_WIDTH / 2 - BUTTON_WIDTH - 5, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2);
         // Listener for click events.
         soloBtn.addListener(new InputListener() {
             @Override
@@ -129,9 +118,9 @@ public class GameSelectionScreen extends UridiumScreen {
      * @return The multiplayer button.
      */
     private Button setupMultiplayerButton() {
-        Button multiplayerButton = new TextButton("M U L T I P L A Y E R", mySkin);
+        Button multiplayerButton = new TextButton("MULTIPLAYER", skin);
         multiplayerButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        multiplayerButton.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP);
+        multiplayerButton.setPosition(Dimensions.GAME_WIDTH / 2 + 5, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2);
         // Listener for click events.
         multiplayerButton.addListener(new InputListener() {
             @Override
@@ -141,7 +130,7 @@ public class GameSelectionScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new LobbyScreen());
+                getUSMInstance().push(new LobbyScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -155,10 +144,9 @@ public class GameSelectionScreen extends UridiumScreen {
      * @return The back button.
      */
     private Button setupBackButton() {
-        Button backBtn = new TextButton("B A C K", mySkin);
+        Button backBtn = new TextButton("back", skin);
         backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        backBtn.setPosition(BUTTON_X, BUTTON_Y - BUTTON_GAP * 2);
-        // Listener for click events.
+        backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -167,8 +155,7 @@ public class GameSelectionScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                getUSMInstance().push(new MenuScreen());
-                super.touchUp(event, x, y, pointer, button);
+                getUSMInstance().push(new MenuScreen(background));
             }
         });
         return backBtn;
@@ -181,7 +168,7 @@ public class GameSelectionScreen extends UridiumScreen {
 
     @Override
     public void update(float delta) {
-
+        background.update(delta);
     }
 
     @Override
@@ -191,7 +178,10 @@ public class GameSelectionScreen extends UridiumScreen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+
+        background.render(batch);
+        titleFont.draw(batch, "URIDIUM", (Dimensions.GAME_WIDTH - gl.width) / 2, (Dimensions.GAME_HEIGHT * 3 / 4) + gl.height / 2);
+
         batch.end();
 
         stage.act();
@@ -199,7 +189,7 @@ public class GameSelectionScreen extends UridiumScreen {
     }
 
     public void dispose() {
-        mySkin.dispose();
+        skin.dispose();
         stage.dispose();
     }
 }

@@ -6,6 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 public class GroundTile extends Tile {
 
     public GroundTile(int gridX, int gridY) {
-        super(gridX, gridY, "ice/textures/tundraCenter.png", false);
+        super(gridX, gridY, "graphics/tile/tundraCenter.png", false);
     }
 }

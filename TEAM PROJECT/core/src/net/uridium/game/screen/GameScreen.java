@@ -14,9 +14,9 @@ import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.server.constant;
 import net.uridium.game.server.msg.*;
 import net.uridium.game.server.msg.PlayerMoveData.Dir;
-import net.uridium.game.ui.HealthBar;
 import net.uridium.game.ui.InGameUI;
 import net.uridium.game.ui.Scoreboard;
+import net.uridium.game.util.Assets;
 import net.uridium.game.util.Audio;
 
 import java.io.*;
@@ -24,8 +24,8 @@ import java.net.Socket;
 import java.util.Collection;
 
 import static net.uridium.game.Uridium.*;
-import static net.uridium.game.res.Textures.GAME_CURSOR;
-import static net.uridium.game.res.Textures.*;
+import static net.uridium.game.util.Assets.BACKGROUND;
+import static net.uridium.game.util.Assets.GAME_CURSOR;
 
 public class GameScreen extends UridiumScreen {
     Socket s;
@@ -40,7 +40,6 @@ public class GameScreen extends UridiumScreen {
     TextureRegion bg;
 
     InGameUI ui;
-    HealthBar healthBar;
     Scoreboard scoreboard;
     Dir lastDir;
 
@@ -58,7 +57,7 @@ public class GameScreen extends UridiumScreen {
 
     public void init(int port, boolean singlePlayer) {
         setCursor(GAME_CURSOR, 32, 32);
-//        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
+        Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
             if(singlePlayer){
@@ -67,6 +66,7 @@ public class GameScreen extends UridiumScreen {
             else{
                 s = new Socket(constant.SERVER_IP,port);
             }
+
             oos = new ObjectOutputStream(s.getOutputStream());
             ois = new ObjectInputStream(s.getInputStream());
 
@@ -92,7 +92,7 @@ public class GameScreen extends UridiumScreen {
 //        healthBar = new HealthBar(level.getPlayer().getHealth(), level.getPlayer().getMaxHealth());
         scoreboard = new Scoreboard();
 
-        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
+        bgTexture = Assets.getTex((BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bg = new TextureRegion(bgTexture);
         bg.setRegion(0, 0, 640, 640);
@@ -117,6 +117,8 @@ public class GameScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
+                if(level.getPlayer().getHealth() == 0) return super.keyDown(keycode);
+
                 switch(keycode){
                     case Input.Keys.W:
                         sendDirMsg(Dir.UP);
@@ -153,6 +155,10 @@ public class GameScreen extends UridiumScreen {
 
             @Override
             public boolean keyUp(int keycode) {
+                if(level.getPlayer().getHealth() == 0) return super.keyUp(keycode);
+
+                System.out.println(level.getPlayer().getHealth() == 0);
+
                 switch(keycode){
                     case Input.Keys.W:
                         if(lastDir == Dir.UP) sendDirMsg(Dir.STOP);
@@ -213,6 +219,11 @@ public class GameScreen extends UridiumScreen {
             case PLAYER_HEALTH:
                 level.updateHealth((PlayerHealthData) msg.getData());
                 scoreboard.updateScoreboard(level.getPlayers());
+                break;
+            case PLAYER_DEATH:
+                PlayerDeathData pdd = (PlayerDeathData) msg.getData();
+                level.killPlayer(pdd);
+                if(level.getPlayerID() == pdd.ID) ui.showExpandingText("You came " + positionToString(pdd.position) + "!", 0.8f, true);
                 break;
             case PLAYER_POWERUP:
                 PlayerPowerupData ppd = (PlayerPowerupData) msg.getData();
@@ -278,5 +289,27 @@ public class GameScreen extends UridiumScreen {
         Level newLevel = new Level(levelData);
         level = newLevel;
         changingLevel = false;
+    }
+
+    public String positionToString(int position) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(position);
+
+        switch(position) {
+            case 1:
+                builder.append("st");
+                break;
+            case 2:
+                builder.append("nd");
+                break;
+            case 3:
+                builder.append("rd");
+                break;
+            case 4:
+                builder.append("th");
+                break;
+        }
+
+        return builder.toString();
     }
 }

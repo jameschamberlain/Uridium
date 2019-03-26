@@ -22,6 +22,11 @@ public class UridiumScreenManager {
         screens.pop();
     }
 
+    public void clearAndSet(UridiumScreen screen) {
+        screens.clear();
+        screens.push(screen);
+    }
+
     public void set(UridiumScreen screen) {
         pop();
         push(screen);

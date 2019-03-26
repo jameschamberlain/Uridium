@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.util.Assets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,9 +47,9 @@ public class Scoreboard {
         parameter.size = 34;
         font = generator.generateFont(parameter);
         generator.dispose();
-        tex = new Texture(Gdx.files.internal("scoreboard_bg.png"));
-        hpBg = new Texture(Gdx.files.internal("hpBg.png"));
-        hp = new Texture(Gdx.files.internal("hp.png"));
+        tex = Assets.getTex("graphics/ui/scoreboard_bg.png");
+        hpBg = Assets.getTex("graphics/ui/hpBg.png");
+        hp = Assets.getTex("graphics/ui/hp.png");
 
         renderer = new ShapeRenderer();
 
@@ -56,10 +57,10 @@ public class Scoreboard {
         yOffset = (GAME_HEIGHT - height) / 2;
 
         datas = new CopyOnWriteArrayList<>();
-        blueIcon = new Texture(Gdx.files.internal("player/BLUE/icon.png"));
-        pinkIcon = new Texture(Gdx.files.internal("player/PINK/icon.png"));
-        greenIcon = new Texture(Gdx.files.internal("player/GREEN/icon.png"));
-        yellowIcon = new Texture(Gdx.files.internal("player/YELLOW/icon.png"));
+        blueIcon = Assets.getTex(("graphics/entity/player/BLUE/icon.png"));
+        pinkIcon = Assets.getTex(("graphics/entity/player/PINK/icon.png"));
+        greenIcon = Assets.getTex(("graphics/entity/player/GREEN/icon.png"));
+        yellowIcon = Assets.getTex(("graphics/entity/player/YELLOW/icon.png"));
     }
 
     public void updateScoreboard(ArrayList<Player> players) {

@@ -14,52 +14,46 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import net.uridium.game.util.MyAssetManager;
+import net.uridium.game.ui.Background;
+import net.uridium.game.util.Assets;
+import net.uridium.game.util.Dimensions;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static net.uridium.game.Uridium.*;
 import static net.uridium.game.res.Textures.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
+import static net.uridium.game.util.Assets.*;
+import static net.uridium.game.util.Dimensions.BUTTON_HEIGHT;
+import static net.uridium.game.util.Dimensions.BUTTON_WIDTH;
 
-public class AudioScreen extends SettingsScreen {
+public class AudioScreen extends UridiumScreen {
 
 
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
-    private Skin mySkin;
+    private Skin skin;
     private Stage stage;
 
-    Texture bgTexture;
-    TextureRegion bg;
+    Background background;
 
-    AudioScreen() {
+    public AudioScreen(Background background) {
         setCursor(MENU_CURSOR, 0, 0);
 
-        bgTexture = new Texture(Gdx.files.internal(BACKGROUND));
-        bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        bg = new TextureRegion(bgTexture);
-        bg.setRegion(0, 0, 640, 640);
-
-
-        MyAssetManager myAssetManager = new MyAssetManager();
-        myAssetManager.queueAddSkin();
-        myAssetManager.manager.finishLoading();
-        mySkin = myAssetManager.manager.get(SKIN);
+        this.background = background;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 
+        skin = Assets.getAssets().getManager().get(SKIN);
         batch = new SpriteBatch();
 
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-
-        Button plusBtn = new TextButton("  +  ", mySkin);
+        Button plusBtn = new TextButton("  +  ", skin);
         plusBtn.setSize(80, 40);
         plusBtn.setPosition((GAME_WIDTH + 100)/2 , (GAME_HEIGHT +50 )/2);
-       // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
         plusBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -74,7 +68,7 @@ public class AudioScreen extends SettingsScreen {
         });
 
 
-        Button minusBtn = new TextButton("  -  ", mySkin);
+        Button minusBtn = new TextButton("  -  ", skin);
         minusBtn.setSize(80, 40);
         minusBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +50 )/2);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -91,7 +85,7 @@ public class AudioScreen extends SettingsScreen {
             }
         });
 
-        Button pauseBtn = new TextButton(" ||  ", mySkin);
+        Button pauseBtn = new TextButton(" ||  ", skin);
         pauseBtn.setSize(80, 40);
         pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2);
         // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
@@ -114,10 +108,9 @@ public class AudioScreen extends SettingsScreen {
 
 
 
-        Button backBtn = new TextButton("BACK", mySkin);
-        backBtn.setSize(340, 80);
-        backBtn.setPosition((GAME_WIDTH - 340) / 2, (GAME_HEIGHT - 80) / 2);
-        backBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
+        Button backBtn = new TextButton("back", skin);
+        backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         backBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -128,7 +121,7 @@ public class AudioScreen extends SettingsScreen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Back");
-                getUSMInstance().push(new SettingsScreen());
+                getUSMInstance().push(new SettingsScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -144,7 +137,7 @@ public class AudioScreen extends SettingsScreen {
 
     @Override
     public void update(float delta) {
-
+        background.update(delta);
     }
 
     @Override
@@ -154,14 +147,14 @@ public class AudioScreen extends SettingsScreen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+        background.render(batch);
         batch.end();
 
         stage.act();
         stage.draw();
     }
     public void dispose() {
-        mySkin.dispose();
+        skin.dispose();
         stage.dispose();
     }
 }
