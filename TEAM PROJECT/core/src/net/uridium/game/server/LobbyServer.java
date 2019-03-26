@@ -29,8 +29,7 @@ public class LobbyServer {
         ss = new ServerSocket(constant.LOBBY_SERVER_PORT);
         rooms = new HashMap<String, int[]>();
         sendPaths = new ArrayList<>();
-        rooms.put("Ahaaaaaa",new int[]{9977, 0});
-        rooms.put("chuooooo",new int[]{9933, 0});
+
         new Thread(new Acceptor(ss)).start();
 
     }
@@ -80,6 +79,12 @@ public class LobbyServer {
             rooms.put(roomName,new int[]{myRoom,0});
             portNum = myRoom;
             System.out.println("Not exist, "+roomName+" So,add a Room "+portNum);
+        }
+        try {
+            new Server(portNum);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return portNum;

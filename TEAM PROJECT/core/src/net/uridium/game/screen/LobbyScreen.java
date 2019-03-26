@@ -275,14 +275,14 @@ public class LobbyScreen extends UridiumScreen {
                 ps.println(sendToken);
                 System.out.println(roomData.get(choice)[0]);
 
-                //System.out.println(roomData.get(choice)[0]);
+                System.out.println(roomData.get(choice)[0]);
                 int portNum = roomData.get(choice)[0];
-                try {
-                    new Server(portNum);
-                    Thread.sleep(998);
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    new Server(portNum);
+//                    Thread.sleep(998);
+//                } catch (IOException | InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 getUSMInstance().push(new GameScreen(portNum));
 
                 super.touchUp(event, x, y, pointer, button);
