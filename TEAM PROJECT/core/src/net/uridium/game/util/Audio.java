@@ -16,7 +16,8 @@ public class Audio {
         ENEMY_DEAD,
         CHANGE_ROOM,
         GAME_OVER,
-        VICTORY
+        VICTORY,
+        POWERUP
     }
 
     private static Audio instance = new Audio();
@@ -33,17 +34,18 @@ public class Audio {
     public void init() {
         theme = Assets.get("audio/background.wav", Music.class);
         theme.setLooping(true);
-        theme.setVolume(volume);
+        theme.setVolume(volume * 0.6f);
 
         sounds = new HashMap<>();
-//        sounds.put(BUTTON_CLICK, Assets.get("audio/BUTTON_CLICK.wav", Sound.class));
-//        sounds.put(PLAYER_SHOOT, Assets.get("audio/PLAYER_SHOOT.wav", Sound.class));
-//        sounds.put(PLAYER_DAMAGE, Assets.get("audio/PLAYER_DAMAGE.wav", Sound.class));
-//        sounds.put(PLAYER_DEAD, Assets.get("audio/PLAYER_DEAD.wav", Sound.class));
-//        sounds.put(ENEMY_DEAD, Assets.get("audio/ENEMY_DEAD.wav", Sound.class));
-//        sounds.put(CHANGE_ROOM, Assets.get("audio/CHANGE_ROOM.wav", Sound.class));
-//        sounds.put(GAME_OVER, Assets.get("audio/GAME_OVER.wav", Sound.class));
+        sounds.put(BUTTON_CLICK, Assets.get("audio/BUTTON_CLICK.wav", Sound.class));
+        sounds.put(PLAYER_SHOOT, Assets.get("audio/PLAYER_SHOOT.wav", Sound.class));
+        sounds.put(PLAYER_DAMAGE, Assets.get("audio/PLAYER_DAMAGE.wav", Sound.class));
+        sounds.put(PLAYER_DEAD, Assets.get("audio/PLAYER_DEAD.wav", Sound.class));
+        sounds.put(ENEMY_DEAD, Assets.get("audio/ENEMY_DEAD.wav", Sound.class));
+        sounds.put(CHANGE_ROOM, Assets.get("audio/CHANGE_ROOM.ogg", Sound.class));
+        sounds.put(GAME_OVER, Assets.get("audio/GAME_OVER.wav", Sound.class));
 //        sounds.put(VICTORY, Assets.get("audio/VICTORY.wav", Sound.class));
+        sounds.put(POWERUP, Assets.get("audio/POWERUP.wav", Sound.class));
     }
 
     public void playTheme() {
@@ -57,10 +59,10 @@ public class Audio {
     public void playSound(SOUND sound, boolean loop){
         if(muted) return;
 
-//        Sound s = sounds.get(sound);
-//
-//        if(loop) s.loop(volume);
-//        else s.play(volume);
+        Sound s = sounds.get(sound);
+
+        if(loop) s.loop(volume);
+        else s.play(volume);
     }
 
     public float getVolume() {
@@ -69,7 +71,7 @@ public class Audio {
 
     public void setVolume(float volume) {
         this.volume = volume;
-        theme.setVolume(volume);
+        theme.setVolume(volume * 0.8f);
     }
 
     public void toggleMute() {

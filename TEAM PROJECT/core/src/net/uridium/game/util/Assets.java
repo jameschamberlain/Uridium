@@ -147,13 +147,14 @@ public class Assets {
 
         // AUDIO
         Assets.getAssets().getManager().load("audio/background.wav", Music.class);
-//        Assets.getAssets().getManager().load("audio/BUTTON_CLICK.wav", Sound.class);
-//        Assets.getAssets().getManager().load("audio/PLAYER_SHOOT.wav", Sound.class);
-//        Assets.getAssets().getManager().load("audio/PLAYER_DAMAGE.wav", Sound.class);
-//        Assets.getAssets().getManager().load("audio/PLAYER_DEAD.wav", Sound.class);
-//        Assets.getAssets().getManager().load("audio/ENEMY_DEAD.wav", Sound.class);
-//        Assets.getAssets().getManager().load("audio/CHANGE_ROOM.wav", Sound.class);
-//        Assets.getAssets().getManager().load("audio/GAME_OVER.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/BUTTON_CLICK.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_SHOOT.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_DAMAGE.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_DEAD.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/ENEMY_DEAD.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/CHANGE_ROOM.ogg", Sound.class);
+        Assets.getAssets().getManager().load("audio/GAME_OVER.wav", Sound.class);
 //        Assets.getAssets().getManager().load("audio/VICTORY.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/POWERUP.wav", Sound.class);
     }
 }
