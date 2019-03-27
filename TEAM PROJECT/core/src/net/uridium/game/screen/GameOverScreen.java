@@ -34,6 +34,7 @@ public class GameOverScreen extends UridiumScreen {
     private Stage stage;
 
     Background background;
+    String text;
     BitmapFont titleFont;
     BitmapFont smallFont;
     GlyphLayout gl;
@@ -59,6 +60,9 @@ public class GameOverScreen extends UridiumScreen {
         Gdx.input.setInputProcessor(stage);
 
         background = new Background();
+        background.setShowAlt(gameOverData.won);
+
+        text = gameOverData.won ? "YOU WIN!" : "GAME OVER";
 
         this.gameOverData = gameOverData;
 
@@ -67,6 +71,7 @@ public class GameOverScreen extends UridiumScreen {
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if(lockout <= 0) {
                     Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
+                    background.setShowAlt(false);
                     getUSMInstance().set(new MenuScreen(background));
                     return true;
                 }
@@ -95,8 +100,8 @@ public class GameOverScreen extends UridiumScreen {
         batch.begin();
 
         background.render(batch);
-        gl = new GlyphLayout(titleFont, "GAME OVER");
-        titleFont.draw(batch, "GAME OVER", (Dimensions.GAME_WIDTH - gl.width) / 2, (Dimensions.GAME_HEIGHT * 3 / 4) + gl.height / 2);
+        gl = new GlyphLayout(titleFont, text);
+        titleFont.draw(batch, text, (Dimensions.GAME_WIDTH - gl.width) / 2, (Dimensions.GAME_HEIGHT * 3 / 4) + gl.height / 2);
 
         float y = GAME_HEIGHT / 2;
         smallFont.getData().setScale(1.4f);
