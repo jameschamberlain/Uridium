@@ -24,11 +24,12 @@ public class Assets {
      * Image used on the splash screen.
      */
     public static final String SPLASH_BACKGROUND = "graphics/ui/splash/background.png";
-
+    public static final String SPLASH_BACKGROUND2 = "graphics/ui/splash/background2.png";
     /**
      * Image used on the splash screen.
      */
     public static final String SPLASH_FOREGROUND = "graphics/ui/splash/foreground.png";
+    public static final String SPLASH_FOREGROUND2 = "graphics/ui/splash/foreground2.png";
 
     /**
      * Background tile used in the menus and in-game.
@@ -49,6 +50,7 @@ public class Assets {
      * Cursor used in-game.
      */
     public static final String GAME_CURSOR = "graphics/ui/crosshair_white.png";
+
 
     private static Assets assets = new Assets();
     public static Assets getAssets() {

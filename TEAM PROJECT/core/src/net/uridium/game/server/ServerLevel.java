@@ -255,7 +255,7 @@ public class ServerLevel {
                         player.setRank(rank);
                         msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), rank)));
                         if (getNumPlayers() - getNumPlayersDead() == 0) {
-                            gameOver();
+                            gameOver(false);
                         }
                         retargetEnemies();
                     }
@@ -478,7 +478,7 @@ public class ServerLevel {
 
     public void handleBoss(Boss boss) {
         if(boss.isDead() && !gameEnded)
-            gameOver();
+            gameOver(true);
     }
 
     public void handleEnemySpawner(EnemySpawner spawner) {
@@ -559,7 +559,7 @@ public class ServerLevel {
         return players;
     }
 
-    public void gameOver() {
+    public void gameOver(boolean won) {
         gameEnded = true;
 
         ArrayList<Player> players = getPlayers();
@@ -569,7 +569,7 @@ public class ServerLevel {
             if(players.get(i).getRank() == -1)
                 players.get(i).setRank(i + 1);
 
-        msgs.add(new Msg(Msg.MsgType.GAME_OVER, new GameOverData(getPlayers())));
+        msgs.add(new Msg(Msg.MsgType.GAME_OVER, new GameOverData(getPlayers(), won)));
     }
 
     public boolean isGameEnded() {
