@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -19,6 +21,7 @@ import net.uridium.game.server.ServerConstants;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
 import net.uridium.game.util.Audio;
+import net.uridium.game.util.Dimensions;
 
 import java.io.*;
 import java.net.Socket;
@@ -43,6 +46,8 @@ public class LobbyScreen extends UridiumScreen {
     private HashMap<String,int[]> roomData;
 
     private Background background;
+    BitmapFont titleFont;
+    GlyphLayout gl;
 
     // ROOM CODE!
     private String roomCode = "";
@@ -102,6 +107,8 @@ public class LobbyScreen extends UridiumScreen {
         mySkin = Assets.getAssets().getManager().get(SKIN);
 
         this.background = background;
+        titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
+        gl = new GlyphLayout(titleFont, "URIDIUM");
 
         // Setup camera.
         camera = new OrthographicCamera();
@@ -113,43 +120,20 @@ public class LobbyScreen extends UridiumScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-
-        // Setup game title label.
-        Label gameTitle = setupGameTitle();
         // Setup create button.
         Button createBtn = setupCreateButton();
         // Setup refresh button.
         Button refreshBtn = setupRefreshButton();
-        // Setup random button.
-        Button randomBtn = setupRandomButton();
         // Setup back button.
         Button backBtn = setupBackButton();
         // Setup room list.
         ScrollPane roomList = setupRoomList();
 
-        // Add title, buttons and room list to the screen.
-        stage.addActor(gameTitle);
         stage.addActor(createBtn);
         stage.addActor(refreshBtn);
-        stage.addActor(randomBtn);
         stage.addActor(backBtn);
         stage.addActor(roomList);
         stage.unfocus(roomList);
-    }
-
-
-    /**
-     * Setup the game title label.
-     *
-     * @return The game title label.
-     */
-    private Label setupGameTitle() {
-        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
-        gameTitle.setSize(TITLE_WIDTH, TITLE_HEIGHT);
-        gameTitle.setPosition(TITLE_X, TITLE_Y);
-        gameTitle.setFontScale(TITLE_FONT_SCALE);
-        gameTitle.setAlignment(Align.center);
-        return gameTitle;
     }
 
     /**
@@ -292,33 +276,6 @@ public class LobbyScreen extends UridiumScreen {
     }
 
     /**
-     * Setup the random button.
-     * Joins a random room.
-     *
-     * @return The random button.
-     */
-    private Button setupRandomButton() {
-        Button randomBtn = new TextButton("R A N D O M", mySkin);
-        randomBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
-        randomBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 2);
-        // Listener for click events.
-        randomBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
-                super.touchUp(event, x, y, pointer, button);
-            }
-        });
-        return randomBtn;
-    }
-
-
-    /**
      * Setup the back button.
      * Returns the user to the game selection screen.
      *
@@ -444,6 +401,8 @@ public class LobbyScreen extends UridiumScreen {
             }
 
         }
+
+        background.update(delta);
     }
 
     @Override
@@ -453,7 +412,10 @@ public class LobbyScreen extends UridiumScreen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+
+        background.render(batch);
+        titleFont.draw(batch, "URIDIUM", (Dimensions.GAME_WIDTH - gl.width) / 2, (Dimensions.GAME_HEIGHT * 3 / 4) + gl.height / 2);
+
         batch.end();
 
         stage.act();

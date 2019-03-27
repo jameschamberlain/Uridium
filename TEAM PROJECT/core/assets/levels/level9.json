@@ -9,7 +9,7 @@
       "W       OOOO       W",
       "W        OO        W",
       "W   OOOOOOOOOOOO   W",
-      "D      OOOOOO      W",
+      "D      OOOOOO      D",
       "W                  W",
       "W                  W",
       "WWWWWWWWWWWWWWWWWWWW"
@@ -26,10 +26,19 @@
       "types": [
         "SPIDER"
       ],
-      "x": 9,
+      "x": 5,
       "y": 6,
-      "numEnemies": 4,
-      "spawnRate": 900
+      "numEnemies": 12,
+      "spawnRate": 1000
+    },
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 8,
+      "y": 6,
+      "numEnemies": 12,
+      "spawnRate": 1000
     }
   ],
   "doors": [
@@ -38,6 +47,12 @@
       "y": 3,
       "dest": 8,
       "entrance": 2
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "dest": -1,
+      "entrance": 1
     }
   ],
   "name": "Level 9",

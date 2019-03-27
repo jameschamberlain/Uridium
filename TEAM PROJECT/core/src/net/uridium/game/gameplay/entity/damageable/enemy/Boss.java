@@ -31,7 +31,7 @@ public class Boss extends Enemy {
     public transient ServerLevel level;
 
     public Boss(int ID, Vector2 pos, ServerLevel level) {
-        super(ID, new Rectangle(pos.x - 27.5f, pos.y - 40, 55, 80), 5, 5, 80);
+        super(ID, new Rectangle(pos.x - 27.5f, pos.y - 40, 55, 80), 50, 50, 80);
 
         minX = level.getGridWidth() * TILE_WIDTH / 5;
         maxX = minX * 4;

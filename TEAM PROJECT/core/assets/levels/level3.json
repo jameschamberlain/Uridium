@@ -32,12 +32,13 @@
   "spawners": [
     {
       "types": [
-        "BLUE_FISH"
+        "BLUE_FISH",
+        "GREEN_FISH"
       ],
       "x": 15,
       "y": 2,
-      "numEnemies": 4,
-      "spawnRate": 2000
+      "numEnemies": 12,
+      "spawnRate": 600
     }
   ],
   "doors": [
