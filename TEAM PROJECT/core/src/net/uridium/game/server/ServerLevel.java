@@ -6,8 +6,11 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.ai.Pathfinder;
 import net.uridium.game.gameplay.entity.EnemySpawner;
 import net.uridium.game.gameplay.entity.Entity;
-import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.gameplay.entity.damageable.enemy.Bat;
+import net.uridium.game.gameplay.entity.damageable.enemy.Boss;
+import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
+import net.uridium.game.gameplay.entity.damageable.enemy.Slime;
 import net.uridium.game.gameplay.entity.item.Heal;
 import net.uridium.game.gameplay.entity.item.Item;
 import net.uridium.game.gameplay.entity.item.MovementSteroid;
@@ -19,16 +22,13 @@ import net.uridium.game.gameplay.tile.DoorTile;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
-import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
 public class ServerLevel {
     int id;
@@ -53,6 +53,9 @@ public class ServerLevel {
 
     private long enteredTime = 0;
 
+    private boolean gameEnded = false;
+    private boolean unlocked = false;
+
     public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> entrances) {
         this(id, grid, gridWidth, gridHeight, entrances, new ArrayList<>());
     }
@@ -76,16 +79,17 @@ public class ServerLevel {
             int spawnerId = getNextEntityID();
             spawner.setID(spawnerId);
             addEntity(spawner);
-//            System.out.println("added spawner, id => " + spawnerId);
         }
 
-        printEntities();
+        if(id == -1)
+            spawnBoss();
+
+        enteredTime = System.currentTimeMillis();
     }
 
-    public void printEntities() {
-        for (Entity e : entities.values()) {
-            System.out.println(e instanceof EnemySpawner);
-        }
+    public void spawnBoss() {
+        Boss b = new Boss(getNextEntityID(), new Vector2(gridWidth / 2 * TILE_WIDTH, gridHeight * 3 / 4 * TILE_HEIGHT), this);
+        entities.put(b.getID(), b);
     }
 
     public void setEnteredTime(long enteredTime) {
@@ -121,7 +125,7 @@ public class ServerLevel {
             }
 
             retargetEnemies();
-        } else if (entity instanceof Enemy) {
+        } else if (entity instanceof Enemy && !(entity instanceof Boss) && !(entity instanceof Bat)&& !(entity instanceof Slime)) {
             Enemy enemy = (Enemy) entity;
             enemy.setPathfinder(new Pathfinder(getObstacleGridPositionList(), gridWidth, gridHeight));
 
@@ -131,7 +135,7 @@ public class ServerLevel {
 
     public void retargetEnemies() {
         for (Entity e : entities.values()) {
-            if (e instanceof Enemy) {
+            if (e instanceof Enemy && !(e instanceof Boss) && !(e instanceof Bat)&& !(e instanceof Slime)) {
                 Enemy enemy = (Enemy) e;
 
                 Player player;
@@ -178,7 +182,7 @@ public class ServerLevel {
     }
 
     public LevelData getLevelData() {
-        return new LevelData(grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
+        return new LevelData(id, grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
     }
 
     public int getNumPlayers() {
@@ -224,7 +228,7 @@ public class ServerLevel {
                     int dest = door.getDest();
                     int entrance = door.getEntrance();
 
-                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel()) {
+                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel() && door.isEnabled()) {
                         newLevelId = dest;
                         shouldChangeLevel = true;
                         nextLevelEntrance = entrance;
@@ -236,7 +240,7 @@ public class ServerLevel {
         }
 
         for (Entity e : entities.values()) {
-            if (e instanceof Enemy) {
+            if (e instanceof Enemy && !(e instanceof Boss)) {
                 Enemy enemy = (Enemy) e;
 
                 if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
@@ -247,9 +251,11 @@ public class ServerLevel {
                     if (player.getHealth() == 0) {
                         player.setPosition(new Vector2(-1000, -1000));
                         player.setVelocity(0, 0);
-                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), getNumPlayers() - getNumPlayersDead() + 1)));
-                        if(getNumPlayers() - getNumPlayersDead() == 0) {
-                            msgs.add(new Msg(Msg.MsgType.GAME_OVER, -1));
+                        int rank = getNumPlayers() - getNumPlayersDead() + 1;
+                        player.setRank(rank);
+                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), rank)));
+                        if (getNumPlayers() - getNumPlayersDead() == 0) {
+                            gameOver();
                         }
                         retargetEnemies();
                     }
@@ -287,6 +293,11 @@ public class ServerLevel {
                     obstacle = tile.getBody();
 
                     if (Intersector.intersectRectangles(enemyBody, obstacle, overlap)) {
+                        if(enemy instanceof Bat || enemy instanceof Slime) {
+                            entityIDsToRemove.add(enemy.getID());
+                            return;
+                        }
+
                         if (overlap.width > overlap.height)
                             enemy.setY(enemy.getLastPos().y);
                         else if (overlap.width < overlap.height)
@@ -300,6 +311,11 @@ public class ServerLevel {
                 }
             }
         }
+
+        if (enemyBody.y + enemyBody.height > gridHeight * TILE_HEIGHT || enemyBody.y < 0)
+            entityIDsToRemove.add(enemy.getID());
+        else if (enemyBody.x + enemyBody.width > gridWidth * TILE_WIDTH || enemyBody.x < 0)
+            entityIDsToRemove.add(enemy.getID());
     }
 
     public void checkCollisionsForProjectile(Projectile p) {
@@ -339,29 +355,20 @@ public class ServerLevel {
 
             if (Intersector.intersectRectangles(projectileBody, entityBody, overlap)) {
                 if (e instanceof Enemy) {
+                    Enemy enemy = (Enemy) e;
+                    enemy.damage(1);
                     entityIDsToRemove.add(p.getID());
-                    entityIDsToRemove.add(e.getID());
 
-                    Player killer = getPlayer(p.getOwnerID());
-                    killer.addScore(100);
-                    killer.addXp(2.5f);
-                    msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(killer.getID(), killer.getScore(), killer.getLevel(), killer.getXp(), killer.getXpToLevelUp(), killer.isLevelledUp())));
-                    killer.setLevelledUpFalse();
+                    if(enemy.isDead() && !(enemy instanceof Boss)) {
+                        entityIDsToRemove.add(e.getID());
 
-                    //spawn item
-                    switch (r.nextInt(5)) {
-                        case 0:
-                            Heal h = new Heal(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
-                            addEntity(h);
-                            break;
-                        case 1:
-                            ShootingSteroid ss = new ShootingSteroid(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
-                            addEntity(ss);
-                            break;
-                        case 2:
-                            MovementSteroid ms = new MovementSteroid(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
-                            addEntity(ms);
-                            break;
+                        Player killer = getPlayer(p.getOwnerID());
+                        killer.addScore(100);
+                        killer.addXp(2.5f);
+                        msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(killer.getID(), killer.getScore(), killer.getLevel(), killer.getXp(), killer.getXpToLevelUp(), killer.isLevelledUp())));
+                        killer.setLevelledUpFalse();
+
+                        dropItem(enemy.getPosition(new Vector2()));
                     }
                 }
 
@@ -413,30 +420,65 @@ public class ServerLevel {
     public void update(float delta) {
         if (playerIDs.size() == 0) return;
 
+        boolean noEnemies = canChangeLevel();
+
         for (Entity e : entities.values()) {
             e.update(delta);
 
-            if (e instanceof Player)
+            if (e instanceof Player) {
                 checkCollisionsForPlayer((Player) e);
-            else if (e instanceof Projectile)
+            } else if (e instanceof Projectile) {
                 checkCollisionsForProjectile((Projectile) e);
-            else if (e instanceof Enemy)
+            } else if (e instanceof Boss) {
+                handleBoss((Boss) e);
+            } else if (e instanceof Enemy) {
+                noEnemies = false;
                 checkCollisionsForEnemy((Enemy) e);
-            else if (e instanceof EnemySpawner)
-                handleEnemySpawner((EnemySpawner) e);
-            else if (e instanceof Item)
-                if (((Item) e).isUsed()) entityIDsToRemove.add(e.getID());
+            } else if (e instanceof EnemySpawner) {
+                EnemySpawner es = (EnemySpawner) e;
+                if(es.getNumEnemies() != 0)
+                    noEnemies = false;
+
+                handleEnemySpawner(es);
+            } else if (e instanceof Item) {
+                if (((Item) e).isUsed())
+                    entityIDsToRemove.add(e.getID());
+            }
 
             if (e.checkChanged()) {
                 if (e instanceof Enemy) {
-                    msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()), ((Enemy) e).getAngle())));
+                    msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()), ((Enemy) e).getAngle(), ((Enemy) e).getHealth(), ((Enemy) e).getMaxHealth())));
                 } else {
                     msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
                 }
             }
         }
 
+        if(!unlocked && noEnemies) {
+            msgs.add(new Msg(Msg.MsgType.UNLOCK_DOORS, 0));
+            unlocked = true;
+            unlockDoors();
+        }
+
         purgeEntities();
+    }
+
+    public void unlockDoors() {
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                Tile tile = grid[i][j];
+
+                if (tile instanceof DoorTile) {
+                    DoorTile door = (DoorTile) tile;
+                    door.enable();
+                }
+            }
+        }
+    }
+
+    public void handleBoss(Boss boss) {
+        if(boss.isDead() && !gameEnded)
+            gameOver();
     }
 
     public void handleEnemySpawner(EnemySpawner spawner) {
@@ -461,8 +503,26 @@ public class ServerLevel {
         addEntity(e);
     }
 
+    public void dropItem(Vector2 pos) {
+        switch (r.nextInt(24)) {
+            case 0:
+            case 1:
+                Heal h = new Heal(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40));
+                addEntity(h);
+                break;
+            case 2:
+                ShootingSteroid ss = new ShootingSteroid(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40));
+                addEntity(ss);
+                break;
+            case 3:
+                MovementSteroid ms = new MovementSteroid(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40));
+                addEntity(ms);
+                break;
+        }
+    }
+
     public int shouldChangeLevel() {
-        return shouldChangeLevel ? newLevelId : -1;
+        return shouldChangeLevel ? newLevelId : 0;
     }
 
     public int getNextLevelEntrance() {
@@ -474,7 +534,7 @@ public class ServerLevel {
     }
 
     public boolean canChangeLevel() {
-        return System.currentTimeMillis() - enteredTime > 3000;
+        return System.currentTimeMillis() - enteredTime > 3000 && enteredTime != 0;
     }
 
     public Player.Colour getAvailColour() {
@@ -484,8 +544,8 @@ public class ServerLevel {
     public int getNumPlayersDead() {
         int dead = 0;
 
-        for(Player p : getPlayers())
-            if(p.getHealth() == 0) dead++;
+        for (Player p : getPlayers())
+            if (p.getHealth() == 0) dead++;
 
         return dead;
     }
@@ -493,9 +553,34 @@ public class ServerLevel {
     public ArrayList<Player> getPlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
-        for(Entity e : entities.values())
-            if(e instanceof Player) players.add((Player) e);
+        for (Entity e : entities.values())
+            if (e instanceof Player) players.add((Player) e);
 
         return players;
+    }
+
+    public void gameOver() {
+        gameEnded = true;
+
+        ArrayList<Player> players = getPlayers();
+        Collections.sort(players, Collections.reverseOrder());
+
+        for(int i = 0; i < players.size(); i++)
+            if(players.get(i).getRank() == -1)
+                players.get(i).setRank(i + 1);
+
+        msgs.add(new Msg(Msg.MsgType.GAME_OVER, new GameOverData(getPlayers())));
+    }
+
+    public boolean isGameEnded() {
+        return gameEnded;
+    }
+
+    public int getGridWidth() {
+        return gridWidth;
+    }
+
+    public int getGridHeight() {
+        return gridHeight;
     }
 }

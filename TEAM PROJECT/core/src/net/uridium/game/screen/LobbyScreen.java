@@ -15,16 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
+import net.uridium.game.server.ServerConstants;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
-import net.uridium.game.server.constant;
-
+import net.uridium.game.util.Audio;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import static net.uridium.game.Uridium.setCursor;
 import static net.uridium.game.util.Dimensions.*;
@@ -41,10 +39,10 @@ public class LobbyScreen extends UridiumScreen {
     private int myPort;
     private TextureRegion bg;
 
-    private Background background;
-
     private List<String> roomList;
     private HashMap<String,int[]> roomData;
+
+    private Background background;
 
     // ROOM CODE!
     private String roomCode = "";
@@ -56,15 +54,15 @@ public class LobbyScreen extends UridiumScreen {
 
     private String choice;
 
+
     /**
      * Constructor for a new lobby screen.
      */
     public LobbyScreen(Background background) {
-
         roomData = new HashMap<>();
 
         try {
-            s = new Socket(constant.SERVER_IP, constant.LOBBY_SERVER_PORT);
+            s = new Socket(ServerConstants.SERVER_IP, ServerConstants.LOBBY_SERVER_PORT);
             ps = new PrintStream(s.getOutputStream());
             oi = new ObjectInputStream(s.getInputStream());
             roomData = (HashMap<String, int[]>) oi.readObject();
@@ -95,7 +93,6 @@ public class LobbyScreen extends UridiumScreen {
 
         setCursor(MENU_CURSOR, 0, 0);
         myPort = 0;
-
         // Setup textures and background.
         Texture bgTexture = Assets.getTex((BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -123,6 +120,8 @@ public class LobbyScreen extends UridiumScreen {
         Button createBtn = setupCreateButton();
         // Setup refresh button.
         Button refreshBtn = setupRefreshButton();
+        // Setup random button.
+        Button randomBtn = setupRandomButton();
         // Setup back button.
         Button backBtn = setupBackButton();
         // Setup room list.
@@ -132,11 +131,10 @@ public class LobbyScreen extends UridiumScreen {
         stage.addActor(gameTitle);
         stage.addActor(createBtn);
         stage.addActor(refreshBtn);
+        stage.addActor(randomBtn);
         stage.addActor(backBtn);
         stage.addActor(roomList);
         stage.unfocus(roomList);
-
-
     }
 
 
@@ -153,7 +151,6 @@ public class LobbyScreen extends UridiumScreen {
         gameTitle.setAlignment(Align.center);
         return gameTitle;
     }
-
 
     /**
      * Setup the create button.
@@ -174,6 +171,8 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
+
                 // Label to describe dialog.
                 Label descriptionLabel = new Label("Enter room ID", mySkin);
                 descriptionLabel.setAlignment(Align.center);
@@ -265,6 +264,7 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 System.out.println("You have Choosed "+choice);
                 choice = choice.split(" ")[1];
                 for(String s : roomData.keySet()){
@@ -275,14 +275,14 @@ public class LobbyScreen extends UridiumScreen {
                 ps.println(sendToken);
                 System.out.println(roomData.get(choice)[0]);
 
-                System.out.println(roomData.get(choice)[0]);
+                //System.out.println(roomData.get(choice)[0]);
                 int portNum = roomData.get(choice)[0];
-//                try {
-//                    new Server(portNum);
-//                    Thread.sleep(998);
-//                } catch (IOException | InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    new Server(portNum);
+                    Thread.sleep(998);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
                 getUSMInstance().push(new GameScreen(portNum));
 
                 super.touchUp(event, x, y, pointer, button);
@@ -291,12 +291,31 @@ public class LobbyScreen extends UridiumScreen {
         return refreshBtn;
     }
 
-//    public int getPort(String name){
-//        return roomData.get(name)[0];
-//    }
+    /**
+     * Setup the random button.
+     * Joins a random room.
+     *
+     * @return The random button.
+     */
+    private Button setupRandomButton() {
+        Button randomBtn = new TextButton("R A N D O M", mySkin);
+        randomBtn.setSize(SIDE_BUTTON_WIDTH, SIDE_BUTTON_HEIGHT);
+        randomBtn.setPosition(SIDE_BUTTON_X, SIDE_BUTTON_Y - SIDE_BUTTON_GAP * 2);
+        // Listener for click events.
+        randomBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
 
-
-
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        return randomBtn;
+    }
 
 
     /**
@@ -318,8 +337,8 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new GameSelectionScreen(background));
-                super.touchUp(event, x, y, pointer, button);
             }
         });
         return backBtn;
@@ -384,7 +403,7 @@ public class LobbyScreen extends UridiumScreen {
 //        int port = 0;
 //
 //        try {
-//            Socket s = new Socket(constant.SERVER_IP, constant.LOBBY_SERVER_PORT);
+//            Socket s = new Socket(ServerConstants.SERVER_IP, ServerConstants.LOBBY_SERVER_PORT);
 //            PrintStream ps = new PrintStream(s.getOutputStream());
 //            ObjectInputStream oi = new ObjectInputStream(s.getInputStream());
 //            ps.println(roomCode);

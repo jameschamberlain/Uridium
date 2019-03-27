@@ -6,6 +6,7 @@ import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.server.msg.*;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -28,6 +29,20 @@ public class Server{
     ServerLevel currentLevel;
     long lastUpdate;
 
+    boolean gameEnded;
+
+    Thread acceptor;
+    Thread levelUpdate;
+
+    /**
+     * Overload the Constructor of Server
+     * If there is no input. Assign server a default value
+     * @throws IOException
+     */
+    public Server() throws IOException {
+        this(6666);
+    }
+
     /**
      * Constructor of Server
      * Build up a server according to input.
@@ -38,17 +53,14 @@ public class Server{
      * @throws IOException
      */
     public Server(int port) throws IOException {
-        System.out.println("Server Starting ...");
-        try{
+        try {
             ss = new ServerSocket(port);
-        }
-        catch (Exception e){
-            System.out.println("Server exists already");
-        }
+        } catch (BindException e) {}
 
+        init();
+    }
 
-        System.out.println("Creating Level ...");
-
+    private void init() throws FileNotFoundException {
         levels = new ConcurrentHashMap<>();
 
         File f = new File("levels/level1.json");
@@ -60,21 +72,16 @@ public class Server{
 
         users = new CopyOnWriteArrayList<>();
 
-        new Thread(new Acceptor(ss)).start();
-        new Thread(this::levelUpdate).start();
-    }
+        acceptor = new Thread(new Acceptor(ss));
+        acceptor.start();
+        levelUpdate = new Thread(this::levelUpdate);
+        levelUpdate.start();
 
-    /**
-     * Overload the Constructor of Server
-     * If there is no input. Assign server a default value
-     * @throws IOException
-     */
-    public Server() throws IOException {
-        this(6666);
+        gameEnded = false;
     }
 
     private void levelUpdate() {
-        while (true) {
+        while (!gameEnded) {
             float delta = System.currentTimeMillis() - lastUpdate;
             delta /= 1000;
             currentLevel.update(delta);
@@ -82,22 +89,22 @@ public class Server{
 
             ArrayList<Msg> newMsgs = new ArrayList<>();
             currentLevel.getMsgs().drainTo(newMsgs);
-//            if(newMsgs.size() > 0) {
-//                System.out.println("Msgs: " + newMsgs.size());
-//                for(Msg msg : newMsgs)
-//                    System.out.println("\t" + msg.getType().name());
-//            }
 
             for(Sender s : users)
                 for (Msg msg : newMsgs)
                     s.getMsgQueue().add(msg);
 
             int id;
-            if((id = currentLevel.shouldChangeLevel()) != -1) {
+            if((id = currentLevel.shouldChangeLevel()) != 0) {
                 currentLevel.changedLevel();
 
                 if(levels.get(id) == null) {
-                    File f = new File("levels/level" + id + ".json");
+                    File f;
+                    if(id == -1)
+                        f = new File("levels/level_boss.json");
+                    else
+                        f = new File("levels/level" + id + ".json");
+
                     try {
                         ServerLevel newLevel = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
 
@@ -138,6 +145,14 @@ public class Server{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            gameEnded = currentLevel.isGameEnded();
+        }
+
+        try {
+            init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -159,7 +174,7 @@ public class Server{
         public void run() {
             System.out.println("Waiting for users ...");
 
-            while (true) {
+            while (!gameEnded) {
                 int playerID = 0;
                 try {
                     s = ss.accept();
@@ -188,6 +203,12 @@ public class Server{
 
                 new Thread(sender).start();
                 new Thread(receiver).start();
+            }
+
+            try {
+                ss.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -223,7 +244,6 @@ public class Server{
                             PlayerMoveData moveData = (PlayerMoveData) msg.getData();
 
                             if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
-                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
 
                             switch(moveData.dir) {
                                 case STOP:
@@ -247,7 +267,6 @@ public class Server{
                             PlayerShootData shootData = (PlayerShootData) msg.getData();
 
                             if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
-                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
 
                             if(currentLevel.getPlayer(playerID).canShoot()){
                                 currentLevel.createBullet(playerID, shootData.angle);

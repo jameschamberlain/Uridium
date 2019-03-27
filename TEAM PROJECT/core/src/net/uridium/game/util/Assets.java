@@ -4,6 +4,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,6 +15,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 import net.uridium.game.gameplay.entity.damageable.Player;
+
+import static net.uridium.game.util.Audio.SOUND.*;
+import static net.uridium.game.util.Audio.SOUND.VICTORY;
 
 public class Assets {
     /**
@@ -104,9 +109,11 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/tile/igloo.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/tile/DOORBOI.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/tile/iceBlockAlt.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/tile/iceBlock.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/tile/obstacle.png", Texture.class);
 
         // ENTITY
-        Assets.getAssets().getManager().load("graphics/entity/crate_01.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/spawner.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/projectile/wrench.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/item/heal.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/item/coffee.png", Texture.class);
@@ -118,6 +125,11 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/entity/enemy/fishPink_swim.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/enemy/spider_walk1.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/enemy/spider_walk2.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/ghost.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/ghost_normal.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/bat.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/bat_fly.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/slimeBlue_squashed.png", Texture.class);
 
         for(Player.Colour c : Player.Colour.values()) {
             Assets.getAssets().getManager().load("graphics/entity/player/" + c.toString() + "/walk1.png", Texture.class);
@@ -139,5 +151,17 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/ui/scoreboard_bg.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/powerup.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/border.png", Texture.class);
+
+        // AUDIO
+        Assets.getAssets().getManager().load("audio/background.wav", Music.class);
+        Assets.getAssets().getManager().load("audio/BUTTON_CLICK.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_SHOOT.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_DAMAGE.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_DEAD.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/ENEMY_DEAD.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/CHANGE_ROOM.ogg", Sound.class);
+        Assets.getAssets().getManager().load("audio/GAME_OVER.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/VICTORY.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/POWERUP.wav", Sound.class);
     }
 }

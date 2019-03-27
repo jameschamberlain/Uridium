@@ -1,7 +1,6 @@
 package net.uridium.game.gameplay.entity.damageable;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,7 +10,7 @@ import net.uridium.game.util.Assets;
 
 import static net.uridium.game.res.Textures.*;
 
-public class Player extends DamageableEntity {
+public class Player extends DamageableEntity implements Comparable<Player> {
     public enum Colour {
         GREEN,
         PINK,
@@ -44,6 +43,8 @@ public class Player extends DamageableEntity {
     private float speed = 200;
 
     private boolean scoreChanged = false;
+
+    private int rank = -1;
 
     private transient Animation<TextureRegion> animUp;
     private transient Animation<TextureRegion> animDown;
@@ -119,6 +120,10 @@ public class Player extends DamageableEntity {
         xp -= xpToLevelUp;
         xpToLevelUp += 2.5f;
         isLevelledUp = true;
+
+        float addedHealth = maxHealth * 0.2f;
+        maxHealth += addedHealth;
+        heal(addedHealth);
     }
 
     public void setXp(float xp) {
@@ -219,6 +224,14 @@ public class Player extends DamageableEntity {
         this.powerupDuration = powerupDuration;
     }
 
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
     @Override
     public void update(float delta) {
         super.update(delta);
@@ -228,10 +241,8 @@ public class Player extends DamageableEntity {
         if (powerup != POWERUP.NONE) {
             powerupDuration -= delta;
 
-            if (powerupDuration <= 0) {
+            if (powerupDuration <= 0)
                 powerup = POWERUP.NONE;
-                System.out.println("powerup over");
-            }
         }
     }
 
@@ -250,6 +261,11 @@ public class Player extends DamageableEntity {
                 batch.draw(t, body.x, body.y, body.width, body.height);
             }
         }
+    }
+
+    @Override
+    public int compareTo(Player o) {
+        return score - o.getScore();
     }
 }
 

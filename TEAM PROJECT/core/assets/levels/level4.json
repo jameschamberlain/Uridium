@@ -1,0 +1,64 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 10,
+    "rows": [
+      "WWWWWWWWWWWWWWWWWWWW",
+      "W              OO OW",
+      "W             OO   W",
+      "W          OOO     W",
+      "W       OOO        W",
+      "WOOOOOOO           W",
+      "D                  W",
+      "W            OO    W",
+      "WOOOOOOO OOOO  OO OW",
+      "WWWWWWWWDWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 1,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 1
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 18,
+      "y": 8,
+      "numEnemies": 3,
+      "spawnRate": 1200
+    },
+    {
+      "types": [
+        "PINK_FISH"
+      ],
+      "x": 18,
+      "y": 1,
+      "numEnemies": 3,
+      "spawnRate": 1200
+    }
+  ],
+  "doors": [
+    {
+      "x": 0,
+      "y": 3,
+      "dest": 2,
+      "entrance": 2
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "dest": 3,
+      "entrance": 2
+    }
+  ],
+  "name": "Level 4",
+  "id": 4
+}

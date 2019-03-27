@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 
 import static net.uridium.game.util.Dimensions.GAME_HEIGHT;
 import static net.uridium.game.util.Dimensions.GAME_WIDTH;
@@ -80,6 +81,7 @@ public class LoadingScreen extends UridiumScreen {
 
             batch.end();
         } else {
+            Audio.getAudio().init();
             getUSMInstance().push(new MenuScreen(background));
         }
     }

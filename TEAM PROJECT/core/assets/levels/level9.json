@@ -1,0 +1,45 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 10,
+    "rows": [
+      "WWWWWWWWWWWWWWWWWWWW",
+      "W                  W",
+      "W                  W",
+      "W       OOOO       W",
+      "W        OO        W",
+      "W   OOOOOOOOOOOO   W",
+      "D      OOOOOO      W",
+      "W                  W",
+      "W                  W",
+      "WWWWWWWWWWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 1,
+      "y": 3
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "SPIDER"
+      ],
+      "x": 9,
+      "y": 6,
+      "numEnemies": 4,
+      "spawnRate": 900
+    }
+  ],
+  "doors": [
+    {
+      "x": 0,
+      "y": 3,
+      "dest": 8,
+      "entrance": 2
+    }
+  ],
+  "name": "Level 9",
+  "id": 9
+}

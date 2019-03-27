@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 import net.uridium.game.util.Dimensions;
 
 import java.io.IOException;
@@ -98,6 +99,7 @@ public class GameSelectionScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 try {
                     new Server();
                 }
@@ -130,8 +132,8 @@ public class GameSelectionScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new LobbyScreen(background));
-                super.touchDown(event, x, y, pointer, button);
             }
         });
         return multiplayerButton;
@@ -155,6 +157,7 @@ public class GameSelectionScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new MenuScreen(background));
             }
         });

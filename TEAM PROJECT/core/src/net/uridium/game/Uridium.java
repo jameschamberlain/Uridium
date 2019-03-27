@@ -33,7 +33,6 @@ public class Uridium extends ApplicationAdapter {
 	}
 
 	public static void setCursor(String cursor, int xHotspot, int yHotspot) {
-		System.out.println(Assets.getAssets().getManager().isFinished());
 		TextureRegion cursorImage = new TextureRegion(Assets.getAssets().getManager().get(cursor, Texture.class));
 		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		if (!cursorImage.getTexture().getTextureData().isPrepared()) {

@@ -21,7 +21,7 @@ public final class Textures {
     /**
      * Image for the spawn tile.
      */
-    public static final String SPAWN_TILE = "graphics/entity/crate_01.png";
+    public static final String SPAWN_TILE = "graphics/entity/spawner.png";
     /**
      * Path to folder with player animations.
      */

@@ -41,6 +41,10 @@ public class EnemySpawner extends Entity {
         return numEnemies > 0 && System.currentTimeMillis() - lastSpawn > spawnRate;
     }
 
+    public int getNumEnemies() {
+        return numEnemies;
+    }
+
     public Enemy spawn(int id, Vector2 pos) {
         numEnemies--;
         lastSpawn = System.currentTimeMillis();

@@ -7,7 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class LobbyServer {
     private ServerSocket ss;
@@ -26,10 +25,9 @@ public class LobbyServer {
      * @throws IOException
      */
     public LobbyServer() throws IOException {
-        ss = new ServerSocket(constant.LOBBY_SERVER_PORT);
+        ss = new ServerSocket(ServerConstants.LOBBY_SERVER_PORT);
         rooms = new HashMap<String, int[]>();
         sendPaths = new ArrayList<>();
-
         new Thread(new Acceptor(ss)).start();
 
     }
@@ -79,12 +77,6 @@ public class LobbyServer {
             rooms.put(roomName,new int[]{myRoom,0});
             portNum = myRoom;
             System.out.println("Not exist, "+roomName+" So,add a Room "+portNum);
-        }
-        try {
-            new Server(portNum);
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return portNum;
