@@ -25,6 +25,7 @@ public class DamageableEntity extends Entity {
         if(health > maxHealth) health = maxHealth;
 
         this.health = health;
+        System.out.println(this.health);
     }
 
     public void damage(float damage) {
@@ -50,6 +51,6 @@ public class DamageableEntity extends Entity {
     }
 
     public boolean isDead() {
-        return health == 0;
+        return health <= 0;
     }
 }

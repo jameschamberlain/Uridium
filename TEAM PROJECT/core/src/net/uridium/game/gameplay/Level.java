@@ -10,9 +10,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import net.uridium.game.gameplay.entity.Entity;
+import net.uridium.game.gameplay.entity.damageable.DamageableEntity;
+import net.uridium.game.gameplay.entity.damageable.enemy.Boss;
 import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
 import net.uridium.game.gameplay.entity.projectile.Bullet;
+import net.uridium.game.gameplay.tile.DoorTile;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
 import net.uridium.game.util.Audio;
@@ -25,6 +28,7 @@ import static net.uridium.game.Uridium.GAME_WIDTH;
 import static net.uridium.game.util.Audio.SOUND.ENEMY_DEAD;
 
 public class Level {
+    int id;
     Tile[][] grid;
     public int gridWidth;
     public int gridHeight;
@@ -34,8 +38,6 @@ public class Level {
     public float xOffset;
     public float yOffset;
 
-    float enemyMoveSpeed = 30;
-
     ConcurrentHashMap<Integer, Entity> entities;
     int playerID;
 
@@ -44,12 +46,10 @@ public class Level {
     ParticleEffectPool healEffectPool;
     Array<ParticleEffectPool.PooledEffect> particleEffects;
 
-//    String outputScore;
-//    BitmapFont myFont = new BitmapFont(Gdx.files.internal("arial.fnt"));
-
     public Level(LevelData levelData) {
         entities = new ConcurrentHashMap<>();
 
+        this.id = levelData.id;
         this.grid = levelData.grid;
         this.gridWidth = levelData.gridWidth;
         this.gridHeight = levelData.gridHeight;
@@ -61,13 +61,13 @@ public class Level {
         yOffset = GAME_HEIGHT - (gridHeight * TILE_HEIGHT) - 80;
         yOffset /= 2;
 
-        for(int i = 0; i < gridWidth; i++) {
-            for(int j = 0; j < gridHeight; j++) {
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
                 grid[i][j].loadTexture();
             }
         }
 
-        for(Entity e : entities.values())
+        for (Entity e : entities.values())
             e.loadTexture();
 
         particleEffects = new Array<>();
@@ -97,21 +97,28 @@ public class Level {
         entities.put(e.getID(), e);
         e.loadTexture();
 
-        if(e instanceof Bullet)
+        if (e instanceof Bullet)
             Audio.getAudio().playSound(Audio.SOUND.PLAYER_SHOOT);
     }
 
     public void updateEntity(EntityUpdateData entityUpdateData) {
         Entity e = entities.get(entityUpdateData.ID);
-        if(e == null) return;
+        if (e == null) return;
 
         e.setPosition(entityUpdateData.pos);
         e.setVelocity(entityUpdateData.vel);
-        if(e instanceof Enemy) ((Enemy) e).setAngle(entityUpdateData.angle);
+
+        if(entityUpdateData.maxHealth > 0) {
+            DamageableEntity de = (DamageableEntity) e;
+            de.setHealth(entityUpdateData.health);
+            de.setMaxHealth(entityUpdateData.maxHealth);
+        }
+
+        if (e instanceof Enemy) ((Enemy) e).setAngle(entityUpdateData.angle);
     }
 
     public void removeEntity(RemoveEntityData removeEntityData) {
-        if(entities.get(removeEntityData.entityID) instanceof Enemy)
+        if (entities.get(removeEntityData.entityID) instanceof Enemy)
             Audio.getAudio().playSound(ENEMY_DEAD);
 
         entities.remove(removeEntityData.entityID);
@@ -129,10 +136,10 @@ public class Level {
         player.setXp(playerUpdateData.xp);
         player.setXpToLevelUp(playerUpdateData.xpToLevelUp);
 
-        if(playerUpdateData.levelledUp) {
+        if (playerUpdateData.levelledUp) {
             Vector2 playerPos = player.getPosition(new Vector2());
             ParticleEffectPool.PooledEffect effect = levelUpEffectPool.obtain();
-            effect.setPosition(playerPos.x + player.getBody().width * (3/4), playerPos.y + player.getBody().height * (3/4));
+            effect.setPosition(playerPos.x + player.getBody().width * (3 / 4), playerPos.y + player.getBody().height * (3 / 4));
             effect.start();
             particleEffects.add(effect);
         }
@@ -146,7 +153,7 @@ public class Level {
     public void updateHealth(PlayerHealthData playerHealthData) {
         Player player = (Player) entities.get(playerHealthData.playerID);
 
-        if(damageEffectPool != null) {
+        if (damageEffectPool != null) {
             if (playerHealthData.health < player.getHealth()) {
                 Audio.getAudio().playSound(Audio.SOUND.PLAYER_DAMAGE);
                 Vector2 playerPos = player.getPosition(new Vector2());
@@ -167,6 +174,19 @@ public class Level {
         player.setMaxHealth(playerHealthData.maxHealth);
     }
 
+    public void unlockDoors() {
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                Tile tile = grid[i][j];
+
+                if (tile instanceof DoorTile) {
+                    DoorTile door = (DoorTile) tile;
+                    door.enable();
+                }
+            }
+        }
+    }
+
     public int getPlayerID() {
         return playerID;
     }
@@ -177,15 +197,15 @@ public class Level {
 
         Tile tile;
         Rectangle obstacle;
-        for(int i = 0; i < gridWidth; i++) {
+        for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
                 tile = grid[i][j];
 
-                if(tile.isObstacle()) {
+                if (tile.isObstacle()) {
                     obstacle = tile.getBody();
 
-                    if(Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
-                        if(overlap.width > overlap.height)
+                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap)) {
+                        if (overlap.width > overlap.height)
                             player.setY(player.getLastPos().y);
                         else
                             player.setX(player.getLastPos().x);
@@ -196,9 +216,9 @@ public class Level {
             }
         }
 
-        if(playerBody.y + playerBody.height > gridHeight * TILE_HEIGHT || playerBody.y < 0)
+        if (playerBody.y + playerBody.height > gridHeight * TILE_HEIGHT || playerBody.y < 0)
             player.setY(player.getLastPos().y);
-        else if(playerBody.x + playerBody.width > gridWidth * TILE_WIDTH || playerBody.x < 0)
+        else if (playerBody.x + playerBody.width > gridWidth * TILE_WIDTH || playerBody.x < 0)
             player.setX(player.getLastPos().x);
 
         return false;
@@ -211,14 +231,14 @@ public class Level {
     public ArrayList<Player> getPlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
-        for(Entity e : entities.values())
-            if(e instanceof Player) players.add((Player) e);
+        for (Entity e : entities.values())
+            if (e instanceof Player) players.add((Player) e);
 
         return players;
     }
 
     public void update(float delta) {
-        for(Entity e : entities.values()) {
+        for (Entity e : entities.values()) {
             e.update(delta);
 
             if (e instanceof Player)
@@ -228,7 +248,7 @@ public class Level {
         for (int i = particleEffects.size - 1; i >= 0; i--) {
             ParticleEffectPool.PooledEffect effect = particleEffects.get(i);
             effect.update(delta);
-            if(effect.isComplete()) {
+            if (effect.isComplete()) {
                 effect.free();
                 particleEffects.removeIndex(i);
             }
@@ -240,16 +260,31 @@ public class Level {
         matrix4.translate(xOffset, yOffset, 0);
         batch.setProjectionMatrix(matrix4);
 
-        for(int i = 0; i < gridWidth; i++) {
-            for(int j = 0; j < gridHeight; j++) {
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
                 grid[i][j].render(batch);
             }
         }
 
-        for(Entity e : entities.values())
+        for (Entity e : entities.values())
             e.render(batch);
 
-        for(ParticleEffectPool.PooledEffect effect : particleEffects)
+        for (ParticleEffectPool.PooledEffect effect : particleEffects)
             effect.draw(batch);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Boss getBoss() {
+        if(id != -1)
+            return null;
+
+        for (Entity e : entities.values())
+            if (e instanceof Boss)
+                return (Boss) e;
+
+        return null;
     }
 }

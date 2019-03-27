@@ -1,6 +1,5 @@
 package net.uridium.game.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.server.ServerConstants;
 import net.uridium.game.server.msg.*;
 import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.InGameUI;
@@ -27,7 +27,6 @@ import static net.uridium.game.Uridium.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.BACKGROUND;
 import static net.uridium.game.util.Assets.GAME_CURSOR;
-import static net.uridium.game.util.Audio.SOUND.ENEMY_DEAD;
 
 public class GameScreen extends UridiumScreen {
     Socket s;
@@ -51,17 +50,22 @@ public class GameScreen extends UridiumScreen {
         init();
     }
 
-    public GameScreen(int port){init(port);}
+    public GameScreen(int port){init(port,false);}
 
     @Override
-    public void init(){init(6666);}
+    public void init(){init(6666,true);}
 
-    public void init(int port) {
+
+    public void init(int port, boolean singlePlayer) {
         setCursor(GAME_CURSOR, 32, 32);
-//        Audio.getAudio().libPlayLoop("audio\\background.wav");
 
         try {
-            s = new Socket("localhost", port);
+            if(singlePlayer){
+               s = new Socket("127.0.0.1",port);
+            }
+            else{
+                s = new Socket(ServerConstants.SERVER_IP,port);
+            }
             oos = new ObjectOutputStream(s.getOutputStream());
             ois = new ObjectInputStream(s.getInputStream());
 
@@ -202,6 +206,9 @@ public class GameScreen extends UridiumScreen {
             case REPLACE_TILE:
                 level.replaceTile((ReplaceTileData) msg.getData());
                 break;
+            case UNLOCK_DOORS:
+                level.unlockDoors();
+                break;
             case PLAYER_UPDATE:
                 PlayerUpdateData data = (PlayerUpdateData) msg.getData();
                 level.updatePlayer(data);
@@ -260,7 +267,9 @@ public class GameScreen extends UridiumScreen {
         if(!changingLevel) {
             level.update(delta);
             ui.update(delta);
-//            System.out.println(level.getPlayer().getLevel());
+
+            if(level.getId() == -1)
+                ui.setBossHpPercent(level.getBoss().getHealth() / level.getBoss().getMaxHealth());
         }
     }
 
@@ -269,7 +278,7 @@ public class GameScreen extends UridiumScreen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_HEIGHT);
         if(!changingLevel) {
             level.render(batch);
 
@@ -282,9 +291,11 @@ public class GameScreen extends UridiumScreen {
 
     public void changeLevel(LevelData levelData) {
         changingLevel = true;
-        Level newLevel = new Level(levelData);
-        level = newLevel;
+        level = new Level(levelData);
         changingLevel = false;
+
+        if(levelData.id == -1)
+            ui.setBossLevel(true);
     }
 
     public static String positionToString(int position) {

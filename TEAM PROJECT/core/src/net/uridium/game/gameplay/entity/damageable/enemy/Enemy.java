@@ -54,8 +54,8 @@ public abstract class Enemy extends DamageableEntity {
     /**
      * The speed the enemy travels.
      */
-    private float speed = 100;
-    private float angle = 0;
+    float speed = 100;
+    float angle = 0;
 
     private transient Player target;
 
@@ -75,7 +75,8 @@ public abstract class Enemy extends DamageableEntity {
     @Override
     public void update(float delta) {
         super.update(delta);
-        if (t == null && target != null && target.getHealth() > 0) updatePathfinding(delta);
+        if (t == null && target != null && target.getHealth() > 0)
+            updatePathfinding(delta);
         stateTime += delta;
     }
 

@@ -34,10 +34,24 @@ public class Server{
     Thread acceptor;
     Thread levelUpdate;
 
+    /**
+     * Overload the Constructor of Server
+     * If there is no input. Assign server a default value
+     * @throws IOException
+     */
     public Server() throws IOException {
         this(6666);
     }
 
+    /**
+     * Constructor of Server
+     * Build up a server according to input.
+     * Server contains two Threads.
+     * One would keep listening client.
+     * and the other one would keep sending data to clients that connected to this server
+     * @param port
+     * @throws IOException
+     */
     public Server(int port) throws IOException {
         try {
             ss = new ServerSocket(port);
@@ -81,11 +95,16 @@ public class Server{
                     s.getMsgQueue().add(msg);
 
             int id;
-            if((id = currentLevel.shouldChangeLevel()) != -1) {
+            if((id = currentLevel.shouldChangeLevel()) != 0) {
                 currentLevel.changedLevel();
 
                 if(levels.get(id) == null) {
-                    File f = new File("levels/level" + id + ".json");
+                    File f;
+                    if(id == -1)
+                        f = new File("levels/level_boss.json");
+                    else
+                        f = new File("levels/level" + id + ".json");
+
                     try {
                         ServerLevel newLevel = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
 
@@ -137,6 +156,13 @@ public class Server{
         }
     }
 
+    /**
+     * Keep waiting a new client to connect.
+     * Once the connection built up.
+     * The server to keep listening request from clients,
+     * updating level data.
+     * sending data to clients who connected to this server
+     */
     public class Acceptor implements Runnable {
         private ServerSocket ss;
 
@@ -187,6 +213,9 @@ public class Server{
         }
     }
 
+    /**
+     * Keep receiving data from clients
+     */
     public class Receiver implements Runnable {
         private ObjectInputStream ois;
         Socket s;
@@ -255,6 +284,9 @@ public class Server{
         }
     }
 
+    /**
+     * Keep sending data to clients which connected to this server.
+     */
     public class Sender implements Runnable {
         private ObjectOutputStream oos;
         private Socket s;

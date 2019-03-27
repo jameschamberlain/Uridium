@@ -1,0 +1,63 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 8,
+    "rows": [
+      "WWWWWWWWWWWWWWWWWWWW",
+      "W      OO  OO      W",
+      "W   OO        OO   W",
+      "W                  W",
+      "D                  D",
+      "W   OO        OO   W",
+      "W      OO  OO      W",
+      "WWWWWWWWWDWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 18,
+      "y": 3
+    },
+    {
+      "x": 9,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 3
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 8,
+      "y": 6,
+      "numEnemies": 0,
+      "spawnRate": 1200
+    }
+  ],
+  "doors": [
+    {
+      "x": 19,
+      "y": 3,
+      "dest": 1,
+      "entrance": 1
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "dest": 6,
+      "entrance": 1
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "dest": 11,
+      "entrance": 1
+    }
+  ],
+  "name": "Level 5",
+  "id": 5
+}

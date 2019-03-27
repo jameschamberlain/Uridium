@@ -25,7 +25,7 @@ public class Audio {
     private Audio() {}
 
     private boolean muted = false;
-    private float volume = 0.5f;
+    private float volume = 0;
 
     private Music theme;
 
@@ -61,8 +61,10 @@ public class Audio {
 
         Sound s = sounds.get(sound);
 
-        if(loop) s.loop(volume);
-        else s.play(volume);
+        try {
+            if (loop) s.loop(volume);
+            else s.play(volume);
+        } catch (Exception e) {}
     }
 
     public float getVolume() {

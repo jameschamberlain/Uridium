@@ -4,21 +4,21 @@
     "height": 10,
     "rows": [
       "WWWWWWWDWWWWWWWWWWWW",
+      "W        O         W",
       "W                  W",
-      "W        OOO       W",
-      "W        OOO   OO  W",
-      "W              O   W",
-      "D                  D",
-      "W             OO   W",
-      "W              O   W",
-      "W              O   W",
+      "W     O  O  O      W",
+      "W                  W",
+      "D    O  O O  O     W",
+      "W                  D",
+      "W  O  O  O  O  O   W",
+      "W                  W",
       "WWWWWWWWWWWWWWWWWWWW"
     ]
   },
   "entrances": [
     {
       "x": 1,
-      "y": 5
+      "y": 4
     },
     {
       "x": 7,
@@ -26,7 +26,7 @@
     },
     {
       "x": 18,
-      "y": 4
+      "y": 3
     }
   ],
   "spawners": [
@@ -34,32 +34,32 @@
       "types": [
         "BLUE_FISH"
       ],
-      "x": 11,
-      "y": 6,
-      "numEnemies": 1,
-      "spawnRate": 800
+      "x": 15,
+      "y": 2,
+      "numEnemies": 4,
+      "spawnRate": 2000
     }
   ],
   "doors": [
     {
       "x": 0,
       "y": 4,
-      "dest": -1,
-      "entrance": 1
+      "dest": 1,
+      "entrance": 3
     },
     {
       "x": 7,
       "y": 9,
-      "dest": 2,
+      "dest": 4,
       "entrance": 1
     },
     {
       "x": 19,
-      "y": 4,
-      "dest": 3,
+      "y": 3,
+      "dest": 7,
       "entrance": 1
     }
   ],
-  "name": "The Start",
-  "id": 1
+  "name": "Level 3",
+  "id": 3
 }

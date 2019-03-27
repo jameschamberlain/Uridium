@@ -40,7 +40,14 @@ public class InGameUI {
     float powerupDuration;
     float powerupRemaining;
 
+    boolean isBossLevel;
+    float bossHpPercent;
+
     public InGameUI(float gridYOffset) {
+        this(gridYOffset, false);
+    }
+
+    public InGameUI(float gridYOffset, boolean isBossLevel) {
         bg = Assets.getTex("graphics/ui/scoreboard_bg.png");
         border = Assets.getTex("graphics/ui/border.png");
 
@@ -51,23 +58,33 @@ public class InGameUI {
 
         this.gridYOffset = gridYOffset;
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("newFont.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("graphics/ui/font/Big_Bottom_Typeface_Normal.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 26;
+        parameter.size = 18;
         font = generator.generateFont(parameter);
-        parameter.size = 50;
+        parameter.size = 38;
         largeFont = generator.generateFont(parameter);
         generator.dispose();
+
+        this.isBossLevel = isBossLevel;
+    }
+
+    public void setBossLevel(boolean isBossLevel) {
+        this.isBossLevel = isBossLevel;
+    }
+
+    public void setBossHpPercent(float bossHpPercent) {
+        this.bossHpPercent = bossHpPercent;
     }
 
     public void update(float delta) {
-        if(powerupRemaining > 0) powerupRemaining -= delta;
-        if(showingText) {
-            if(textDuration > 0) {
+        if (powerupRemaining > 0) powerupRemaining -= delta;
+        if (showingText) {
+            if (textDuration > 0) {
                 textDuration -= delta;
                 float scale = (maxTextDuration - textDuration) * 5;
                 largeFont.getData().setScale(scale > 1 ? 1 : scale);
-            } else if(textDuration < 0 && !infiniteText) {
+            } else if (textDuration < 0 && !infiniteText) {
                 showingText = false;
             }
         }
@@ -96,7 +113,10 @@ public class InGameUI {
         xOffset += 230;
 
         drawPowerupBar(batch);
-        if(showingText) drawExpandingText(batch);
+        if (showingText) drawExpandingText(batch);
+
+        if(isBossLevel)
+            drawBossHpBar(batch);
     }
 
     public void showExpandingText(String text, float textDuration, boolean infiniteText) {
@@ -108,13 +128,18 @@ public class InGameUI {
     }
 
     public void drawHealthBar(SpriteBatch batch, float percentage, float xOffset) {
-        batch.draw(hpBg, xOffset, 645 + (75 - 24) / 2, 200, 24);
-        batch.draw(hp, xOffset + 4, 645 + (75 - 20) / 2, (200 - 8) * (percentage / 100), 20);
+        batch.draw(hpBg, xOffset, 645 + (75 - 24) / 2f, 200, 24);
+        batch.draw(hp, xOffset + 4, 645 + (75 - 20) / 2f, (200 - 8) * (percentage / 100), 20);
     }
 
     public void drawXpBar(SpriteBatch batch, float percentage, float xOffset) {
         batch.draw(hpBg, xOffset, 645 + (75 - 24) / 2, 200, 24);
         batch.draw(xp, xOffset + 4, 645 + (75 - 20) / 2, (200 - 8) * (percentage / 100), 20);
+    }
+
+    public void drawBossHpBar(SpriteBatch batch) {
+        batch.draw(hpBg, 20, (GAME_HEIGHT - 300) / 2f, 60, 300);
+        batch.draw(hp, 25, (GAME_HEIGHT - 300) / 2f + 5, 50, 290 * bossHpPercent);
     }
 
     public void drawRightSide(SpriteBatch batch, Player player, float xOffset) {
@@ -137,7 +162,7 @@ public class InGameUI {
     }
 
     public void drawPowerupBar(SpriteBatch batch) {
-        if(powerupRemaining > 0) {
+        if (powerupRemaining > 0) {
             batch.draw(hpBg, (GAME_WIDTH - 360) / 2, (gridYOffset - 48) / 2, 360, 48);
             batch.draw(powerup, (GAME_WIDTH - 360) / 2 + 8, (gridYOffset - 48) / 2 + 8, 344 * (powerupRemaining / powerupDuration), 32);
         }

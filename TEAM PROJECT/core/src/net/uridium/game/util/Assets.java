@@ -109,9 +109,11 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/tile/igloo.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/tile/DOORBOI.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/tile/iceBlockAlt.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/tile/iceBlock.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/tile/obstacle.png", Texture.class);
 
         // ENTITY
-        Assets.getAssets().getManager().load("graphics/entity/crate_01.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/spawner.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/projectile/wrench.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/item/heal.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/item/coffee.png", Texture.class);
@@ -123,6 +125,11 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/entity/enemy/fishPink_swim.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/enemy/spider_walk1.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/enemy/spider_walk2.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/ghost.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/ghost_normal.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/bat.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/bat_fly.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/slimeBlue_squashed.png", Texture.class);
 
         for(Player.Colour c : Player.Colour.values()) {
             Assets.getAssets().getManager().load("graphics/entity/player/" + c.toString() + "/walk1.png", Texture.class);

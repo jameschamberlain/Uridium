@@ -10,7 +10,7 @@ import net.uridium.game.util.Assets;
 
 import static net.uridium.game.res.Textures.*;
 
-public class Player extends DamageableEntity {
+public class Player extends DamageableEntity implements Comparable<Player> {
     public enum Colour {
         GREEN,
         PINK,
@@ -120,6 +120,10 @@ public class Player extends DamageableEntity {
         xp -= xpToLevelUp;
         xpToLevelUp += 2.5f;
         isLevelledUp = true;
+
+        float addedHealth = maxHealth * 0.2f;
+        maxHealth += addedHealth;
+        heal(addedHealth);
     }
 
     public void setXp(float xp) {
@@ -257,6 +261,11 @@ public class Player extends DamageableEntity {
                 batch.draw(t, body.x, body.y, body.width, body.height);
             }
         }
+    }
+
+    @Override
+    public int compareTo(Player o) {
+        return score - o.getScore();
     }
 }
 

@@ -1,0 +1,74 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 10,
+    "rows": [
+      "WWWWWWWDWWWWWWWWWWWW",
+      "W                  W",
+      "W        OO        W",
+      "W      OOOOOO      W",
+      "W                  W",
+      "W   OO        OO   W",
+      "W                  D",
+      "W      O    O      W",
+      "W                  W",
+      "WWWWWWWDWWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 18,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 1
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 9,
+      "y": 7,
+      "numEnemies": 8,
+      "spawnRate": 1200
+    },
+    {
+      "types": [
+        "PINK_FISH"
+      ],
+      "x": 10,
+      "y": 7,
+      "numEnemies": 4,
+      "spawnRate": 1500
+    }
+  ],
+  "doors": [
+    {
+      "x": 7,
+      "y": 9,
+      "dest": 7,
+      "entrance": 1
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "dest": 9,
+      "entrance": 1
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "dest": 10,
+      "entrance": 1
+    }
+  ],
+  "name": "Level 8",
+  "id": 8
+}
