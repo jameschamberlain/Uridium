@@ -25,10 +25,7 @@ import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 public class InstructionScreen extends UridiumScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
-    private SpriteBatch batch1;
-    private SpriteBatch batch2;
-    private BitmapFont font1;
-    private List list;
+
 
     private Skin skin;
     private Stage stage;

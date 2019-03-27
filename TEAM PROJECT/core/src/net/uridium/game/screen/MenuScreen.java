@@ -1,6 +1,7 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -122,6 +123,7 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
                 getUSMInstance().push(new GameSelectionScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -148,6 +150,7 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
                 getUSMInstance().push(new SettingsScreen(background));
                 super.touchUp(event, x, y, pointer, button);
             }
@@ -177,6 +180,19 @@ public class MenuScreen extends UridiumScreen {
         background.render(batch);
 
         titleFont.draw(batch, "URIDIUM", (GAME_WIDTH - gl.width) / 2, (GAME_HEIGHT * 3 / 4) + gl.height / 2);
+
+        if(Gdx.input.isKeyPressed(Input.Keys.P)){
+            getUSMInstance().push(new GameSelectionScreen(background));
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.S)){
+            getUSMInstance().push(new SettingsScreen(background));
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.E)){
+            Gdx.app.exit();
+        }
+
 
         batch.end();
 
