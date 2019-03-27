@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.server.constant;
 import net.uridium.game.server.msg.*;
 import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.InGameUI;
@@ -48,18 +49,24 @@ public class GameScreen extends UridiumScreen {
         init();
     }
 
-    public GameScreen(int port){init(port);}
+    public GameScreen(int port){init(port,false);}
 
     @Override
-    public void init(){init(6666);}
+    public void init(){init(6666,true);}
 
 
-    public void init(int port) {
+    public void init(int port, boolean singlePlayer) {
         setCursor(GAME_CURSOR, 32, 32);
         //Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
-            s = new Socket("localhost", port);
+            if(singlePlayer){
+               s = new Socket("127.0.0.1",port);
+            }
+            else{
+                s = new Socket(constant.SERVER_IP,port);
+            }
+
             oos = new ObjectOutputStream(s.getOutputStream());
             ois = new ObjectInputStream(s.getInputStream());
 
