@@ -7,7 +7,14 @@ import java.util.HashMap;
 
 import static net.uridium.game.util.Audio.SOUND.*;
 
+/**
+ * Class used to manage audio throughout the game, uses a singleton pattern to prevent multiple instances being created
+ */
 public class Audio {
+
+    /**
+     * Different sound effect identifiers
+     */
     public enum SOUND {
         BUTTON_CLICK,
         PLAYER_SHOOT,
@@ -20,17 +27,34 @@ public class Audio {
         POWERUP
     }
 
+
     private static Audio instance = new Audio();
     public static Audio getAudio() { return instance; }
     private Audio() {}
 
+    /**
+     * Whether the game is muted
+     */
     private boolean muted = false;
+
+    /**
+     * The volume of the game, from 0 to 1
+     */
     private float volume = 0;
 
+    /**
+     * The theme music to play
+     */
     private Music theme;
 
+    /**
+     * A hashmap of sounds which links sounds to their enum identifies, see {@link SOUND}
+     */
     private HashMap<SOUND, Sound> sounds;
 
+    /**
+     * Initialises the Audio instance
+     */
     public void init() {
         theme = Assets.get("audio/background.wav", Music.class);
         theme.setLooping(true);
@@ -48,14 +72,26 @@ public class Audio {
         sounds.put(POWERUP, Assets.get("audio/POWERUP.wav", Sound.class));
     }
 
+    /**
+     * Play the theme tune, starts the theme tune if the game is not muted
+     */
     public void playTheme() {
         if(!muted) theme.play();
     }
 
+    /**
+     * Play a sound, no looping
+     * @param sound Sound to play
+     */
     public void playSound(SOUND sound) {
         this.playSound(sound, false);
     }
 
+    /**
+     * Play a sound
+     * @param sound Sound to play
+     * @param loop Whether to loop the sound or not
+     */
     public void playSound(SOUND sound, boolean loop){
         if(muted) return;
 
@@ -67,15 +103,24 @@ public class Audio {
         } catch (Exception e) {}
     }
 
+    /**
+     * @return The volume of the game
+     */
     public float getVolume() {
         return volume;
     }
 
+    /**
+     * @param volume The new volume of the game
+     */
     public void setVolume(float volume) {
         this.volume = volume;
         theme.setVolume(volume * 0.8f);
     }
 
+    /**
+     * Toggle mute in the game, when muting stops all sound effects and the theme tune
+     */
     public void toggleMute() {
         muted = !muted;
 

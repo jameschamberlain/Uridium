@@ -27,25 +27,85 @@ import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 import static net.uridium.game.util.Audio.SOUND.ENEMY_DEAD;
 
+/**
+ * The client side version of the level class, handles all rendering and receives updates from the server
+ */
 public class Level {
+
+    /**
+     * The id of the level
+     */
     int id;
+
+    /**
+     * The 2d array of tiles which form the grid
+     */
     Tile[][] grid;
+
+    /**
+     * The width of the grid in tiles
+     */
     public int gridWidth;
+
+    /**
+     * The height of the grid in tiles
+     */
     public int gridHeight;
 
+    /**
+     * Width of each tile
+     */
     public static final float TILE_WIDTH = 48;
+
+    /**
+     * Height of each tile
+     */
     public static final float TILE_HEIGHT = 48;
+
+    /**
+     * The xOffset the grid needs to be drawn at in order for it to be centered on screen
+     */
     public float xOffset;
+
+    /**
+     * The yOffset the grid needs to be drawn at in order for it to be centered on screen
+     */
     public float yOffset;
 
+    /**
+     * HashMap of entities in the level, the key is the entity id
+     */
     ConcurrentHashMap<Integer, Entity> entities;
+
+    /**
+     * ID of this client's player in the level
+     */
     int playerID;
 
+    /**
+     * Pool of particle effects for levelling up
+     */
     ParticleEffectPool levelUpEffectPool;
+
+    /**
+     * Pool of particle effects for the player taking damage
+     */
     ParticleEffectPool damageEffectPool;
+
+    /**
+     * Pool of particles effects for the playing being healed
+     */
     ParticleEffectPool healEffectPool;
+
+    /**
+     * Array of all particle effects to be updated and rendered
+     */
     Array<ParticleEffectPool.PooledEffect> particleEffects;
 
+    /**
+     * Level constructor, constructs a client side level based on the LevelData object received from the server
+     * @param levelData The LevelData object received from the server
+     */
     public Level(LevelData levelData) {
         entities = new ConcurrentHashMap<>();
 
@@ -87,12 +147,20 @@ public class Level {
         });
     }
 
+    /**
+     * @param offsets The Vector2 to copy the render offsets too
+     * @return The Vector2 containing the render offsets
+     */
     public Vector2 getOffsets(Vector2 offsets) {
         offsets.x = xOffset;
         offsets.y = yOffset;
         return offsets;
     }
 
+    /**
+     * Add an entity to the level
+     * @param e The entity to add to the level
+     */
     public void addEntity(Entity e) {
         entities.put(e.getID(), e);
         e.loadTexture();
@@ -101,6 +169,10 @@ public class Level {
             Audio.getAudio().playSound(Audio.SOUND.PLAYER_SHOOT);
     }
 
+    /**
+     * Update an entity in the level
+     * @param entityUpdateData EntityUpdateData object received from the server
+     */
     public void updateEntity(EntityUpdateData entityUpdateData) {
         Entity e = entities.get(entityUpdateData.ID);
         if (e == null) return;
@@ -117,6 +189,10 @@ public class Level {
         if (e instanceof Enemy) ((Enemy) e).setAngle(entityUpdateData.angle);
     }
 
+    /**
+     * Remove an entity from the server
+     * @param removeEntityData RemoveEntityData object retrieved from the server
+     */
     public void removeEntity(RemoveEntityData removeEntityData) {
         if (entities.get(removeEntityData.entityID) instanceof Enemy)
             Audio.getAudio().playSound(ENEMY_DEAD);
@@ -124,11 +200,19 @@ public class Level {
         entities.remove(removeEntityData.entityID);
     }
 
+    /**
+     * Replace a tile in the grid
+     * @param replaceTileData ReplaceTileData object received from the server
+     */
     public void replaceTile(ReplaceTileData replaceTileData) {
         replaceTileData.t.loadTexture();
         grid[replaceTileData.x][replaceTileData.y] = replaceTileData.t;
     }
 
+    /**
+     * Update a player in the level
+     * @param playerUpdateData PlayerUpdateData object received from the server
+     */
     public void updatePlayer(PlayerUpdateData playerUpdateData) {
         Player player = (Player) entities.get(playerUpdateData.playerID);
         player.setScore(playerUpdateData.score);
@@ -139,17 +223,25 @@ public class Level {
         if (playerUpdateData.levelledUp) {
             Vector2 playerPos = player.getPosition(new Vector2());
             ParticleEffectPool.PooledEffect effect = levelUpEffectPool.obtain();
-            effect.setPosition(playerPos.x + player.getBody().width * (3 / 4), playerPos.y + player.getBody().height * (3 / 4));
+            effect.setPosition(playerPos.x + player.getBody().width * (3 / 4f), playerPos.y + player.getBody().height * (3 / 4f));
             effect.start();
             particleEffects.add(effect);
         }
     }
 
+    /**
+     * Called when a player dies on the level
+     * @param playerDeathData PlayerDeathData object received from the server
+     */
     public void killPlayer(PlayerDeathData playerDeathData) {
         Vector2 pos = new Vector2();
         entities.get(playerDeathData.ID).getPosition(pos);
     }
 
+    /**
+     * Updates the health of the player
+     * @param playerHealthData PlayerHealthData object received from the server
+     */
     public void updateHealth(PlayerHealthData playerHealthData) {
         Player player = (Player) entities.get(playerHealthData.playerID);
 
@@ -174,6 +266,9 @@ public class Level {
         player.setMaxHealth(playerHealthData.maxHealth);
     }
 
+    /**
+     * Enable all the doors on the map
+     */
     public void unlockDoors() {
         for (int i = 0; i < gridWidth; i++) {
             for (int j = 0; j < gridHeight; j++) {
@@ -187,11 +282,18 @@ public class Level {
         }
     }
 
+    /**
+     * @return The id of this client's player
+     */
     public int getPlayerID() {
         return playerID;
     }
 
-    public boolean checkCollisionsForPlayer(Player player) {
+    /**
+     * Checks for collisions between the player and the walls to keep movement and collisions smooth
+     * @param player The player to check collisinos with
+     */
+    public void checkCollisionsForPlayer(Player player) {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
 
@@ -210,7 +312,7 @@ public class Level {
                         else
                             player.setX(player.getLastPos().x);
 
-                        return true;
+                        return;
                     }
                 }
             }
@@ -220,14 +322,18 @@ public class Level {
             player.setY(player.getLastPos().y);
         else if (playerBody.x + playerBody.width > gridWidth * TILE_WIDTH || playerBody.x < 0)
             player.setX(player.getLastPos().x);
-
-        return false;
     }
 
+    /**
+     * @return This client's player
+     */
     public Player getPlayer() {
         return (Player) entities.get(playerID);
     }
 
+    /**
+     * @return A list of players in the level
+     */
     public ArrayList<Player> getPlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
@@ -237,6 +343,10 @@ public class Level {
         return players;
     }
 
+    /**
+     * Updates the level and everything in it
+     * @param delta The time between this update and the last
+     */
     public void update(float delta) {
         for (Entity e : entities.values()) {
             e.update(delta);
@@ -255,6 +365,10 @@ public class Level {
         }
     }
 
+    /**
+     * Renders the level to the screen
+     * @param batch The SpriteBatch used to render the level to the screen
+     */
     public void render(SpriteBatch batch) {
         Matrix4 matrix4 = batch.getProjectionMatrix();
         matrix4.translate(xOffset, yOffset, 0);
@@ -273,10 +387,16 @@ public class Level {
             effect.draw(batch);
     }
 
+    /**
+     * @return The id of the level
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * @return The boss instance if on the boss level, or <code>null</code> otherwise
+     */
     public Boss getBoss() {
         if(id != -1)
             return null;
