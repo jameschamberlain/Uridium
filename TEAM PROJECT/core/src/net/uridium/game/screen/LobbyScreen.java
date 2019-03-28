@@ -196,10 +196,19 @@ public class LobbyScreen extends UridiumScreen {
                     protected void result(Object object) {
                         if (object.equals(true) && !(textField.getText().isEmpty())) {
                             roomCode = textField.getText();
+                            String roomCodeCopy = roomCode;
                             roomCode = "create "+roomCode;
                             System.out.println(roomCode);
                             ps.println(roomCode);
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            myPort = roomData.get(roomCodeCopy)[0];
                             System.out.println("Room code "+roomCode+" has been sent");
+
+                            getUSMInstance().push(new GameScreen(myPort));
 //                            try {
 //                                roomData = (HashMap<String,int[]>)oi.readObject();
 //                                System.out.println("Data size is "+roomData.size());
@@ -261,12 +270,6 @@ public class LobbyScreen extends UridiumScreen {
 
                 //System.out.println(roomData.get(choice)[0]);
                 int portNum = roomData.get(choice)[0];
-                try {
-                    new Server(portNum);
-                    Thread.sleep(998);
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
                 getUSMInstance().push(new GameScreen(portNum));
 
                 super.touchUp(event, x, y, pointer, button);

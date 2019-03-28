@@ -13,8 +13,6 @@ public class LobbyServer {
     private Socket s;
     private BufferedReader bfr;
     private ObjectOutputStream oo;
-    //private String roomCode;
-    //private int portNum;
     private PrintStream ps;
     private HashMap<String,int[]> rooms;
     private String instruction;
@@ -43,20 +41,20 @@ public class LobbyServer {
         boolean exist = false;
         int portNum = 0;
 
+        //Check if the room exists
         for (String i : rooms.keySet()) {
             if (roomName.equals(i) ) {
                 exist=true;
                 System.out.println("This room already exist!!!!!!");
             }
         }
-
+        //If the room exists already, just add 1 to the number of player
         if(exist){
             int[] r = rooms.get(roomName);
             if(r[1]!=2){
                 portNum = r[0];
                 r[1]++;
                 rooms.put(roomName,r);
-                System.out.println("This is R You want to check"+r);
                 System.out.println("Find the room");
             }
             else{
@@ -64,6 +62,7 @@ public class LobbyServer {
             }
         }
         else{
+            //Ensure the port number is unique
             int myRoom = (int)(Math.random() * 1000) + 3000;
             while(rooms.values().contains(new int[] {myRoom,0})){
                 myRoom = (int)(Math.random() * 1000) + 3000;
@@ -74,16 +73,16 @@ public class LobbyServer {
             while(rooms.values().contains(new int[] {myRoom,2})){
                 myRoom = (int)(Math.random() * 1000) + 3000;
             }
-            rooms.put(roomName,new int[]{myRoom,0});
+            rooms.put(roomName,new int[]{myRoom,1});
             portNum = myRoom;
             System.out.println("Not exist, "+roomName+" So,add a Room "+portNum);
+            try {
+                new Server(portNum);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            new Server(portNum);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         return portNum;
     }
@@ -118,22 +117,21 @@ public class LobbyServer {
                     bfr = new BufferedReader(new InputStreamReader(s.getInputStream()));
                     oo = new ObjectOutputStream(s.getOutputStream());
 
+                    //Once a client connected, send current room data immediately
                     oo.writeObject(rooms);
                     oo.flush();
                     oo.reset();
 
                     new Thread(()->{
+                        //For keeping output and input channel open all the time.
                         BufferedReader myBfr = bfr;
                         ObjectOutputStream myOo = oo;
-                        sendPaths.add(oo);
+                        sendPaths.add(myOo);
                         while(true){
                             try {
                                 String myString = myBfr.readLine();
-                                dealWithInstrction(myString);
+                                dealWithInstruction(myString);
                                 sendMessageToAll();
-                                //oo.writeObject(rooms);
-//                                oo.flush();
-//                                oo.reset();
                                 System.out.println(myString);
                                 Thread.sleep(3);
                             } catch (IOException e) {
@@ -155,6 +153,7 @@ public class LobbyServer {
      * Send data to all clients which connected to this lobby
      */
     public void sendMessageToAll(){
+        //Send messages to all clients
         for(ObjectOutputStream p:sendPaths){
             try {
                 p.writeObject(rooms);
@@ -171,7 +170,7 @@ public class LobbyServer {
      * Deal with differnent instructions.
      * @param instruction
      */
-    public void dealWithInstrction(String instruction){
+    public void dealWithInstruction(String instruction){
         String[] instruction_tuple = instruction.split(" ");
 
         switch (instruction_tuple[0]){
@@ -180,10 +179,8 @@ public class LobbyServer {
                 break;
             case "join":
                 changeRoom(instruction_tuple[1]);
-                // code block
                 break;
             default:
-                // code block
         }
     }
 
