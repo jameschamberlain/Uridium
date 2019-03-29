@@ -1,6 +1,7 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -73,24 +74,12 @@ public class InstructionsScreen extends UridiumScreen {
 
 
 
-
-        Label rule1 = new Label(" 'W' - To move up.",skin);
-        rule1.setSize(1280, 360);
-        rule1.setPosition(-100, 300);
-        rule1.setFontScale(1.4f);
-        rule1.setAlignment(Align.center);
-
-        Label rule2 = new Label(" 'A' - To move left.",skin);
-        rule2.setSize(1280, 360);
-        rule2.setPosition(-100, 200);
-        rule2.setFontScale(1.4f);
-        rule2.setAlignment(Align.center);
-
-        Label rule3 = new Label(" 'S' - To move down.\n 'D' - To move right.",skin);
-        rule3.setSize(1280, 360);
-        rule3.setPosition(-50, 100);
-        rule3.setFontScale(1.4f);
-        rule3.setAlignment(Align.center);
+        Label rules = new Label("'W' - To move up.\n 'A' - To move left.\n 'S' - To move down.\n 'D' - To move right.",skin);
+        rules.setSize(1280, 360);
+        rules.setPosition(0, 200);
+        rules.setFontScale(1.4f);
+        rules.setAlignment(Align.center);
+        rules.setColor(Color.BLACK);
 
         Button backBtn = new TextButton("BACK",skin);
         backBtn.setSize(200, 80);
@@ -114,9 +103,7 @@ public class InstructionsScreen extends UridiumScreen {
 
 
         stage.addActor(backBtn);
-        stage.addActor(rule1);
-        stage.addActor(rule2);
-        stage.addActor(rule3);
+        stage.addActor(rules);
     }
     @Override
     public void init() {

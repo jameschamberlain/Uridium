@@ -7,7 +7,7 @@ public class ServerConstants {
     /**
      * The constant SERVER_IP.
      */
-    public static final String SERVER_IP = "192.168.191.1";
+    public static final String SERVER_IP = "127.0.0.1";
     /**
      * The constant LOBBY_SERVER_PORT.
      */

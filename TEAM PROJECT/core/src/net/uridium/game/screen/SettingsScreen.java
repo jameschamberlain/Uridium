@@ -104,7 +104,7 @@ public class SettingsScreen extends UridiumScreen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
-//                getUSMInstance().push(new InstructionScreen(background));
+                getUSMInstance().push(new InstructionsScreen(background));
             }
         });
 

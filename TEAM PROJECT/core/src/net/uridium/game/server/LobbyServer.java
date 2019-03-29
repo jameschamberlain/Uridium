@@ -78,7 +78,7 @@ public class LobbyServer {
             while(rooms.values().contains(new int[] {myRoom,2})){
                 myRoom = (int)(Math.random() * 1000) + 3000;
             }
-            rooms.put(roomName,new int[]{myRoom,0});
+            rooms.put(roomName,new int[]{myRoom,1});
             portNum = myRoom;
             System.out.println("Not exist, "+roomName+" So,add a Room "+portNum);
         }
