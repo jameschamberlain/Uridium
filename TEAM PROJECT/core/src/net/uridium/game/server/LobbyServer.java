@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The type Lobby server.
+ */
 public class LobbyServer {
     private ServerSocket ss;
     private Socket s;
@@ -22,7 +25,8 @@ public class LobbyServer {
 
     /**
      * Constructor of LobbyServer
-     * @throws IOException
+     *
+     * @throws IOException the io exception
      */
     public LobbyServer() throws IOException {
         ss = new ServerSocket(ServerConstants.LOBBY_SERVER_PORT);
@@ -34,10 +38,10 @@ public class LobbyServer {
 
     /**
      * Store a room into Hashmap and assign it an unique number
-     * @param roomName
+     *
+     * @param roomName the room name
      * @return portNumber (To return a unique number for creating a server)
      */
-
     public int changeRoom(String roomName){
 
         boolean exist = false;
@@ -97,6 +101,11 @@ public class LobbyServer {
     public class Acceptor implements Runnable {
         private ServerSocket ss;
 
+        /**
+         * Instantiates a new Acceptor.
+         *
+         * @param ss the ss
+         */
         public Acceptor(ServerSocket ss) {
             this.ss = ss;
         }
@@ -169,7 +178,8 @@ public class LobbyServer {
 
     /**
      * Deal with differnent instructions.
-     * @param instruction
+     *
+     * @param instruction the instruction
      */
     public void dealWithInstrction(String instruction){
         String[] instruction_tuple = instruction.split(" ");
@@ -187,6 +197,11 @@ public class LobbyServer {
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param arg the input arguments
+     */
     public static void main(String[] arg) {
         try {
             LobbyServer l = new LobbyServer();

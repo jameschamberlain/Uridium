@@ -32,6 +32,9 @@ import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.*;
 
+/**
+ * The type Game selection screen.
+ */
 public class GameSelectionScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
@@ -40,13 +43,25 @@ public class GameSelectionScreen extends UridiumScreen {
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
 
-
-
+    /**
+     * Instantiates a new Game selection screen.
+     *
+     * @param background the background
+     */
     public GameSelectionScreen(Background background) {
         Texture bgTexture = Assets.getTex((BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -191,6 +206,9 @@ public class GameSelectionScreen extends UridiumScreen {
         stage.draw();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         skin.dispose();
         stage.dispose();

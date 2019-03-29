@@ -32,6 +32,9 @@ import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.*;
 
+/**
+ * The type Lobby screen.
+ */
 public class LobbyScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
@@ -46,7 +49,13 @@ public class LobbyScreen extends UridiumScreen {
     private HashMap<String,int[]> roomData;
 
     private Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
     // ROOM CODE!
@@ -62,6 +71,8 @@ public class LobbyScreen extends UridiumScreen {
 
     /**
      * Constructor for a new lobby screen.
+     *
+     * @param background the background
      */
     public LobbyScreen(Background background) {
         roomData = new HashMap<>();
@@ -422,6 +433,9 @@ public class LobbyScreen extends UridiumScreen {
         stage.draw();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         mySkin.dispose();
         stage.dispose();

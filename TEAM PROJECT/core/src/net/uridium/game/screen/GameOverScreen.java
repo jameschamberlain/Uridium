@@ -26,22 +26,54 @@ import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.MENU_CURSOR;
 import static net.uridium.game.util.Assets.SKIN;
 
+/**
+ * The type Game over screen.
+ */
 public class GameOverScreen extends UridiumScreen {
+    /**
+     * The Camera.
+     */
     OrthographicCamera camera;
+    /**
+     * The Batch.
+     */
     SpriteBatch batch;
 
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Text.
+     */
     String text;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Small font.
+     */
     BitmapFont smallFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
+    /**
+     * The Game over data.
+     */
     GameOverData gameOverData;
     private float lockout = 3;
 
+    /**
+     * Instantiates a new Game over screen.
+     *
+     * @param gameOverData the game over data
+     */
     public GameOverScreen(GameOverData gameOverData) {
         setCursor(MENU_CURSOR, 0, 0);
 

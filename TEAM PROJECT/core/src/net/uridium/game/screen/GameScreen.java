@@ -28,34 +28,87 @@ import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.BACKGROUND;
 import static net.uridium.game.util.Assets.GAME_CURSOR;
 
+/**
+ * The type Game screen.
+ */
 public class GameScreen extends UridiumScreen {
+    /**
+     * The S.
+     */
     Socket s;
+    /**
+     * The Oos.
+     */
     ObjectOutputStream oos;
+    /**
+     * The Ois.
+     */
     ObjectInputStream ois;
 
+    /**
+     * The Camera.
+     */
     OrthographicCamera camera;
+    /**
+     * The Batch.
+     */
     SpriteBatch batch;
 
+    /**
+     * The Level.
+     */
     Level level;
+    /**
+     * The Bg texture.
+     */
     Texture bgTexture;
+    /**
+     * The Bg.
+     */
     TextureRegion bg;
 
+    /**
+     * The Ui.
+     */
     InGameUI ui;
+    /**
+     * The Scoreboard.
+     */
     Scoreboard scoreboard;
+    /**
+     * The Last dir.
+     */
     Dir lastDir;
 
+    /**
+     * The Changing level.
+     */
     boolean changingLevel = false;
 
+    /**
+     * Instantiates a new Game screen.
+     */
     public GameScreen() {
         init();
     }
 
+    /**
+     * Instantiates a new Game screen.
+     *
+     * @param port the port
+     */
     public GameScreen(int port){init(port,false);}
 
     @Override
     public void init(){init(6666,true);}
 
 
+    /**
+     * Init.
+     *
+     * @param port         the port
+     * @param singlePlayer the single player
+     */
     public void init(int port, boolean singlePlayer) {
         setCursor(GAME_CURSOR, 32, 32);
 
@@ -289,6 +342,11 @@ public class GameScreen extends UridiumScreen {
         batch.end();
     }
 
+    /**
+     * Change level.
+     *
+     * @param levelData the level data
+     */
     public void changeLevel(LevelData levelData) {
         changingLevel = true;
         level = new Level(levelData);
@@ -298,6 +356,12 @@ public class GameScreen extends UridiumScreen {
             ui.setBossLevel(true);
     }
 
+    /**
+     * Position to string string.
+     *
+     * @param position the position
+     * @return the string
+     */
     public static String positionToString(int position) {
         StringBuilder builder = new StringBuilder();
         builder.append(position);

@@ -28,6 +28,9 @@ import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.*;
 
+/**
+ * The type Menu screen.
+ */
 public class MenuScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
@@ -36,13 +39,27 @@ public class MenuScreen extends UridiumScreen {
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
 //    Texture bgTexture;
 //    TextureRegion bg;
 
+    /**
+     * Instantiates a new Menu screen.
+     *
+     * @param backgroud the backgroud
+     */
     public MenuScreen(Background backgroud) {
         setCursor(MENU_CURSOR, 0, 0);
         Audio.getAudio().playTheme();
@@ -156,6 +173,9 @@ public class MenuScreen extends UridiumScreen {
         stage.draw();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         skin.dispose();
         stage.dispose();

@@ -20,16 +20,34 @@ import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.BACKGROUND;
 
+/**
+ * The type Loading screen.
+ */
 public class LoadingScreen extends UridiumScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
+    /**
+     * The Background.
+     */
     Background background;
 
+    /**
+     * The Font.
+     */
     BitmapFont font;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
+    /**
+     * Instantiates a new Loading screen.
+     */
     public LoadingScreen() {
         Assets.getAssets().loadAssets();
 
@@ -86,6 +104,9 @@ public class LoadingScreen extends UridiumScreen {
         }
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
 
     }

@@ -16,6 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * The type Server.
+ */
 public class Server{
     //Here is for network
     private ServerSocket ss;
@@ -23,21 +26,43 @@ public class Server{
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
+    /**
+     * The Users.
+     */
     CopyOnWriteArrayList<Sender> users;
 
+    /**
+     * The Levels.
+     */
     ConcurrentHashMap<Integer, ServerLevel> levels;
+    /**
+     * The Current level.
+     */
     ServerLevel currentLevel;
+    /**
+     * The Last update.
+     */
     long lastUpdate;
 
+    /**
+     * The Game ended.
+     */
     boolean gameEnded;
 
+    /**
+     * The Acceptor.
+     */
     Thread acceptor;
+    /**
+     * The Level update.
+     */
     Thread levelUpdate;
 
     /**
      * Overload the Constructor of Server
      * If there is no input. Assign server a default value
-     * @throws IOException
+     *
+     * @throws IOException the io exception
      */
     public Server() throws IOException {
         this(6666);
@@ -49,8 +74,9 @@ public class Server{
      * Server contains two Threads.
      * One would keep listening client.
      * and the other one would keep sending data to clients that connected to this server
-     * @param port
-     * @throws IOException
+     *
+     * @param port the port
+     * @throws IOException the io exception
      */
     public Server(int port) throws IOException {
         try {
@@ -166,6 +192,11 @@ public class Server{
     public class Acceptor implements Runnable {
         private ServerSocket ss;
 
+        /**
+         * Instantiates a new Acceptor.
+         *
+         * @param ss the ss
+         */
         public Acceptor(ServerSocket ss) {
             this.ss=ss;
         }
@@ -218,15 +249,30 @@ public class Server{
      */
     public class Receiver implements Runnable {
         private ObjectInputStream ois;
+        /**
+         * The S.
+         */
         Socket s;
         private int playerID;
 
+        /**
+         * Instantiates a new Receiver.
+         *
+         * @param ois      the ois
+         * @param s        the s
+         * @param playerID the player id
+         */
         public Receiver(ObjectInputStream ois, Socket s, int playerID) {
             this.ois = ois;
             this.s = s;
             this.playerID = playerID;
         }
 
+        /**
+         * Gets player id.
+         *
+         * @return the player id
+         */
         public int getPlayerID() {
             return playerID;
         }
@@ -293,6 +339,13 @@ public class Server{
         private BlockingQueue<Msg> msgs;
         private int playerID;
 
+        /**
+         * Instantiates a new Sender.
+         *
+         * @param oos      the oos
+         * @param s        the s
+         * @param playerID the player id
+         */
         public Sender(ObjectOutputStream oos, Socket s, int playerID) {
             this.oos = oos;
             this.s = s;
@@ -301,6 +354,11 @@ public class Server{
             msgs = new LinkedBlockingQueue<>();
         }
 
+        /**
+         * Gets player id.
+         *
+         * @return the player id
+         */
         public int getPlayerID() {
             return playerID;
         }
@@ -327,11 +385,21 @@ public class Server{
             System.out.println("User Disconnected.");
         }
 
+        /**
+         * Gets msg queue.
+         *
+         * @return the msg queue
+         */
         public BlockingQueue<Msg> getMsgQueue() {
             return msgs;
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param arg the input arguments
+     */
     public static void main(String[] arg) {
         try {
             Server s = new Server();

@@ -29,6 +29,9 @@ import static net.uridium.game.util.Dimensions.BUTTON_WIDTH;
 import static net.uridium.game.util.Dimensions.GAME_HEIGHT;
 import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 
+/**
+ * The type Settings screen.
+ */
 public class SettingsScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
@@ -37,10 +40,24 @@ public class SettingsScreen extends UridiumScreen {
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
+    /**
+     * Instantiates a new Settings screen.
+     *
+     * @param background the background
+     */
     public SettingsScreen(Background background) {
         setCursor(MENU_CURSOR, 0, 0);
 
@@ -143,6 +160,9 @@ public class SettingsScreen extends UridiumScreen {
         stage.draw();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         skin.dispose();
         stage.dispose();

@@ -28,6 +28,9 @@ import static net.uridium.game.util.Dimensions.BUTTON_WIDTH;
 import static net.uridium.game.util.Dimensions.GAME_HEIGHT;
 import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 
+/**
+ * The type Audio screen.
+ */
 public class AudioScreen extends UridiumScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
@@ -35,10 +38,24 @@ public class AudioScreen extends UridiumScreen {
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
+    /**
+     * Instantiates a new Audio screen.
+     *
+     * @param background the background
+     */
     public AudioScreen(Background background) {
         setCursor(MENU_CURSOR, 0, 0);
 
@@ -138,6 +155,10 @@ public class AudioScreen extends UridiumScreen {
         stage.act();
         stage.draw();
     }
+
+    /**
+     * Dispose.
+     */
     public void dispose() {
         skin.dispose();
         stage.dispose();

@@ -24,6 +24,9 @@ import static net.uridium.game.util.Assets.SKIN;
 import static net.uridium.game.util.Dimensions.GAME_HEIGHT;
 import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 
+/**
+ * The type Instructions screen.
+ */
 public class InstructionsScreen extends UridiumScreen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
@@ -34,11 +37,25 @@ public class InstructionsScreen extends UridiumScreen {
 
     private Skin skin;
     private Stage stage;
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
 
+    /**
+     * Instantiates a new Instructions screen.
+     *
+     * @param background the background
+     */
     public InstructionsScreen(Background background){
         setCursor(MENU_CURSOR, 0, 0);
 
