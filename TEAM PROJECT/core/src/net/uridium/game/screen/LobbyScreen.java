@@ -205,7 +205,7 @@ public class LobbyScreen extends UridiumScreen {
                                 while (true) {
 
                                     int[] data = roomData.get(roomCodeCopy);
-                                    Thread.sleep(10);
+                                    Thread.sleep(100);
                                     if (null == data) continue;
                                     myPort = roomData.get(roomCodeCopy)[0];
                                     break;
