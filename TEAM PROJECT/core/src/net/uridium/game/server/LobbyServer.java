@@ -76,11 +76,14 @@ public class LobbyServer {
             rooms.put(roomName,new int[]{myRoom,1});
             portNum = myRoom;
             System.out.println("Not exist, "+roomName+" So,add a Room "+portNum);
+
             try {
                 new Server(portNum);
+                System.out.println("Server starts !!!!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
 
 

@@ -14,15 +14,23 @@ import java.util.ArrayList;
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
 
+/**
+ * Class to create server side levels from json files
+ */
 public class LevelFactory {
 
+    /**
+     * Create a ServerLevel object from a file handle to a json file
+     * @param fileHandle The file handle of the json file
+     * @return The level created
+     */
     public static ServerLevel buildLevelFromFileHandle(FileHandle fileHandle) {
         String json = fileHandle.readString();
         return buildLevelFromJSON(json);
     }
 
     /**
-     * Builds a game level from json
+     * Builds a server side level from json
      * @param json The json to create the level from
      * @return The level created
      */

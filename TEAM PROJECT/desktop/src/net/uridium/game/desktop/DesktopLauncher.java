@@ -20,11 +20,11 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.title = "Uridium";
 
-		try {
-			LobbyServer l = new LobbyServer();
-		} catch (IOException e) {
-			System.out.println("Lobby server already exists.");
-		}
+//		try {
+//			LobbyServer l = new LobbyServer();
+//		} catch (IOException e) {
+//			System.out.println("Lobby server already exists.");
+//		}
 
 		new LwjglApplication(new Uridium(), config);
 	}

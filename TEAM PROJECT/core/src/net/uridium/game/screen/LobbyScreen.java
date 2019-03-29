@@ -22,6 +22,7 @@ import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
 import net.uridium.game.util.Audio;
 import net.uridium.game.util.Dimensions;
+import org.lwjgl.Sys;
 
 import java.io.*;
 import java.net.Socket;
@@ -201,12 +202,18 @@ public class LobbyScreen extends UridiumScreen {
                             System.out.println(roomCode);
                             ps.println(roomCode);
                             try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
+                                while (true) {
+
+                                    int[] data = roomData.get(roomCodeCopy);
+                                    Thread.sleep(10);
+                                    if (null == data) continue;
+                                    myPort = roomData.get(roomCodeCopy)[0];
+                                    break;
+                                }
+                            }catch (Exception e){
                                 e.printStackTrace();
                             }
-                            myPort = roomData.get(roomCodeCopy)[0];
-                            System.out.println("Room code "+roomCode+" has been sent");
+
 
                             getUSMInstance().push(new GameScreen(myPort));
 //                            try {

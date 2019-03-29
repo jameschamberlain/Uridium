@@ -13,7 +13,13 @@ import net.uridium.game.util.Assets;
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
+/**
+ * UI rendered in game, such as health bar and xp bar
+ */
 public class InGameUI {
+    /**
+     * Texture for the
+     */
     Texture bg;
     Texture border;
 

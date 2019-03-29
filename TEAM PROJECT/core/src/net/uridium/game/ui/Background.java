@@ -8,17 +8,43 @@ import net.uridium.game.util.Assets;
 
 import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 
+/**
+ * The animated background rendered in menus
+ */
 public class Background {
+    /**
+     * Background texture
+     */
     Texture background;
+
+    /**
+     * Foreground texture
+     */
     Texture foreground;
 
+    /**
+     * Background texture if won game
+     */
     Texture background2;
+
+    /**
+     * Foreground texture if won game
+     */
     Texture foreground2;
 
+    /**
+     * Moving fish effect
+     */
     ParticleEffect fishEffect;
 
+    /**
+     * If true, the alternate victory background is shown
+     */
     boolean showAlt = false;
 
+    /**
+     * Background constructor
+     */
     public Background() {
         background = new Texture(Gdx.files.internal(Assets.SPLASH_BACKGROUND));
         foreground = new Texture(Gdx.files.internal(Assets.SPLASH_FOREGROUND));
@@ -32,14 +58,25 @@ public class Background {
         fishEffect.start();
     }
 
+    /**
+     * @param showAlt New value of show alt
+     */
     public void setShowAlt(boolean showAlt) {
         this.showAlt = showAlt;
     }
 
+    /**
+     * Updates the background
+     * @param delta The time between this update and the last
+     */
     public void update(float delta) {
         fishEffect.update(delta);
     }
 
+    /**
+     * Renders the background
+     * @param batch The SpriteBatch to render the background with
+     */
     public void render(SpriteBatch batch) {
         if(!showAlt) {
             batch.draw(background, 0, 0, 1280, 720);

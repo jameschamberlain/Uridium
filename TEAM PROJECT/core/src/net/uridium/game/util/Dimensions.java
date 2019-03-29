@@ -1,5 +1,8 @@
 package net.uridium.game.util;
 
+/**
+ * Dimensions class used for certain menu layouts
+ */
 public final class Dimensions {
     // Game dimensions.
     public static final int GAME_WIDTH = 1280;
