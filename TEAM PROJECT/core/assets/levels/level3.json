@@ -1,0 +1,66 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 10,
+    "rows": [
+      "WWWWWWWDWWWWWWWWWWWW",
+      "W        O         W",
+      "W                  W",
+      "W     O  O  O      W",
+      "W                  W",
+      "D    O  O O  O     W",
+      "W                  D",
+      "W  O  O  O  O  O   W",
+      "W                  W",
+      "WWWWWWWWWWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 1,
+      "y": 4
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 18,
+      "y": 3
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH",
+        "GREEN_FISH"
+      ],
+      "x": 15,
+      "y": 2,
+      "numEnemies": 12,
+      "spawnRate": 600
+    }
+  ],
+  "doors": [
+    {
+      "x": 0,
+      "y": 4,
+      "dest": 1,
+      "entrance": 3
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "dest": 4,
+      "entrance": 1
+    },
+    {
+      "x": 19,
+      "y": 3,
+      "dest": 7,
+      "entrance": 1
+    }
+  ],
+  "name": "Level 3",
+  "id": 3
+}

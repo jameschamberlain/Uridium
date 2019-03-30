@@ -4,6 +4,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -14,6 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 import net.uridium.game.gameplay.entity.damageable.Player;
 
+/**
+ * Class to handle the assets of the game, uses singleton pattern to prevent multiple instances from being created
+ */
 public class Assets {
     /**
      * Image used on the splash screen.
@@ -21,9 +26,19 @@ public class Assets {
     public static final String SPLASH_BACKGROUND = "graphics/ui/splash/background.png";
 
     /**
+     * Image used on the alternate victory splash
+     */
+    public static final String SPLASH_BACKGROUND2 = "graphics/ui/splash/background2.png";
+
+    /**
      * Image used on the splash screen.
      */
     public static final String SPLASH_FOREGROUND = "graphics/ui/splash/foreground.png";
+
+    /**
+     * Image used on the alternate victory splash
+     */
+    public static final String SPLASH_FOREGROUND2 = "graphics/ui/splash/foreground2.png";
 
     /**
      * Background tile used in the menus and in-game.
@@ -45,14 +60,31 @@ public class Assets {
      */
     public static final String GAME_CURSOR = "graphics/ui/crosshair_white.png";
 
+    /**
+     * Private instance of assets
+     */
     private static Assets assets = new Assets();
+
+    /**
+     * @return The instance of Assets
+     */
     public static Assets getAssets() {
         return assets;
     }
+
+    /**
+     * Private constructor to avoid any new instances of Assets being created
+     */
     private Assets() {}
 
+    /**
+     * AssetManager used to load and get assets
+     */
     AssetManager manager;
 
+    /**
+     * Initialise the assets instance
+     */
     public void init() {
         manager = new AssetManager();
 
@@ -61,18 +93,35 @@ public class Assets {
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
     }
 
+    /**
+     * @return The asset manager used
+     */
     public AssetManager getManager() {
         return manager;
     }
 
+    /**
+     * See {@link AssetManager#get(String, Class)}
+     * @param asset
+     * @return The retrieved texture
+     */
     public static Texture getTex(String asset) {
         return get(asset, Texture.class);
     }
 
+    /**
+     *
+     * @param asset File name of the asset
+     * @param t Type of asset
+     * @return The retrieved asset
+     */
     public static <T> T get(String asset, Class<T> t) {
         return getAssets().getManager().get(asset, t);
     }
 
+    /**
+     * Prepares all assets to be loaded by the AssetManager
+     */
     public void loadAssets() {
         Assets.getAssets().init();
 
@@ -104,9 +153,11 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/tile/igloo.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/tile/DOORBOI.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/tile/iceBlockAlt.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/tile/iceBlock.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/tile/obstacle.png", Texture.class);
 
         // ENTITY
-        Assets.getAssets().getManager().load("graphics/entity/crate_01.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/spawner.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/projectile/wrench.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/item/heal.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/item/coffee.png", Texture.class);
@@ -118,6 +169,11 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/entity/enemy/fishPink_swim.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/enemy/spider_walk1.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/entity/enemy/spider_walk2.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/ghost.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/ghost_normal.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/bat.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/bat_fly.png", Texture.class);
+        Assets.getAssets().getManager().load("graphics/entity/enemy/slimeBlue_squashed.png", Texture.class);
 
         for(Player.Colour c : Player.Colour.values()) {
             Assets.getAssets().getManager().load("graphics/entity/player/" + c.toString() + "/walk1.png", Texture.class);
@@ -139,5 +195,17 @@ public class Assets {
         Assets.getAssets().getManager().load("graphics/ui/scoreboard_bg.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/powerup.png", Texture.class);
         Assets.getAssets().getManager().load("graphics/ui/border.png", Texture.class);
+
+        // AUDIO
+        Assets.getAssets().getManager().load("audio/background.wav", Music.class);
+        Assets.getAssets().getManager().load("audio/BUTTON_CLICK.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_SHOOT.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_DAMAGE.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/PLAYER_DEAD.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/ENEMY_DEAD.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/CHANGE_ROOM.ogg", Sound.class);
+        Assets.getAssets().getManager().load("audio/GAME_OVER.wav", Sound.class);
+//        Assets.getAssets().getManager().load("audio/VICTORY.wav", Sound.class);
+        Assets.getAssets().getManager().load("audio/POWERUP.wav", Sound.class);
     }
 }

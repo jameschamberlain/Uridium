@@ -18,7 +18,14 @@ import java.util.ArrayList;
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
 
+/**
+ * Base Enemy Class
+ */
 public abstract class Enemy extends DamageableEntity {
+
+    /**
+     * The type of enemy
+     */
     public enum Type {
         BLUE_FISH,
         PINK_FISH,
@@ -54,18 +61,44 @@ public abstract class Enemy extends DamageableEntity {
     /**
      * The speed the enemy travels.
      */
-    private float speed = 100;
-    private float angle = 0;
+    float speed;
 
+    /**
+     * The angle the enemy is at
+     */
+    float angle = 0;
+
+    /**
+     * The target the enemy is moving towards
+     */
     private transient Player target;
 
+    /**
+     * Texture animation
+     */
     transient Animation<TextureRegion> anim;
+
+    /**
+     * Used to track what part of an animation is currently rendered
+     */
     private transient float stateTime;
 
+    /**
+     * Stripped down version of the Enemy constructor with the default velocity set to 0, see {@link Enemy#Enemy(int, Rectangle, Vector2, int, int, float)}
+     */
     public Enemy(int ID, Rectangle body, int maxHealth, int health, float speed) {
         this(ID, body, new Vector2(0, 0), maxHealth, health, speed);
     }
 
+    /**
+     * Enemy Constructor
+     * @param ID The entity id
+     * @param body The body of the entity
+     * @param vel The initial velocity of the enemy
+     * @param maxHealth The max health
+     * @param health The current health
+     * @param speed Used to calculate the velocity of the entity in the x and y directions
+     */
     public Enemy(int ID, Rectangle body, Vector2 vel, int maxHealth, int health, float speed) {
         super(ID, body, vel, "", maxHealth, health);
 
@@ -75,7 +108,8 @@ public abstract class Enemy extends DamageableEntity {
     @Override
     public void update(float delta) {
         super.update(delta);
-        if (t == null && target != null && target.getHealth() > 0) updatePathfinding(delta);
+        if (t == null && target != null && target.getHealth() > 0)
+            updatePathfinding(delta);
         stateTime += delta;
     }
 
@@ -89,12 +123,21 @@ public abstract class Enemy extends DamageableEntity {
         Gdx.app.postRunnable(this::loadAnim);
     }
 
+    /**
+     * Loads the animations for the enemy on the client side
+     */
     public abstract void loadAnim();
 
+    /**
+     * @return The angle of the enemy
+     */
     public float getAngle() {
         return angle;
     }
 
+    /**
+     * @param angle The new angle of the enemy
+     */
     public void setAngle(float angle) {
         this.angle = angle;
     }

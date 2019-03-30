@@ -1,0 +1,83 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 10,
+    "rows": [
+      "WWWWWWWWWWDWWWWWWWWW",
+      "WO                OW",
+      "W                  W",
+      "W       OOOO       W",
+      "W      O    O      W",
+      "D      O    O      D",
+      "W       OOOO       W",
+      "W                  W",
+      "W        O         W",
+      "WWWWWWWWWWWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 18,
+      "y": 4
+    },
+    {
+      "x": 10,
+      "y": 8
+    },
+    {
+      "x": 1,
+      "y": 4
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 1,
+      "y": 8,
+      "numEnemies": 4,
+      "spawnRate": 2000
+    },
+    {
+      "types": [
+        "GREEN_FISH"
+      ],
+      "x": 9,
+      "y": 1,
+      "numEnemies": 4,
+      "spawnRate": 2000
+    },
+    {
+      "types": [
+        "GREEN_FISH"
+      ],
+      "x": 18,
+      "y": 8,
+      "numEnemies": 4,
+      "spawnRate": 2000
+    }
+  ],
+  "doors": [
+    {
+      "x": 19,
+      "y": 4,
+      "dest": 6,
+      "entrance": 3
+    },
+    {
+      "x": 10,
+      "y": 9,
+      "dest": 11,
+      "entrance": 2
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "dest": 15,
+      "entrance": 1
+    }
+  ],
+  "name": "Level 13",
+  "id": 13
+}

@@ -11,9 +11,19 @@ import net.uridium.game.util.Assets;
 
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
-
+/**
+ * Main game class
+ */
 public class Uridium extends ApplicationAdapter {
+
+	/**
+	 * The width of the game window
+	 */
 	public static final int GAME_WIDTH = 1280;
+
+	/**
+	 * The height of the game window
+	 */
 	public static final int GAME_HEIGHT = 720;
 	public static Sound sound;
 
@@ -38,8 +48,13 @@ public class Uridium extends ApplicationAdapter {
 		// FOR LATER USE
 	}
 
+	/**
+	 * Sets the cursor image of the game
+	 * @param cursor The file name of the cursor image
+	 * @param xHotspot See {@link com.badlogic.gdx.Graphics#newCursor(Pixmap, int, int)}
+	 * @param yHotspot See {@link com.badlogic.gdx.Graphics#newCursor(Pixmap, int, int)}
+	 */
 	public static void setCursor(String cursor, int xHotspot, int yHotspot) {
-		System.out.println(Assets.getAssets().getManager().isFinished());
 		TextureRegion cursorImage = new TextureRegion(Assets.getAssets().getManager().get(cursor, Texture.class));
 		cursorImage.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		if (!cursorImage.getTexture().getTextureData().isPrepared()) {

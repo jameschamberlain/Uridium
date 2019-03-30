@@ -19,28 +19,79 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static net.uridium.game.Uridium.GAME_HEIGHT;
 import static net.uridium.game.Uridium.GAME_WIDTH;
 
+/**
+ * The type Scoreboard.
+ */
 public class Scoreboard {
+    /**
+     * The Datas.
+     */
     CopyOnWriteArrayList<ScoreboardData> datas;
 
+    /**
+     * The Font.
+     */
     BitmapFont font;
+    /**
+     * The Tex.
+     */
     Texture tex;
+    /**
+     * The Glyph layout.
+     */
     GlyphLayout glyphLayout;
+    /**
+     * The Renderer.
+     */
     ShapeRenderer renderer;
 
+    /**
+     * The Width.
+     */
     float width = 1000;
+    /**
+     * The Height.
+     */
     float height = 400;
 
+    /**
+     * The X offset.
+     */
     float xOffset;
+    /**
+     * The Y offset.
+     */
     float yOffset;
 
+    /**
+     * The Blue icon.
+     */
     Texture blueIcon;
+    /**
+     * The Green icon.
+     */
     Texture greenIcon;
+    /**
+     * The Yellow icon.
+     */
     Texture yellowIcon;
+    /**
+     * The Pink icon.
+     */
     Texture pinkIcon;
 
+    /**
+     * The Hp.
+     */
     Texture hp;
+    /**
+     * The Hp bg.
+     */
     Texture hpBg;
 
+    /**
+     * Instantiates a new Scoreboard.
+     */
     public Scoreboard() {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("newFont.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -63,6 +114,11 @@ public class Scoreboard {
         yellowIcon = Assets.getTex(("graphics/entity/player/YELLOW/icon.png"));
     }
 
+    /**
+     * Update scoreboard.
+     *
+     * @param players the players
+     */
     public void updateScoreboard(ArrayList<Player> players) {
         for(int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
@@ -75,6 +131,11 @@ public class Scoreboard {
         }
     }
 
+    /**
+     * Render.
+     *
+     * @param batch the batch
+     */
     public void render(SpriteBatch batch) {
         batch.draw(tex, xOffset, yOffset, width, height);
 
@@ -128,13 +189,40 @@ public class Scoreboard {
         }
     }
 
+    /**
+     * The type Scoreboard data.
+     */
     class ScoreboardData {
+        /**
+         * The Player colour.
+         */
         Player.Colour playerColour;
+        /**
+         * The Player name.
+         */
         String playerName;
+        /**
+         * The Health percent.
+         */
         float healthPercent;
+        /**
+         * The Level.
+         */
         int level;
+        /**
+         * The Score.
+         */
         int score;
 
+        /**
+         * Instantiates a new Scoreboard data.
+         *
+         * @param playerColour  the player colour
+         * @param playerName    the player name
+         * @param healthPercent the health percent
+         * @param level         the level
+         * @param score         the score
+         */
         public ScoreboardData(Player.Colour playerColour, String playerName, float healthPercent, int level, int score) {
             this.playerColour = playerColour;
             this.playerName = playerName;

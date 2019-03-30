@@ -1,0 +1,74 @@
+{
+  "grid": {
+    "width": 20,
+    "height": 10,
+    "rows": [
+      "WWWWWWWWWDWWWWWWWWWW",
+      "W                  W",
+      "W    OO     OO     W",
+      "W    OO     OO     W",
+      "W    OO            W",
+      "W    OO            D",
+      "W    OO     OO     W",
+      "W    OO     OO     W",
+      "W                  W",
+      "WWWWWWWWWDWWWWWWWWWW"
+    ]
+  },
+  "entrances": [
+    {
+      "x": 18,
+      "y": 4
+    },
+    {
+      "x": 9,
+      "y": 1
+    },
+    {
+      "x": 9,
+      "y": 8
+    }
+  ],
+  "spawners": [
+    {
+      "types": [
+        "BLUE_FISH"
+      ],
+      "x": 6,
+      "y": 5,
+      "numEnemies": 4,
+      "spawnRate": 2000
+    },
+    {
+      "types": [
+        "GREEN_FISH"
+      ],
+      "x": 6,
+      "y": 4,
+      "numEnemies": 4,
+      "spawnRate": 2000
+    }
+  ],
+  "doors": [
+    {
+      "x": 19,
+      "y": 4,
+      "dest": 5,
+      "entrance": 3
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "dest": 12,
+      "entrance": 1
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "dest": 13,
+      "entrance": 2
+    }
+  ],
+  "name": "Level 11",
+  "id": 11
+}

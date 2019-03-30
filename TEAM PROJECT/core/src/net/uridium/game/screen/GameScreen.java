@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.Level;
 import net.uridium.game.gameplay.entity.Entity;
 import net.uridium.game.gameplay.entity.damageable.Player;
-import net.uridium.game.server.constant;
+import net.uridium.game.server.ServerConstants;
 import net.uridium.game.server.msg.*;
 import net.uridium.game.server.msg.PlayerMoveData.Dir;
 import net.uridium.game.ui.InGameUI;
@@ -24,49 +24,101 @@ import java.net.Socket;
 import java.util.Collection;
 
 import static net.uridium.game.Uridium.*;
+import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.BACKGROUND;
 import static net.uridium.game.util.Assets.GAME_CURSOR;
 
+/**
+ * The type Game screen.
+ */
 public class GameScreen extends UridiumScreen {
+    /**
+     * The S.
+     */
     Socket s;
+    /**
+     * The Oos.
+     */
     ObjectOutputStream oos;
+    /**
+     * The Ois.
+     */
     ObjectInputStream ois;
 
+    /**
+     * The Camera.
+     */
     OrthographicCamera camera;
+    /**
+     * The Batch.
+     */
     SpriteBatch batch;
 
+    /**
+     * The Level.
+     */
     Level level;
+    /**
+     * The Bg texture.
+     */
     Texture bgTexture;
+    /**
+     * The Bg.
+     */
     TextureRegion bg;
 
+    /**
+     * The Ui.
+     */
     InGameUI ui;
+    /**
+     * The Scoreboard.
+     */
     Scoreboard scoreboard;
+    /**
+     * The Last dir.
+     */
     Dir lastDir;
 
+    /**
+     * The Changing level.
+     */
     boolean changingLevel = false;
 
+    /**
+     * Instantiates a new Game screen.
+     */
     public GameScreen() {
         init();
     }
 
+    /**
+     * Instantiates a new Game screen.
+     *
+     * @param port the port
+     */
     public GameScreen(int port){init(port,false);}
 
     @Override
     public void init(){init(6666,true);}
 
 
+    /**
+     * Init.
+     *
+     * @param port         the port
+     * @param singlePlayer the single player
+     */
     public void init(int port, boolean singlePlayer) {
         setCursor(GAME_CURSOR, 32, 32);
-        //Audio.getAudioInstance().libPlayLoop("audio\\background.wav");
 
         try {
             if(singlePlayer){
                s = new Socket("127.0.0.1",port);
             }
             else{
-                s = new Socket(constant.SERVER_IP,port);
+                s = new Socket(ServerConstants.SERVER_IP,port);
             }
-
             oos = new ObjectOutputStream(s.getOutputStream());
             ois = new ObjectInputStream(s.getInputStream());
 
@@ -136,18 +188,6 @@ public class GameScreen extends UridiumScreen {
                         sendDirMsg(Dir.RIGHT);
                         lastDir = Dir.RIGHT;
                         return true;
-//                    case Input.Keys.UP:
-//                        sendShootMsg(Dir.UP);
-//                        return true;
-//                    case Input.Keys.LEFT:
-//                        sendShootMsg(Dir.LEFT);
-//                        return true;
-//                    case Input.Keys.DOWN:
-//                        sendShootMsg(Dir.DOWN);
-//                        return true;
-//                    case Input.Keys.RIGHT:
-//                        sendShootMsg(Dir.RIGHT);
-//                        return true;
                 }
 
                 return super.keyDown(keycode);
@@ -157,20 +197,18 @@ public class GameScreen extends UridiumScreen {
             public boolean keyUp(int keycode) {
                 if(level.getPlayer().getHealth() == 0) return super.keyUp(keycode);
 
-                System.out.println(level.getPlayer().getHealth() == 0);
-
                 switch(keycode){
                     case Input.Keys.W:
-                        if(lastDir == Dir.UP) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.UP) sendDirMsg(getNewDir());
                         return true;
                     case Input.Keys.A:
-                        if(lastDir == Dir.LEFT) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.LEFT) sendDirMsg(getNewDir());
                         return true;
                     case Input.Keys.S:
-                        if(lastDir == Dir.DOWN) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.DOWN) sendDirMsg(getNewDir());
                         return true;
                     case Input.Keys.D:
-                        if(lastDir == Dir.RIGHT) sendDirMsg(Dir.STOP);
+                        if(lastDir == Dir.RIGHT) sendDirMsg(getNewDir());
                         return true;
                 }
 
@@ -194,10 +232,20 @@ public class GameScreen extends UridiumScreen {
         });
     }
 
+    private Dir getNewDir() {
+        if(Gdx.input.isKeyPressed(Input.Keys.W)) return Dir.UP;
+        else if(Gdx.input.isKeyPressed(Input.Keys.A)) return Dir.LEFT;
+        else if(Gdx.input.isKeyPressed(Input.Keys.S)) return Dir.DOWN;
+        else if(Gdx.input.isKeyPressed(Input.Keys.D)) return Dir.RIGHT;
+
+        return Dir.STOP;
+    }
+
     private void processMsg(Msg msg) {
         switch(msg.getType()) {
             case NEW_LEVEL:
                 changeLevel((LevelData) msg.getData());
+                Audio.getAudio().playSound(Audio.SOUND.CHANGE_ROOM);
                 break;
             case NEW_ENTITY:
                 level.addEntity((Entity) msg.getData());
@@ -211,6 +259,9 @@ public class GameScreen extends UridiumScreen {
             case REPLACE_TILE:
                 level.replaceTile((ReplaceTileData) msg.getData());
                 break;
+            case UNLOCK_DOORS:
+                level.unlockDoors();
+                break;
             case PLAYER_UPDATE:
                 PlayerUpdateData data = (PlayerUpdateData) msg.getData();
                 level.updatePlayer(data);
@@ -222,12 +273,17 @@ public class GameScreen extends UridiumScreen {
                 break;
             case PLAYER_DEATH:
                 PlayerDeathData pdd = (PlayerDeathData) msg.getData();
+                Audio.getAudio().playSound(Audio.SOUND.PLAYER_DEAD);
                 level.killPlayer(pdd);
                 if(level.getPlayerID() == pdd.ID) ui.showExpandingText("You came " + positionToString(pdd.position) + "!", 0.8f, true);
                 break;
             case PLAYER_POWERUP:
                 PlayerPowerupData ppd = (PlayerPowerupData) msg.getData();
                 if(ppd.playerID == level.getPlayerID()) ui.updatePowerup(ppd);
+                break;
+            case GAME_OVER:
+                Audio.getAudio().playSound(Audio.SOUND.GAME_OVER);
+                Gdx.app.postRunnable(() -> getUSMInstance().clearAndSet(new GameOverScreen((GameOverData) msg.getData())));
                 break;
         }
     }
@@ -264,7 +320,9 @@ public class GameScreen extends UridiumScreen {
         if(!changingLevel) {
             level.update(delta);
             ui.update(delta);
-//            System.out.println(level.getPlayer().getLevel());
+
+            if(level.getId() == -1)
+                ui.setBossHpPercent(level.getBoss().getHealth() / level.getBoss().getMaxHealth());
         }
     }
 
@@ -273,7 +331,7 @@ public class GameScreen extends UridiumScreen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_HEIGHT);
         if(!changingLevel) {
             level.render(batch);
 
@@ -284,18 +342,27 @@ public class GameScreen extends UridiumScreen {
         batch.end();
     }
 
-
-
-
-
+    /**
+     * Change level.
+     *
+     * @param levelData the level data
+     */
     public void changeLevel(LevelData levelData) {
         changingLevel = true;
-        Level newLevel = new Level(levelData);
-        level = newLevel;
+        level = new Level(levelData);
         changingLevel = false;
+
+        if(levelData.id == -1)
+            ui.setBossLevel(true);
     }
 
-    public String positionToString(int position) {
+    /**
+     * Position to string string.
+     *
+     * @param position the position
+     * @return the string
+     */
+    public static String positionToString(int position) {
         StringBuilder builder = new StringBuilder();
         builder.append(position);
 

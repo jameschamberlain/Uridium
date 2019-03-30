@@ -1,7 +1,6 @@
 package net.uridium.game.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,12 +21,16 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.Uridium;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 
 import static net.uridium.game.Uridium.setCursor;
 import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.*;
 
+/**
+ * The type Menu screen.
+ */
 public class MenuScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
@@ -36,15 +39,30 @@ public class MenuScreen extends UridiumScreen {
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
 //    Texture bgTexture;
 //    TextureRegion bg;
 
+    /**
+     * Instantiates a new Menu screen.
+     *
+     * @param backgroud the backgroud
+     */
     public MenuScreen(Background backgroud) {
         setCursor(MENU_CURSOR, 0, 0);
+        Audio.getAudio().playTheme();
 
         this.background = backgroud;
         titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
@@ -66,41 +84,9 @@ public class MenuScreen extends UridiumScreen {
         // Setup the settings button.
         Button settingsBtn = setupSettingsButton();
 
-        //Setup the exit button.
-        Button exitBtn = setupExitButton();
-
         // Add title and buttons to the screen.
         stage.addActor(playBtn);
         stage.addActor(settingsBtn);
-        stage.addActor(exitBtn);
-    }
-
-    /**
-     * Setup the settings button.
-     * Enters into the settings screen.
-     *
-     * @return The settings button.
-     */
-    private Button setupExitButton() {
-        Button exitBtn = new TextButton("EXIT", skin);
-        exitBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        float a = (GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT + 80;
-        exitBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, a - 80);
-        ((TextButton.TextButtonStyle) exitBtn.getStyle()).fontColor = Color.WHITE;
-        // Listener for click events.
-        exitBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.exit();
-                super.touchDown(event, x, y, pointer, button);
-            }
-        });
-        return exitBtn;
     }
 
     /**
@@ -112,7 +98,7 @@ public class MenuScreen extends UridiumScreen {
     private Button setupPlayButton() {
         Button playBtn = new TextButton("PLAY", skin);
         playBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        playBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT)  / 2 + 80);
+        playBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT) / 2);
         ((TextButton.TextButtonStyle) playBtn.getStyle()).fontColor = Color.WHITE;
         // Listener for click events.
         playBtn.addListener(new InputListener() {
@@ -123,7 +109,7 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new GameSelectionScreen(background));
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -140,7 +126,7 @@ public class MenuScreen extends UridiumScreen {
     private Button setupSettingsButton() {
         Button settingsBtn = new TextButton("SETTINGS", skin);
         settingsBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        settingsBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT + 85 );
+        settingsBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2, (GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         // Listener for click events.
         settingsBtn.addListener(new InputListener() {
             @Override
@@ -150,7 +136,7 @@ public class MenuScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new SettingsScreen(background));
                 super.touchUp(event, x, y, pointer, button);
             }
@@ -181,25 +167,15 @@ public class MenuScreen extends UridiumScreen {
 
         titleFont.draw(batch, "URIDIUM", (GAME_WIDTH - gl.width) / 2, (GAME_HEIGHT * 3 / 4) + gl.height / 2);
 
-        if(Gdx.input.isKeyPressed(Input.Keys.P)){
-            getUSMInstance().push(new GameSelectionScreen(background));
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.S)){
-            getUSMInstance().push(new SettingsScreen(background));
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.E)){
-            Gdx.app.exit();
-        }
-
-
         batch.end();
 
         stage.act();
         stage.draw();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         skin.dispose();
         stage.dispose();

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -15,22 +17,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.uridium.game.server.Server;
+import net.uridium.game.server.ServerConstants;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
-import net.uridium.game.server.constant;
-
+import net.uridium.game.util.Audio;
+import net.uridium.game.util.Dimensions;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import static net.uridium.game.Uridium.setCursor;
 import static net.uridium.game.util.Dimensions.*;
 import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 import static net.uridium.game.util.Assets.*;
 
+/**
+ * The type Lobby screen.
+ */
 public class LobbyScreen extends UridiumScreen {
 
     private OrthographicCamera camera;
@@ -41,10 +45,18 @@ public class LobbyScreen extends UridiumScreen {
     private int myPort;
     private TextureRegion bg;
 
-    private Background background;
-
     private List<String> roomList;
     private HashMap<String,int[]> roomData;
+
+    private Background background;
+    /**
+     * The Title font.
+     */
+    BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
+    GlyphLayout gl;
 
     // ROOM CODE!
     private String roomCode = "";
@@ -56,15 +68,17 @@ public class LobbyScreen extends UridiumScreen {
 
     private String choice;
 
+
     /**
      * Constructor for a new lobby screen.
+     *
+     * @param background the background
      */
     public LobbyScreen(Background background) {
-
         roomData = new HashMap<>();
 
         try {
-            s = new Socket(constant.SERVER_IP, constant.LOBBY_SERVER_PORT);
+            s = new Socket(ServerConstants.SERVER_IP, ServerConstants.LOBBY_SERVER_PORT);
             ps = new PrintStream(s.getOutputStream());
             oi = new ObjectInputStream(s.getInputStream());
             roomData = (HashMap<String, int[]>) oi.readObject();
@@ -95,7 +109,6 @@ public class LobbyScreen extends UridiumScreen {
 
         setCursor(MENU_CURSOR, 0, 0);
         myPort = 0;
-
         // Setup textures and background.
         Texture bgTexture = Assets.getTex((BACKGROUND));
         bgTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -105,6 +118,8 @@ public class LobbyScreen extends UridiumScreen {
         mySkin = Assets.getAssets().getManager().get(SKIN);
 
         this.background = background;
+        titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
+        gl = new GlyphLayout(titleFont, "URIDIUM");
 
         // Setup camera.
         camera = new OrthographicCamera();
@@ -116,9 +131,6 @@ public class LobbyScreen extends UridiumScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-
-        // Setup game title label.
-        Label gameTitle = setupGameTitle();
         // Setup create button.
         Button createBtn = setupCreateButton();
         // Setup refresh button.
@@ -128,32 +140,12 @@ public class LobbyScreen extends UridiumScreen {
         // Setup room list.
         ScrollPane roomList = setupRoomList();
 
-        // Add title, buttons and room list to the screen.
-        stage.addActor(gameTitle);
         stage.addActor(createBtn);
         stage.addActor(refreshBtn);
         stage.addActor(backBtn);
         stage.addActor(roomList);
         stage.unfocus(roomList);
-
-
     }
-
-
-    /**
-     * Setup the game title label.
-     *
-     * @return The game title label.
-     */
-    private Label setupGameTitle() {
-        Label gameTitle = new Label("U R I D I U M", mySkin, "title");
-        gameTitle.setSize(TITLE_WIDTH, TITLE_HEIGHT);
-        gameTitle.setPosition(TITLE_X, TITLE_Y);
-        gameTitle.setFontScale(TITLE_FONT_SCALE);
-        gameTitle.setAlignment(Align.center);
-        return gameTitle;
-    }
-
 
     /**
      * Setup the create button.
@@ -174,6 +166,8 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
+
                 // Label to describe dialog.
                 Label descriptionLabel = new Label("Enter room ID", mySkin);
                 descriptionLabel.setAlignment(Align.center);
@@ -265,6 +259,7 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 System.out.println("You have Choosed "+choice);
                 choice = choice.split(" ")[1];
                 for(String s : roomData.keySet()){
@@ -275,14 +270,14 @@ public class LobbyScreen extends UridiumScreen {
                 ps.println(sendToken);
                 System.out.println(roomData.get(choice)[0]);
 
-                System.out.println(roomData.get(choice)[0]);
+                //System.out.println(roomData.get(choice)[0]);
                 int portNum = roomData.get(choice)[0];
-//                try {
-//                    new Server(portNum);
-//                    Thread.sleep(998);
-//                } catch (IOException | InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    new Server(portNum);
+                    Thread.sleep(998);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
                 getUSMInstance().push(new GameScreen(portNum));
 
                 super.touchUp(event, x, y, pointer, button);
@@ -290,14 +285,6 @@ public class LobbyScreen extends UridiumScreen {
         });
         return refreshBtn;
     }
-
-//    public int getPort(String name){
-//        return roomData.get(name)[0];
-//    }
-
-
-
-
 
     /**
      * Setup the back button.
@@ -318,8 +305,8 @@ public class LobbyScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Audio.getAudio().playSound(Audio.SOUND.BUTTON_CLICK);
                 getUSMInstance().push(new GameSelectionScreen(background));
-                super.touchUp(event, x, y, pointer, button);
             }
         });
         return backBtn;
@@ -384,7 +371,7 @@ public class LobbyScreen extends UridiumScreen {
 //        int port = 0;
 //
 //        try {
-//            Socket s = new Socket(constant.SERVER_IP, constant.LOBBY_SERVER_PORT);
+//            Socket s = new Socket(ServerConstants.SERVER_IP, ServerConstants.LOBBY_SERVER_PORT);
 //            PrintStream ps = new PrintStream(s.getOutputStream());
 //            ObjectInputStream oi = new ObjectInputStream(s.getInputStream());
 //            ps.println(roomCode);
@@ -425,6 +412,8 @@ public class LobbyScreen extends UridiumScreen {
             }
 
         }
+
+        background.update(delta);
     }
 
     @Override
@@ -434,13 +423,19 @@ public class LobbyScreen extends UridiumScreen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(bg, 0, 0, GAME_WIDTH, GAME_WIDTH);
+
+        background.render(batch);
+        titleFont.draw(batch, "URIDIUM", (Dimensions.GAME_WIDTH - gl.width) / 2, (Dimensions.GAME_HEIGHT * 3 / 4) + gl.height / 2);
+
         batch.end();
 
         stage.act();
         stage.draw();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         mySkin.dispose();
         stage.dispose();

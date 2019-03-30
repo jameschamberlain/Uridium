@@ -3,10 +3,10 @@ package net.uridium.game.server;
 import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.LevelFactory;
 import net.uridium.game.gameplay.entity.damageable.Player;
-import net.uridium.game.screen.SettingsScreen;
 import net.uridium.game.server.msg.*;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -16,8 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
-
+/**
+ * The type Server.
+ */
 public class Server{
     //Here is for network
     private ServerSocket ss;
@@ -25,11 +26,47 @@ public class Server{
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
+    /**
+     * The Users.
+     */
     CopyOnWriteArrayList<Sender> users;
 
+    /**
+     * The Levels.
+     */
     ConcurrentHashMap<Integer, ServerLevel> levels;
+    /**
+     * The Current level.
+     */
     ServerLevel currentLevel;
+    /**
+     * The Last update.
+     */
     long lastUpdate;
+
+    /**
+     * The Game ended.
+     */
+    boolean gameEnded;
+
+    /**
+     * The Acceptor.
+     */
+    Thread acceptor;
+    /**
+     * The Level update.
+     */
+    Thread levelUpdate;
+
+    /**
+     * Overload the Constructor of Server
+     * If there is no input. Assign server a default value
+     *
+     * @throws IOException the io exception
+     */
+    public Server() throws IOException {
+        this(6666);
+    }
 
     /**
      * Constructor of Server
@@ -37,21 +74,19 @@ public class Server{
      * Server contains two Threads.
      * One would keep listening client.
      * and the other one would keep sending data to clients that connected to this server
-     * @param port
-     * @throws IOException
+     *
+     * @param port the port
+     * @throws IOException the io exception
      */
     public Server(int port) throws IOException {
-        System.out.println("Server Starting ...");
-        try{
+        try {
             ss = new ServerSocket(port);
-        }
-        catch (Exception e){
-            System.out.println("Server exists already");
-        }
+        } catch (BindException e) {}
 
+        init();
+    }
 
-        System.out.println("Creating Level ...");
-
+    private void init() throws FileNotFoundException {
         levels = new ConcurrentHashMap<>();
 
         File f = new File("levels/level1.json");
@@ -63,21 +98,16 @@ public class Server{
 
         users = new CopyOnWriteArrayList<>();
 
-        new Thread(new Acceptor(ss)).start();
-        new Thread(this::levelUpdate).start();
-    }
+        acceptor = new Thread(new Acceptor(ss));
+        acceptor.start();
+        levelUpdate = new Thread(this::levelUpdate);
+        levelUpdate.start();
 
-    /**
-     * Overload the Constructor of Server
-     * If there is no input. Assign server a default value
-     * @throws IOException
-     */
-    public Server() throws IOException {
-        this(6666);
+        gameEnded = false;
     }
 
     private void levelUpdate() {
-        while (true) {
+        while (!gameEnded) {
             float delta = System.currentTimeMillis() - lastUpdate;
             delta /= 1000;
             currentLevel.update(delta);
@@ -85,22 +115,22 @@ public class Server{
 
             ArrayList<Msg> newMsgs = new ArrayList<>();
             currentLevel.getMsgs().drainTo(newMsgs);
-//            if(newMsgs.size() > 0) {
-//                System.out.println("Msgs: " + newMsgs.size());
-//                for(Msg msg : newMsgs)
-//                    System.out.println("\t" + msg.getType().name());
-//            }
 
             for(Sender s : users)
                 for (Msg msg : newMsgs)
                     s.getMsgQueue().add(msg);
 
             int id;
-            if((id = currentLevel.shouldChangeLevel()) != -1) {
+            if((id = currentLevel.shouldChangeLevel()) != 0) {
                 currentLevel.changedLevel();
 
                 if(levels.get(id) == null) {
-                    File f = new File("levels/level" + id + ".json");
+                    File f;
+                    if(id == -1)
+                        f = new File("levels/level_boss.json");
+                    else
+                        f = new File("levels/level" + id + ".json");
+
                     try {
                         ServerLevel newLevel = LevelFactory.buildLevelFromJSON(new Scanner(f).useDelimiter("\\A").next());
 
@@ -141,6 +171,14 @@ public class Server{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            gameEnded = currentLevel.isGameEnded();
+        }
+
+        try {
+            init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -154,6 +192,11 @@ public class Server{
     public class Acceptor implements Runnable {
         private ServerSocket ss;
 
+        /**
+         * Instantiates a new Acceptor.
+         *
+         * @param ss the ss
+         */
         public Acceptor(ServerSocket ss) {
             this.ss=ss;
         }
@@ -162,7 +205,7 @@ public class Server{
         public void run() {
             System.out.println("Waiting for users ...");
 
-            while (true) {
+            while (!gameEnded) {
                 int playerID = 0;
                 try {
                     s = ss.accept();
@@ -192,6 +235,12 @@ public class Server{
                 new Thread(sender).start();
                 new Thread(receiver).start();
             }
+
+            try {
+                ss.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -200,15 +249,30 @@ public class Server{
      */
     public class Receiver implements Runnable {
         private ObjectInputStream ois;
+        /**
+         * The S.
+         */
         Socket s;
         private int playerID;
 
+        /**
+         * Instantiates a new Receiver.
+         *
+         * @param ois      the ois
+         * @param s        the s
+         * @param playerID the player id
+         */
         public Receiver(ObjectInputStream ois, Socket s, int playerID) {
             this.ois = ois;
             this.s = s;
             this.playerID = playerID;
         }
 
+        /**
+         * Gets player id.
+         *
+         * @return the player id
+         */
         public int getPlayerID() {
             return playerID;
         }
@@ -226,7 +290,6 @@ public class Server{
                             PlayerMoveData moveData = (PlayerMoveData) msg.getData();
 
                             if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
-                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
 
                             switch(moveData.dir) {
                                 case STOP:
@@ -250,7 +313,6 @@ public class Server{
                             PlayerShootData shootData = (PlayerShootData) msg.getData();
 
                             if(currentLevel.getPlayer(playerID).getHealth() == 0) break;
-                            System.out.println("player id: " + playerID + ", health: " + currentLevel.getPlayer(playerID).getHealth());
 
                             if(currentLevel.getPlayer(playerID).canShoot()){
                                 currentLevel.createBullet(playerID, shootData.angle);
@@ -277,6 +339,13 @@ public class Server{
         private BlockingQueue<Msg> msgs;
         private int playerID;
 
+        /**
+         * Instantiates a new Sender.
+         *
+         * @param oos      the oos
+         * @param s        the s
+         * @param playerID the player id
+         */
         public Sender(ObjectOutputStream oos, Socket s, int playerID) {
             this.oos = oos;
             this.s = s;
@@ -285,6 +354,11 @@ public class Server{
             msgs = new LinkedBlockingQueue<>();
         }
 
+        /**
+         * Gets player id.
+         *
+         * @return the player id
+         */
         public int getPlayerID() {
             return playerID;
         }
@@ -311,11 +385,21 @@ public class Server{
             System.out.println("User Disconnected.");
         }
 
+        /**
+         * Gets msg queue.
+         *
+         * @return the msg queue
+         */
         public BlockingQueue<Msg> getMsgQueue() {
             return msgs;
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param arg the input arguments
+     */
     public static void main(String[] arg) {
         try {
             Server s = new Server();

@@ -14,9 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import net.uridium.game.Uridium;
 import net.uridium.game.ui.Background;
 import net.uridium.game.util.Assets;
+import net.uridium.game.util.Audio;
 import net.uridium.game.util.Dimensions;
 
 import static net.uridium.game.Uridium.*;
@@ -28,25 +28,40 @@ import static net.uridium.game.util.Dimensions.BUTTON_WIDTH;
 import static net.uridium.game.util.Dimensions.GAME_HEIGHT;
 import static net.uridium.game.util.Dimensions.GAME_WIDTH;
 
+/**
+ * The type Audio screen.
+ */
 public class AudioScreen extends UridiumScreen {
-
-
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
     private Skin skin;
     private Stage stage;
 
+    /**
+     * The Background.
+     */
     Background background;
+    /**
+     * The Title font.
+     */
     BitmapFont titleFont;
+    /**
+     * The Gl.
+     */
     GlyphLayout gl;
 
+    /**
+     * Instantiates a new Audio screen.
+     *
+     * @param background the background
+     */
     public AudioScreen(Background background) {
         setCursor(MENU_CURSOR, 0, 0);
 
         this.background = background;
         titleFont = Assets.getAssets().getManager().get("bigFont.ttf");
-        gl = new GlyphLayout(titleFont, "URIDIUM");
+        gl = new GlyphLayout(titleFont, "AUDIO");
 
         skin = Assets.getAssets().getManager().get(SKIN);
 
@@ -58,20 +73,17 @@ public class AudioScreen extends UridiumScreen {
         stage = new Stage(new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera), batch);
         Gdx.input.setInputProcessor(stage);
 
-
         Slider slider = new Slider(0f, 1f, 0.01f, false, skin);
-
-        slider.setWidth(250);
-        slider.setValue(1f);
-
-        slider.setPosition((GAME_WIDTH - 340) / 2, ((GAME_HEIGHT - 80) / 2) +50);
-
-
+        slider.setValue(Audio.getAudio().getVolume());
+        slider.setSize(BUTTON_WIDTH - 10, 40);
+        slider.getStyle().knob.setMinHeight(40);
+        slider.getStyle().knob.setMinWidth(15);
+        slider.getStyle().background.setMinHeight(20);
+        slider.setPosition((GAME_WIDTH - (BUTTON_WIDTH - 10)) / 2, (GAME_HEIGHT + BUTTON_HEIGHT) / 2 + 10 + 20);
         slider.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
-                Uridium.music.setVolume(slider.getValue());
+                Audio.getAudio().setVolume(slider.getValue());
 
                 super.touchDown(event, x, y, pointer, button);
             }
@@ -82,39 +94,10 @@ public class AudioScreen extends UridiumScreen {
             }
         });
 
-
-
-
-
-
-
-        Button pauseBtn = new TextButton(" PAUSE", skin);
-        pauseBtn.setSize(250, 80);
-        pauseBtn.setPosition((GAME_WIDTH - 100)/2 , (GAME_HEIGHT +200 )/2 - 50);
-        ((TextButton) pauseBtn).getLabel().setFontScale(1.4f);
-        pauseBtn.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Pause Clicked");
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Pause");
-                Uridium.music.stop();
-                super.touchDown(event, x, y, pointer, button);
-            }
-        });
-
-
-
-        Button playBtn = new TextButton(" PLAY ", skin);
-        playBtn.setSize(250, 80);
-        playBtn.setPosition((GAME_WIDTH - 300)/2 - 100 , (GAME_HEIGHT +200 )/2 - 50);
-        ((TextButton) playBtn).getLabel().setFontScale(1.4f);
-        // plusBtn.addAction(sequence(alpha(1), parallel(fadeIn(.5f), moveBy(0, -20, .5f, Interpolation.pow5Out))));
-        playBtn.addListener(new InputListener() {
+        Button muteBtn = new TextButton("MUTE", skin);
+        muteBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        muteBtn.setPosition((GAME_WIDTH - BUTTON_WIDTH) / 2 , (GAME_HEIGHT - BUTTON_HEIGHT) / 2);
+        muteBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -122,17 +105,12 @@ public class AudioScreen extends UridiumScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Uridium.music.play();
+                Audio.getAudio().toggleMute();
                 super.touchDown(event, x, y, pointer, button);
             }
         });
 
-
-
-
-
-
-        Button backBtn = new TextButton("BACK", skin);
+        Button backBtn = new TextButton("back", skin);
         backBtn.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         backBtn.setPosition((Dimensions.GAME_WIDTH - BUTTON_WIDTH) / 2, (Dimensions.GAME_HEIGHT - BUTTON_HEIGHT) / 2 - 10 - BUTTON_HEIGHT);
         backBtn.addListener(new InputListener() {
@@ -148,8 +126,7 @@ public class AudioScreen extends UridiumScreen {
             }
         });
         stage.addActor(backBtn);
-        stage.addActor(pauseBtn);
-        stage.addActor(playBtn);
+        stage.addActor(muteBtn);
         stage.addActor(slider);
     }
     @Override
@@ -164,22 +141,24 @@ public class AudioScreen extends UridiumScreen {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(1, 0, 0, 0);
+        Gdx.gl.glClearColor(1,0,0,0);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-
-
         background.render(batch);
 
-        titleFont.draw(batch, "URIDIUM", (GAME_WIDTH - gl.width) / 2, (GAME_HEIGHT * 3 / 4) + gl.height / 2);
+        titleFont.draw(batch, "AUDIO", (GAME_WIDTH - gl.width) / 2, (GAME_HEIGHT * 3 / 4) + gl.height / 2);
 
         batch.end();
 
         stage.act();
         stage.draw();
     }
+
+    /**
+     * Dispose.
+     */
     public void dispose() {
         skin.dispose();
         stage.dispose();

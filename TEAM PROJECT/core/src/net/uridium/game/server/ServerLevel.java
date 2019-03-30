@@ -6,8 +6,11 @@ import com.badlogic.gdx.math.Vector2;
 import net.uridium.game.gameplay.ai.Pathfinder;
 import net.uridium.game.gameplay.entity.EnemySpawner;
 import net.uridium.game.gameplay.entity.Entity;
-import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
 import net.uridium.game.gameplay.entity.damageable.Player;
+import net.uridium.game.gameplay.entity.damageable.enemy.Bat;
+import net.uridium.game.gameplay.entity.damageable.enemy.Boss;
+import net.uridium.game.gameplay.entity.damageable.enemy.Enemy;
+import net.uridium.game.gameplay.entity.damageable.enemy.Slime;
 import net.uridium.game.gameplay.entity.item.Heal;
 import net.uridium.game.gameplay.entity.item.Item;
 import net.uridium.game.gameplay.entity.item.MovementSteroid;
@@ -19,44 +22,127 @@ import net.uridium.game.gameplay.tile.DoorTile;
 import net.uridium.game.gameplay.tile.Tile;
 import net.uridium.game.server.msg.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static net.uridium.game.gameplay.Level.TILE_HEIGHT;
 import static net.uridium.game.gameplay.Level.TILE_WIDTH;
-import static net.uridium.game.screen.UridiumScreenManager.getUSMInstance;
 
+/**
+ * The type Server level.
+ */
 public class ServerLevel {
+    /**
+     * The Id.
+     */
     int id;
+
+    /**
+     * The Grid.
+     */
     Tile[][] grid;
+
+    /**
+     * The Grid width.
+     */
     int gridWidth;
+
+    /**
+     * The Grid height.
+     */
     int gridHeight;
 
+    /**
+     * The Entities.
+     */
     ConcurrentHashMap<Integer, Entity> entities;
+
+    /**
+     * The Entity i ds to remove.
+     */
     ArrayList<Integer> entityIDsToRemove;
+
+    /**
+     * The Player i ds.
+     */
     ArrayList<Integer> playerIDs;
 
+
+    /**
+     * The Entrances.
+     */
     ArrayList<Vector2> entrances;
 
+    /**
+     * The Msgs.
+     */
     BlockingQueue<Msg> msgs;
 
+    /**
+     * The Next entity id.
+     */
     int nextEntityID = 4;
+
+    /**
+     * The R.
+     */
     Random r;
 
+    /**
+     * Whether the server needs to change the level
+     */
     private boolean shouldChangeLevel;
+
+    /**
+     * If the level needs to be changed, id of the new level
+     */
     private int newLevelId;
+
+    /**
+     * If the level needs to be changed, id of the entrance to use
+     */
     private int nextLevelEntrance;
 
+    /**
+     * Time the players entered this level
+     */
     private long enteredTime = 0;
 
+    /**
+     * Whether the game has ended (won or all players dead)
+     */
+    private boolean gameEnded = false;
+
+    /**
+     * Whether doors have been unlocked/enabled
+     */
+    private boolean unlocked = false;
+
+    /**
+     * Instantiates a new Server level.
+     *
+     * @param id         the id
+     * @param grid       the grid
+     * @param gridWidth  the grid width
+     * @param gridHeight the grid height
+     * @param entrances  the entrances
+     */
     public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> entrances) {
         this(id, grid, gridWidth, gridHeight, entrances, new ArrayList<>());
     }
 
+    /**
+     * Instantiates a new Server level.
+     *
+     * @param id         the id
+     * @param grid       the grid
+     * @param gridWidth  the grid width
+     * @param gridHeight the grid height
+     * @param entrances  the entrances
+     * @param spawners   the spawners
+     */
     public ServerLevel(int id, Tile[][] grid, int gridWidth, int gridHeight, ArrayList<Vector2> entrances, ArrayList<EnemySpawner> spawners) {
         this.id = id;
         this.grid = grid;
@@ -76,28 +162,48 @@ public class ServerLevel {
             int spawnerId = getNextEntityID();
             spawner.setID(spawnerId);
             addEntity(spawner);
-//            System.out.println("added spawner, id => " + spawnerId);
         }
 
-        printEntities();
+        if(id == -1)
+            spawnBoss();
+
+        enteredTime = System.currentTimeMillis();
     }
 
-    public void printEntities() {
-        for (Entity e : entities.values()) {
-            System.out.println(e instanceof EnemySpawner);
-        }
+    /**
+     * Spawn boss.
+     */
+    public void spawnBoss() {
+        Boss b = new Boss(getNextEntityID(), new Vector2(gridWidth / 2 * TILE_WIDTH, gridHeight * 3 / 4 * TILE_HEIGHT), this);
+        entities.put(b.getID(), b);
     }
 
+    /**
+     * Sets the time the user entered the level
+     *
+     * @param enteredTime the entered time
+     */
     public void setEnteredTime(long enteredTime) {
         this.enteredTime = enteredTime;
     }
 
+    /**
+     * Gets entrance.
+     *
+     * @param entrance the entrance id
+     * @return the entrance position
+     */
     public Vector2 getEntrance(int entrance) {
         Vector2 pos = entrances.get(entrance - 1);
 
         return entrances.get(entrance - 1);
     }
 
+    /**
+     * Gets next available entity id.
+     *
+     * @return the next entity id
+     */
     public int getNextEntityID() {
         int x = nextEntityID++;
 
@@ -107,6 +213,11 @@ public class ServerLevel {
         return x;
     }
 
+    /**
+     * Add entity to the level
+     *
+     * @param entity the entity
+     */
     public void addEntity(Entity entity) {
 //        if(entities.containsKey(entity.getID())) entity.setID(getNextEntityID());
         entities.put(entity.getID(), entity);
@@ -121,7 +232,7 @@ public class ServerLevel {
             }
 
             retargetEnemies();
-        } else if (entity instanceof Enemy) {
+        } else if (entity instanceof Enemy && !(entity instanceof Boss) && !(entity instanceof Bat)&& !(entity instanceof Slime)) {
             Enemy enemy = (Enemy) entity;
             enemy.setPathfinder(new Pathfinder(getObstacleGridPositionList(), gridWidth, gridHeight));
 
@@ -129,9 +240,12 @@ public class ServerLevel {
         }
     }
 
+    /**
+     * Retarget each enemy to the nearest player
+     */
     public void retargetEnemies() {
         for (Entity e : entities.values()) {
-            if (e instanceof Enemy) {
+            if (e instanceof Enemy && !(e instanceof Boss) && !(e instanceof Bat)&& !(e instanceof Slime)) {
                 Enemy enemy = (Enemy) e;
 
                 Player player;
@@ -141,16 +255,21 @@ public class ServerLevel {
         }
     }
 
-    public void addEntities(ArrayList<? extends Entity> entities) {
-        for (Entity entity : entities)
-            addEntity(entity);
-    }
-
-
+    /**
+     * Gets a player.
+     *
+     * @param playerID the player id
+     * @return the player
+     */
     public Player getPlayer(int playerID) {
         return (Player) entities.get(playerID);
     }
 
+    /**
+     * Remove players from the level
+     *
+     * @return the removed players
+     */
     public ArrayList<Player> removePlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
@@ -164,6 +283,9 @@ public class ServerLevel {
         return players;
     }
 
+    /**
+     * Purge entities which need to be removed
+     */
     public void purgeEntities() {
         for (Integer i : entityIDsToRemove) {
             entities.remove(i);
@@ -173,27 +295,58 @@ public class ServerLevel {
         entityIDsToRemove.clear();
     }
 
+    /**
+     * Gets msgs which need to be sent
+     *
+     * @return the msgs
+     */
     public BlockingQueue<Msg> getMsgs() {
         return msgs;
     }
 
+    /**
+     * Gets level data to send to client
+     *
+     * @return the level data
+     */
     public LevelData getLevelData() {
-        return new LevelData(grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
+        return new LevelData(id, grid, gridWidth, gridHeight, new HashMap<Integer, Entity>(entities), -1);
     }
 
+    /**
+     * Gets num players in the game
+     *
+     * @return the num players
+     */
     public int getNumPlayers() {
         return playerIDs.size();
     }
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     public int getID() {
         return id;
     }
 
+    /**
+     * Create bullet.
+     *
+     * @param playerID   the player id
+     * @param shootAngle the shoot angle
+     */
     public void createBullet(int playerID, double shootAngle) {
         Bullet bullet = new Bullet(getNextEntityID(), getPlayer(playerID).getCenter(new Vector2()), (float) shootAngle, playerID);
         addEntity(bullet);
     }
 
+    /**
+     * Check collisions for player.with walls, doors, enemies, and items
+     *
+     * @param player the player
+     */
     public void checkCollisionsForPlayer(Player player) {
         Rectangle playerBody = player.getBody();
         Rectangle overlap = new Rectangle();
@@ -224,7 +377,7 @@ public class ServerLevel {
                     int dest = door.getDest();
                     int entrance = door.getEntrance();
 
-                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel()) {
+                    if (Intersector.intersectRectangles(playerBody, obstacle, overlap) && canChangeLevel() && door.isEnabled()) {
                         newLevelId = dest;
                         shouldChangeLevel = true;
                         nextLevelEntrance = entrance;
@@ -236,7 +389,7 @@ public class ServerLevel {
         }
 
         for (Entity e : entities.values()) {
-            if (e instanceof Enemy) {
+            if (e instanceof Enemy && !(e instanceof Boss)) {
                 Enemy enemy = (Enemy) e;
 
                 if (Intersector.intersectRectangles(playerBody, enemy.getBody(), overlap)) {
@@ -247,9 +400,11 @@ public class ServerLevel {
                     if (player.getHealth() == 0) {
                         player.setPosition(new Vector2(-1000, -1000));
                         player.setVelocity(0, 0);
-                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), getNumPlayers() - getNumPlayersDead() + 1)));
-                        if(getNumPlayers() - getNumPlayersDead() == 0) {
-                            msgs.add(new Msg(Msg.MsgType.GAME_OVER, -1));
+                        int rank = getNumPlayers() - getNumPlayersDead() + 1;
+                        player.setRank(rank);
+                        msgs.add(new Msg(Msg.MsgType.PLAYER_DEATH, new PlayerDeathData(player.getID(), rank)));
+                        if (getNumPlayers() - getNumPlayersDead() == 0) {
+                            gameOver(false);
                         }
                         retargetEnemies();
                     }
@@ -273,6 +428,11 @@ public class ServerLevel {
             player.setX(player.getLastPos().x);
     }
 
+    /**
+     * Check collisions for an enemy with walls
+     *
+     * @param enemy the enemy
+     */
     public void checkCollisionsForEnemy(Enemy enemy) {
         Rectangle enemyBody = enemy.getBody();
         Rectangle overlap = new Rectangle();
@@ -287,6 +447,11 @@ public class ServerLevel {
                     obstacle = tile.getBody();
 
                     if (Intersector.intersectRectangles(enemyBody, obstacle, overlap)) {
+                        if(enemy instanceof Bat || enemy instanceof Slime) {
+                            entityIDsToRemove.add(enemy.getID());
+                            return;
+                        }
+
                         if (overlap.width > overlap.height)
                             enemy.setY(enemy.getLastPos().y);
                         else if (overlap.width < overlap.height)
@@ -300,8 +465,18 @@ public class ServerLevel {
                 }
             }
         }
+
+        if (enemyBody.y + enemyBody.height > gridHeight * TILE_HEIGHT || enemyBody.y < 0)
+            entityIDsToRemove.add(enemy.getID());
+        else if (enemyBody.x + enemyBody.width > gridWidth * TILE_WIDTH || enemyBody.x < 0)
+            entityIDsToRemove.add(enemy.getID());
     }
 
+    /**
+     * Check collisions for projectile with breakable tiles and entities
+     *
+     * @param p the p
+     */
     public void checkCollisionsForProjectile(Projectile p) {
         Rectangle projectileBody = p.getBody();
         Rectangle overlap = new Rectangle();
@@ -339,29 +514,20 @@ public class ServerLevel {
 
             if (Intersector.intersectRectangles(projectileBody, entityBody, overlap)) {
                 if (e instanceof Enemy) {
+                    Enemy enemy = (Enemy) e;
+                    enemy.damage(1);
                     entityIDsToRemove.add(p.getID());
-                    entityIDsToRemove.add(e.getID());
 
-                    Player killer = getPlayer(p.getOwnerID());
-                    killer.addScore(100);
-                    killer.addXp(2.5f);
-                    msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(killer.getID(), killer.getScore(), killer.getLevel(), killer.getXp(), killer.getXpToLevelUp(), killer.isLevelledUp())));
-                    killer.setLevelledUpFalse();
+                    if(enemy.isDead() && !(enemy instanceof Boss)) {
+                        entityIDsToRemove.add(e.getID());
 
-                    //spawn item
-                    switch (r.nextInt(5)) {
-                        case 0:
-                            Heal h = new Heal(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
-                            addEntity(h);
-                            break;
-                        case 1:
-                            ShootingSteroid ss = new ShootingSteroid(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
-                            addEntity(ss);
-                            break;
-                        case 2:
-                            MovementSteroid ms = new MovementSteroid(getNextEntityID(), new Rectangle(entityBody.x, entityBody.y, 40, 40));
-                            addEntity(ms);
-                            break;
+                        Player killer = getPlayer(p.getOwnerID());
+                        killer.addScore(100);
+                        killer.addXp(2.5f);
+                        msgs.add(new Msg(Msg.MsgType.PLAYER_UPDATE, new PlayerUpdateData(killer.getID(), killer.getScore(), killer.getLevel(), killer.getXp(), killer.getXpToLevelUp(), killer.isLevelledUp())));
+                        killer.setLevelledUpFalse();
+
+                        dropItem(enemy.getPosition(new Vector2()));
                     }
                 }
 
@@ -370,6 +536,11 @@ public class ServerLevel {
         }
     }
 
+    /**
+     * Gets a list of all the grid coordinates which contain obstacles
+     *
+     * @return the obstacle grid position list
+     */
     public ArrayList<Vector2> getObstacleGridPositionList() {
         ArrayList<Vector2> positions = new ArrayList<>();
 
@@ -385,6 +556,12 @@ public class ServerLevel {
         return positions;
     }
 
+    /**
+     * Gets closest player to enemy.
+     *
+     * @param enemy the enemy
+     * @return the closest player to enemy
+     */
     public Player getClosestPlayerToEnemy(Enemy enemy) {
         Player closestPlayer = null;
         float shortestDistance = Float.MAX_VALUE;
@@ -410,35 +587,88 @@ public class ServerLevel {
         return closestPlayer;
     }
 
+    /**
+     * Update the level
+     *
+     * @param delta the delta time
+     */
     public void update(float delta) {
         if (playerIDs.size() == 0) return;
+
+        boolean noEnemies = canChangeLevel();
 
         for (Entity e : entities.values()) {
             e.update(delta);
 
-            if (e instanceof Player)
+            if (e instanceof Player) {
                 checkCollisionsForPlayer((Player) e);
-            else if (e instanceof Projectile)
+            } else if (e instanceof Projectile) {
                 checkCollisionsForProjectile((Projectile) e);
-            else if (e instanceof Enemy)
+            } else if (e instanceof Boss) {
+                handleBoss((Boss) e);
+            } else if (e instanceof Enemy) {
+                noEnemies = false;
                 checkCollisionsForEnemy((Enemy) e);
-            else if (e instanceof EnemySpawner)
-                handleEnemySpawner((EnemySpawner) e);
-            else if (e instanceof Item)
-                if (((Item) e).isUsed()) entityIDsToRemove.add(e.getID());
+            } else if (e instanceof EnemySpawner) {
+                EnemySpawner es = (EnemySpawner) e;
+                if(es.getNumEnemies() != 0)
+                    noEnemies = false;
+
+                handleEnemySpawner(es);
+            } else if (e instanceof Item) {
+                if (((Item) e).isUsed())
+                    entityIDsToRemove.add(e.getID());
+            }
 
             if (e.checkChanged()) {
                 if (e instanceof Enemy) {
-                    msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()), ((Enemy) e).getAngle())));
+                    msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()), ((Enemy) e).getAngle(), ((Enemy) e).getHealth(), ((Enemy) e).getMaxHealth())));
                 } else {
                     msgs.add(new Msg(Msg.MsgType.ENTITY_UPDATE, new EntityUpdateData(e.getID(), e.getPosition(new Vector2()), e.getVelocity(new Vector2()))));
                 }
             }
         }
 
+        if(!unlocked && noEnemies) {
+            msgs.add(new Msg(Msg.MsgType.UNLOCK_DOORS, 0));
+            unlocked = true;
+            unlockDoors();
+        }
+
         purgeEntities();
     }
 
+    /**
+     * Unlock doors in the level
+     */
+    public void unlockDoors() {
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                Tile tile = grid[i][j];
+
+                if (tile instanceof DoorTile) {
+                    DoorTile door = (DoorTile) tile;
+                    door.enable();
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle boss updates
+     *
+     * @param boss the boss
+     */
+    public void handleBoss(Boss boss) {
+        if(boss.isDead() && !gameEnded)
+            gameOver(true);
+    }
+
+    /**
+     * Handle enemy spawner updates
+     *
+     * @param spawner the spawner
+     */
     public void handleEnemySpawner(EnemySpawner spawner) {
         if (!spawner.canSpawn()) return;
 
@@ -461,41 +691,142 @@ public class ServerLevel {
         addEntity(e);
     }
 
-    public int shouldChangeLevel() {
-        return shouldChangeLevel ? newLevelId : -1;
+    /**
+     * Drop item on ground on enemy death
+     *
+     * @param pos the pos
+     */
+    public void dropItem(Vector2 pos) {
+        switch (r.nextInt(24)) {
+            case 0:
+            case 1:
+                Heal h = new Heal(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40));
+                addEntity(h);
+                break;
+            case 2:
+                ShootingSteroid ss = new ShootingSteroid(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40));
+                addEntity(ss);
+                break;
+            case 3:
+                MovementSteroid ms = new MovementSteroid(getNextEntityID(), new Rectangle(pos.x, pos.y, 40, 40));
+                addEntity(ms);
+                break;
+        }
     }
 
+    /**
+     * Checks if the server should change the level
+     *
+     * @return Returns the id of the level to change to if it should change, 0 otherwise
+     */
+    public int shouldChangeLevel() {
+        return shouldChangeLevel ? newLevelId : 0;
+    }
+
+    /**
+     * Gets the entrance of the next level to use if needed
+     *
+     * @return the next level entrance
+     */
     public int getNextLevelEntrance() {
         return nextLevelEntrance;
     }
 
+    /**
+     * After changing level, makes sure upon re-entering the level that it does not instantly change level back
+     */
     public void changedLevel() {
         shouldChangeLevel = false;
     }
 
+    /**
+     * Can change level boolean.
+     *
+     * @return Whether the level can be changed
+     */
     public boolean canChangeLevel() {
-        return System.currentTimeMillis() - enteredTime > 3000;
+        return System.currentTimeMillis() - enteredTime > 3000 && enteredTime != 0;
     }
 
+    /**
+     * Gets next player colour available
+     *
+     * @return A player colour
+     */
     public Player.Colour getAvailColour() {
         return Player.Colour.values()[playerIDs.size()];
     }
 
+    /**
+     * Gets num players dead.
+     *
+     * @return the num players dead
+     */
     public int getNumPlayersDead() {
         int dead = 0;
 
-        for(Player p : getPlayers())
-            if(p.getHealth() == 0) dead++;
+        for (Player p : getPlayers())
+            if (p.getHealth() == 0) dead++;
 
         return dead;
     }
 
+    /**
+     * Gets players.
+     *
+     * @return the players
+     */
     public ArrayList<Player> getPlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
-        for(Entity e : entities.values())
-            if(e instanceof Player) players.add((Player) e);
+        for (Entity e : entities.values())
+            if (e instanceof Player) players.add((Player) e);
 
         return players;
+    }
+
+    /**
+     * Game over.
+     *
+     * @param won Whether the game was won or not
+     */
+    public void gameOver(boolean won) {
+        gameEnded = true;
+
+        ArrayList<Player> players = getPlayers();
+        Collections.sort(players, Collections.reverseOrder());
+
+        for(int i = 0; i < players.size(); i++)
+            if(players.get(i).getRank() == -1)
+                players.get(i).setRank(i + 1);
+
+        msgs.add(new Msg(Msg.MsgType.GAME_OVER, new GameOverData(getPlayers(), won)));
+    }
+
+    /**
+     * Is game ended boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isGameEnded() {
+        return gameEnded;
+    }
+
+    /**
+     * Gets grid width.
+     *
+     * @return the grid width
+     */
+    public int getGridWidth() {
+        return gridWidth;
+    }
+
+    /**
+     * Gets grid height.
+     *
+     * @return the grid height
+     */
+    public int getGridHeight() {
+        return gridHeight;
     }
 }
