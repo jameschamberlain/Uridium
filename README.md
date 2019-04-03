@@ -41,6 +41,6 @@ must be able to switch the music off!
 Screenshots
 ---------------
 <div>
-  <img src="/screenshots/main_menu_screenshot.png" alt="Main Menu Screenshot" width="50%"/>
-  <img src="/screenshots/game_screenshot.png" alt="Game Screenshot" width="50%"/>
+  <img src="/screenshots/main_menu_screenshot.png" alt="Main Menu Screenshot" width="48%"/>
+  <img src="/screenshots/game_screenshot.png" alt="Game Screenshot" width="48%"/>
 </div>
